@@ -10,33 +10,45 @@ export default function PostTripForm({ lang, setView, onAdd }) {
     name: '', phone: '', from: 'New York', to: 'Dakar',
     date: '', space: '', price: '', note: '',
   })
-  const [success, setSuccess] = useState(false)
-  const [error, setError]     = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess]       = useState(false)
+  const [error, setError]           = useState(null)
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
 
-  const submit = () => {
+  const submit = async () => {
     if (!form.name || !form.date || !form.space) {
-      setError(true)
+      setError(t.formRequired)
       return
     }
-    setError(false)
-    const initials = form.name.trim().split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
-    const avatarColors = [
-      ['#8A5800', '#FDF3E3'], ['#1A5C38', '#E8F4ED'],
-      ['#7A3B1E', '#FDF0E8'], ['#185FA5', '#E6F1FB'],
-    ]
-    const [color, bg] = avatarColors[Math.floor(Math.random() * avatarColors.length)]
-    onAdd({
-      id: Date.now(), initials, color, bg,
-      rating: 5.0, trips: 0, delivered: 0,
-      responseTime: '—', memberSince: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-      verified: { phone: false, id: false, community: false },
-      review: { text: '', author: '' },
-      ...form,
-    })
-    setSuccess(true)
-    setTimeout(() => { setSuccess(false); setView('browse') }, 2200)
+    setError(null)
+    setSubmitting(true)
+
+    try {
+      const initials = form.name.trim().split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+      const avatarColors = [
+        ['#8A5800', '#FDF3E3'], ['#1A5C38', '#E8F4ED'],
+        ['#7A3B1E', '#FDF0E8'], ['#185FA5', '#E6F1FB'],
+      ]
+      const [color, bg] = avatarColors[Math.floor(Math.random() * avatarColors.length)]
+
+      await onAdd({
+        initials, color, bg,
+        rating: 5.0, trips: 0, delivered: 0,
+        responseTime: '—',
+        memberSince: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        verified: { phone: false, id: false, community: false },
+        review: { text: '', author: '' },
+        ...form,
+      })
+
+      setSuccess(true)
+      setTimeout(() => { setSuccess(false); setView('browse') }, 2200)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -52,11 +64,10 @@ export default function PostTripForm({ lang, setView, onAdd }) {
         )}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-5 text-sm text-red-700">
-            {t.formRequired}
+            {error}
           </div>
         )}
 
-        {/* Personal info */}
         <div className="section-label mb-3">{t.fsPersonal}</div>
         <label className="text-xs font-semibold text-ink-200 block mb-1.5">{t.flName}</label>
         <input className="form-input mb-4" placeholder="e.g. Aminata Mbaye"
@@ -67,9 +78,8 @@ export default function PostTripForm({ lang, setView, onAdd }) {
           value={form.phone} onChange={(e) => set('phone', e.target.value)} />
 
         <div className="h-px bg-sand-200 my-5" />
-
-        {/* Trip details */}
         <div className="section-label mb-3">{t.fsTrip}</div>
+
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
             <label className="text-xs font-semibold text-ink-200 block mb-1.5">{t.flFrom}</label>
@@ -106,8 +116,16 @@ export default function PostTripForm({ lang, setView, onAdd }) {
         <textarea className="form-input mb-5 resize-none" rows={3} placeholder={t.flNotePh}
           value={form.note} onChange={(e) => set('note', e.target.value)} />
 
-        <button className="btn-primary w-full py-3 text-sm" onClick={submit}>{t.btnSubmit}</button>
-        <button className="btn-outline w-full py-2.5 text-sm mt-2" onClick={() => setView('browse')}>{t.btnCancel}</button>
+        <button
+          className="btn-primary w-full py-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+          onClick={submit}
+          disabled={submitting}
+        >
+          {submitting ? '...' : t.btnSubmit}
+        </button>
+        <button className="btn-outline w-full py-2.5 text-sm mt-2" onClick={() => setView('browse')}>
+          {t.btnCancel}
+        </button>
       </div>
     </div>
   )

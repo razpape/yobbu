@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-
+ 
 // Maps a raw Supabase row → the shape our components expect
 function rowToTrip(row) {
   return {
@@ -30,7 +30,7 @@ function rowToTrip(row) {
     },
   }
 }
-
+ 
 // Maps our form data → the shape Supabase expects
 function tripToRow(trip) {
   return {
@@ -57,12 +57,12 @@ function tripToRow(trip) {
     note:              trip.note  ?? '',
   }
 }
-
+ 
 export function useTrips() {
   const [trips,   setTrips]   = useState([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
-
+ 
   // Fetch all trips on mount
   useEffect(() => {
     async function fetchTrips() {
@@ -71,7 +71,7 @@ export function useTrips() {
         .from('trips')
         .select('*')
         .order('created_at', { ascending: false })
-
+ 
       if (error) {
         setError(error.message)
       } else {
@@ -79,10 +79,10 @@ export function useTrips() {
       }
       setLoading(false)
     }
-
+ 
     fetchTrips()
   }, [])
-
+ 
   // Insert a new trip
   async function addTrip(tripData) {
     const row = tripToRow(tripData)
@@ -91,15 +91,15 @@ export function useTrips() {
       .insert([row])
       .select()
       .single()
-
+ 
     if (error) {
       throw new Error(error.message)
     }
-
+ 
     const newTrip = rowToTrip(data)
     setTrips((prev) => [newTrip, ...prev])
     return newTrip
   }
-
+ 
   return { trips, loading, error, addTrip }
 }

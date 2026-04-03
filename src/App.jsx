@@ -4,14 +4,12 @@ import Hero from './components/Hero'
 import HowItWorks from './components/HowItWorks'
 import BrowsePage from './components/BrowsePage'
 import PostTripForm from './components/PostTripForm'
-import { SEED_TRIPS } from './data/trips'
+import { useTrips } from './hooks/useTrips'
 
 export default function App() {
-  const [lang, setLang]   = useState('en')
-  const [view, setView]   = useState('home')
-  const [trips, setTrips] = useState(SEED_TRIPS)
-
-  const addTrip = (trip) => setTrips((prev) => [trip, ...prev])
+  const [lang, setLang] = useState('en')
+  const [view, setView] = useState('home')
+  const { trips, loading, error, addTrip } = useTrips()
 
   return (
     <div className="min-h-screen bg-sand">
@@ -29,7 +27,8 @@ export default function App() {
           lang={lang}
           setView={setView}
           trips={trips}
-          setTrips={setTrips}
+          loading={loading}
+          error={error}
         />
       )}
 
