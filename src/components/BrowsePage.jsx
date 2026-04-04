@@ -1,18 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import GPCard from './GPCard'
 import { DESTINATIONS } from '../data/trips'
 import { translations } from '../utils/translations'
 
-export default function BrowsePage({ lang, setView, trips, loading, error, user, onLoginRequired }) {
+export default function BrowsePage({ lang, setView, trips, loading, error, user, onLoginRequired, searchFilter }) {
   const [dest, setDest] = useState('all')
   const t = translations[lang]
+
+  useEffect(() => {
+    if (searchFilter?.dest) {
+      setDest(searchFilter.dest)
+    }
+  }, [searchFilter])
 
   const filtered = dest === 'all' ? trips
     : dest === 'Dakar'       ? trips.filter((g) => g.to === 'Dakar' && g.from !== 'Paris')
     : dest === 'Conakry'     ? trips.filter((g) => g.to === 'Conakry')
     : dest === 'Paris-Dakar' ? trips.filter((g) => g.from === 'Paris')
     : dest === 'US-Dakar'    ? trips.filter((g) => g.to === 'Dakar' && g.from !== 'New York' && g.from !== 'Paris')
-    : trips
+    : trips.filter((g) => g.to === dest)
 
   return (
     <>
@@ -74,11 +80,8 @@ export default function BrowsePage({ lang, setView, trips, loading, error, user,
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {filtered.map((gp) => (
                   <GPCard
-                    key={gp.id}
-                    gp={gp}
-                    lang={lang}
-                    user={user}
-                    onContactClick={onLoginRequired}
+                    key={gp.id} gp={gp} lang={lang}
+                    user={user} onContactClick={onLoginRequired}
                   />
                 ))}
               </div>

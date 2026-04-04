@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { translations } from '../utils/translations'
- 
+
 function Stars({ rating }) {
   return (
     <span>
@@ -10,7 +10,7 @@ function Stars({ rating }) {
     </span>
   )
 }
- 
+
 function VerifiedBadges({ verified, lang }) {
   const t = translations[lang]
   const badges = [
@@ -37,24 +37,22 @@ function VerifiedBadges({ verified, lang }) {
     </div>
   )
 }
- 
+
 export default function GPCard({ gp, lang, user, onContactClick }) {
   const [showReview, setShowReview] = useState(false)
   const t = translations[lang]
   const route = gp.from === 'Paris' ? `Paris → ${gp.to}` : `${gp.from} → ${gp.to}`
- 
-  const handleContact = () => {
-    if (!user) {
-      onContactClick()
-      return
-    }
+
+  const handleContact = (e) => {
+    e.stopPropagation()
+    if (!user) { onContactClick(); return }
     const message = encodeURIComponent(
       `Hi ${gp.name}, I found you on Yobbu and I'd like to send a package to ${gp.to}. Can we discuss the details?`
     )
     const phone = gp.phone?.replace(/\D/g, '')
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank')
   }
- 
+
   return (
     <div className="card">
       <div className="flex items-start gap-3 mb-3">
@@ -84,29 +82,28 @@ export default function GPCard({ gp, lang, user, onContactClick }) {
           <VerifiedBadges verified={gp.verified} lang={lang} />
         </div>
       </div>
- 
+
       <div className="flex flex-wrap gap-1.5 mb-3">
         <span className="pill bg-gold-light text-gold-dark">{route}</span>
         <span className="pill bg-forest-light text-forest">{gp.date}</span>
         <span className="pill bg-orange-50 text-orange-800">~{gp.space} kg</span>
         <span className="pill bg-sand-100 text-ink-200">{gp.price}</span>
       </div>
- 
+
       <div className="flex items-center justify-between">
         <span className="text-[11px] text-ink-300">⏱ {t.responds} {gp.responseTime}</span>
         <div className="flex items-center gap-2">
           <button
             className="text-[11px] font-semibold text-gold-dark hover:text-gold transition-colors"
-            onClick={(e) => { e.stopPropagation(); setShowReview((v) => !v) }}
-          >
+            onClick={(e) => { e.stopPropagation(); setShowReview((v) => !v) }}>
             {showReview ? t.hideReview : t.seeReview}
           </button>
           <button className="btn-primary text-xs px-4 py-1.5" onClick={handleContact}>
-            {user ? t.contact : (lang === 'fr' ? 'Se connecter pour contacter' : 'Login to contact')}
+            {t.contact}
           </button>
         </div>
       </div>
- 
+
       {showReview && gp.review?.text && (
         <div className="mt-3 bg-sand-100 rounded-lg p-3 border-l-2 border-gold-mid">
           <p className="text-xs text-ink-200 leading-relaxed italic">"{gp.review.text}"</p>
