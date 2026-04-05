@@ -8,6 +8,7 @@ import Footer from './components/Footer'
 import BrowsePage from './components/BrowsePage'
 import PostTripForm from './components/PostTripForm'
 import AuthModal from './components/AuthModal'
+import ProfilePage from './pages/ProfilePage'
 import Admin from './pages/Admin'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
@@ -15,40 +16,52 @@ import { useAuth } from './hooks/useAuth'
 const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true'
 
 export default function App() {
-  const [lang, setLang]           = useState('en')
-  const [view, setView]           = useState('home')
-  const [showAuth, setShowAuth]   = useState(false)
+  const [lang, setLang]               = useState('en')
+  const [view, setView]               = useState('home')
+  const [showAuth, setShowAuth]       = useState(false)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const { trips, loading, error, addTrip } = useTrips()
-  const { user, signOut }         = useAuth()
+  const { user, signOut }             = useAuth()
 
   if (isAdminRoute) return <Admin />
 
-  const handleSearch = (filter) => {
-    setSearchFilter(filter)
-    setView('browse')
+  const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
+
+  const handleAuthSuccess = () => {
+    setShowAuth(false)
+    setView('profile')
   }
 
-  const handleAuthSuccess = () => setShowAuth(false)
+  const handleSignOut = async () => {
+    await signOut()
+    setView('home')
+  }
+
+  // Profile page — full page
+  if (view === 'profile' && user) {
+    return (
+      <ProfilePage
+        user={user}
+        lang={lang}
+        onSignOut={handleSignOut}
+        setView={setView}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-sand">
       <Navbar
         lang={lang} setLang={setLang}
         view={view} setView={setView}
-        user={user} onSignOut={signOut}
+        user={user} onSignOut={handleSignOut}
         onLoginClick={() => setShowAuth(true)}
       />
 
       {view === 'home' && (
         <>
           <Hero lang={lang} setView={setView} onSearch={handleSearch} />
-          <TravelerSlider
-            trips={trips} lang={lang}
-            user={user}
-            onLoginRequired={() => setShowAuth(true)}
-            setView={setView}
-          />
+          <TravelerSlider trips={trips} lang={lang} user={user} onLoginRequired={() => setShowAuth(true)} setView={setView} />
           <HowItWorks lang={lang} />
           <FAQ lang={lang} />
           <Footer lang={lang} setView={setView} />
@@ -56,28 +69,15 @@ export default function App() {
       )}
 
       {view === 'browse' && (
-        <BrowsePage
-          lang={lang} setView={setView}
-          trips={trips} loading={loading} error={error}
-          user={user}
-          onLoginRequired={() => setShowAuth(true)}
-          searchFilter={searchFilter}
-        />
+        <BrowsePage lang={lang} setView={setView} trips={trips} loading={loading} error={error} user={user} onLoginRequired={() => setShowAuth(true)} searchFilter={searchFilter} />
       )}
 
       {view === 'post' && (
-        <PostTripForm
-          lang={lang} setView={setView}
-          onAdd={addTrip}
-        />
+        <PostTripForm lang={lang} setView={setView} onAdd={addTrip} />
       )}
 
       {showAuth && (
-        <AuthModal
-          lang={lang}
-          onClose={() => setShowAuth(false)}
-          onSuccess={handleAuthSuccess}
-        />
+        <AuthModal lang={lang} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
       )}
     </div>
   )
