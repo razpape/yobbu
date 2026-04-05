@@ -88,10 +88,10 @@ export default function Hero({ lang, setView, onSearch }) {
       `}</style>
 
       <div className="hero-section" style={{ background: '#FDFBF7', color: '#1A1710' }}>
-        <section style={{ overflow: 'hidden', position: 'relative' }}>
+        <section style={{ overflow: 'hidden', position: 'relative', padding: '0 48px' }}>
           <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 900px 700px at 75% 45%, rgba(200,137,28,.10) 0%, transparent 70%)', pointerEvents:'none' }} />
 
-          <div className="hero-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', maxWidth:1280, margin:'0 auto', width:'100%', position:'relative', zIndex:2, padding:'48px 0 64px' }}>
+          <div className="hero-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'center', maxWidth:1280, margin:'0 auto', width:'100%', position:'relative', zIndex:2, padding:'64px 0 80px' }}>
 
             {/* Left */}
             <div>
