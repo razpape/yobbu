@@ -1,14 +1,20 @@
 import { useState } from 'react'
 
-export default function Navbar({ lang, setLang, setView }) {
+export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const isFr = lang === 'fr'
+
+  const meta = user?.user_metadata || {}
+  const fullName = meta.full_name || meta.first_name || user?.phone || 'Me'
+  const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
   return (
     <>
       <style>{`
         .nav-link:hover { color: #C8891C !important; }
         .btn-post:hover { background: #E5A630 !important; }
+        .btn-signin:hover { background: #F7F3ED !important; }
+        .avatar-btn:hover { background: #C8891C !important; color: #fff !important; }
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: flex !important; }
@@ -28,7 +34,7 @@ export default function Navbar({ lang, setLang, setView }) {
             Yob<span style={{ color: '#C8891C' }}>bu</span>
           </div>
 
-          {/* Desktop nav */}
+          {/* Desktop */}
           <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 20, overflow: 'hidden', marginRight: 16 }}>
               {['en', 'fr'].map(l => (
@@ -38,14 +44,35 @@ export default function Navbar({ lang, setLang, setView }) {
                 </button>
               ))}
             </div>
+
             <span className="nav-link" onClick={() => setView('browse')}
               style={{ fontSize: 14, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '8px 16px', transition: 'color .2s' }}>
               {isFr ? 'Voir les GPs' : 'Browse GPs'}
             </span>
-            <button className="btn-post" onClick={() => setView('post')}
-              style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
-              {isFr ? '+ Poster un voyage' : '+ Post a trip'}
-            </button>
+
+            {user ? (
+              <>
+                <button className="btn-post" onClick={() => setView('post')}
+                  style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
+                  {isFr ? '+ Poster' : '+ Post a trip'}
+                </button>
+                <div className="avatar-btn" onClick={() => setView('profile')}
+                  style={{ width: 38, height: 38, borderRadius: '50%', background: '#FFF8EB', border: '1.5px solid #F0C878', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#C8891C', cursor: 'pointer', transition: 'all .2s' }}>
+                  {initials}
+                </div>
+              </>
+            ) : (
+              <>
+                <button className="btn-signin" onClick={onLoginClick}
+                  style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.12)', padding: '9px 20px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all .2s' }}>
+                  {isFr ? 'Se connecter' : 'Sign in'}
+                </button>
+                <button className="btn-post" onClick={() => setView('post')}
+                  style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
+                  {isFr ? '+ Poster un voyage' : '+ Post a trip'}
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile */}
@@ -76,10 +103,22 @@ export default function Navbar({ lang, setLang, setView }) {
               style={{ fontSize: 15, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,.06)' }}>
               {isFr ? 'Voir les GPs' : 'Browse GPs'}
             </span>
+            {!user && (
+              <button onClick={() => { onLoginClick(); setMenuOpen(false) }}
+                style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.12)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                {isFr ? 'Se connecter' : 'Sign in'}
+              </button>
+            )}
             <button onClick={() => { setView('post'); setMenuOpen(false) }}
               style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '13px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {isFr ? '+ Poster un voyage' : '+ Post a trip'}
             </button>
+            {user && (
+              <button onClick={() => { onSignOut(); setMenuOpen(false) }}
+                style={{ background: 'transparent', color: '#8A8070', border: '1px solid rgba(0,0,0,.08)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, cursor: 'pointer' }}>
+                {isFr ? 'Déconnexion' : 'Sign out'}
+              </button>
+            )}
           </div>
         )}
       </nav>
