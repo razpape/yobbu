@@ -1,257 +1,361 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import GPCard from './GPCard'
-import { ShieldCheckIcon, ClockIcon, SearchIcon, PlaneIcon } from './Icons'
+import { ShieldCheckIcon } from './Icons'
 
-const DESTINATIONS = [
-  { value: 'all',     en: 'All routes',              fr: 'Toutes les routes' },
-  { value: 'Dakar',   en: 'Dakar, Senegal',          fr: 'Dakar, Sénégal' },
-  { value: 'Conakry', en: 'Conakry, Guinea',         fr: 'Conakry, Guinée' },
-  { value: 'Abidjan', en: "Abidjan, Côte d'Ivoire",  fr: "Abidjan, Côte d'Ivoire" },
-  { value: 'Bamako',  en: 'Bamako, Mali',            fr: 'Bamako, Mali' },
-  { value: 'Lomé',    en: 'Lomé, Togo',              fr: 'Lomé, Togo' },
+const DESTINATION_GROUPS = [
+  {
+    label: { en: '🇺🇸 USA Origins', fr: '🇺🇸 Origines USA' },
+    options: [
+      { value: 'New York',      en: 'New York City (NYC)', fr: 'New York (NYC)' },
+      { value: 'Washington DC', en: 'Washington, D.C. (IAD)', fr: 'Washington D.C. (IAD)' },
+      { value: 'Atlanta',       en: 'Atlanta (ATL)',       fr: 'Atlanta (ATL)' },
+    ],
+  },
+  {
+    label: { en: '🇪🇺 Europe Origins', fr: '🇪🇺 Origines Europe' },
+    options: [
+      { value: 'Paris',  en: 'Paris (CDG)',  fr: 'Paris (CDG)' },
+      { value: 'London', en: 'London (LHR)', fr: 'Londres (LHR)' },
+    ],
+  },
+  {
+    label: { en: '🌍 Africa Destinations', fr: '🌍 Destinations Afrique' },
+    options: [
+      { value: 'Dakar',   en: 'Dakar, Senegal',          fr: 'Dakar, Sénégal' },
+      { value: 'Lagos',   en: 'Lagos, Nigeria',           fr: 'Lagos, Nigéria' },
+      { value: 'Accra',   en: 'Accra, Ghana',             fr: 'Accra, Ghana' },
+      { value: 'Abidjan', en: "Abidjan, Côte d'Ivoire",  fr: "Abidjan, Côte d'Ivoire" },
+      { value: 'Bamako',  en: 'Bamako, Mali',             fr: 'Bamako, Mali' },
+      { value: 'Conakry', en: 'Conakry, Guinea',          fr: 'Conakry, Guinée' },
+      { value: 'Lomé',    en: 'Lomé, Togo',               fr: 'Lomé, Togo' },
+    ],
+  },
 ]
 
-const FLIGHTS = [
-  { route: 'New York → Dakar',   en: 'Air Senegal · 7h direct',   fr: 'Air Sénégal · 7h direct',  ago: { en:'2h ago',  fr:'il y a 2h'  } },
-  { route: 'Paris → Dakar',      en: 'Air France · 5h direct',    fr: 'Air France · 5h direct',   ago: { en:'5h ago',  fr:'il y a 5h'  } },
-  { route: 'New York → Conakry', en: 'Brussels Airlines · 9h',    fr: 'Brussels Airlines · 9h',   ago: { en:'11h ago', fr:'il y a 11h' } },
-  { route: 'Atlanta → Dakar',    en: 'Delta · Connecting',        fr: 'Delta · Correspondance',   ago: { en:'18h ago', fr:'il y a 18h' } },
+const AVAIL_OPTIONS = [
+  { value: 'same_day',   en: 'Same day',       fr: 'Jour même' },
+  { value: 'one_day',    en: 'One day notice', fr: '1 jour de préavis' },
+  { value: 'this_week',  en: 'This week',      fr: 'Cette semaine' },
+  { value: 'this_month', en: 'This month',     fr: 'Ce mois-ci' },
 ]
 
-function FlightPanel({ lang, setView }) {
+function toYMD(d) { return d.toISOString().slice(0, 10) }
+
+function getDateRange(option) {
+  const today = new Date(); today.setHours(0,0,0,0)
+  const todayStr = toYMD(today)
+  if (option === 'same_day') return { from: todayStr, to: todayStr }
+  if (option === 'one_day') { const t = new Date(today); t.setDate(t.getDate()+1); return { from: todayStr, to: toYMD(t) } }
+  if (option === 'this_week') { const t = new Date(today); t.setDate(t.getDate()+(6-t.getDay())); return { from: todayStr, to: toYMD(t) } }
+  if (option === 'this_month') { return { from: todayStr, to: toYMD(new Date(today.getFullYear(), today.getMonth()+1, 0)) } }
+  return { from: '', to: '' }
+}
+
+const VERIFY_OPTIONS = [
+  { value: 'all',      en: 'All travelers', fr: 'Tous les voyageurs' },
+  { value: 'verified', en: 'Verified',      fr: 'Vérifiés' },
+]
+
+const labelStyle = { display:'block', fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }
+const selectStyle = { width:'100%', padding:'10px 32px 10px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:8, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', boxSizing:'border-box', background:'#fff', appearance:'none', cursor:'pointer' }
+
+function SidebarContent({ lang, dest, setDest, availOption, setAvailOption, priceFilter, setPriceFilter, verifyFilter, setVerifyFilter, onFilter, onClose }) {
   const isFr = lang === 'fr'
+
   return (
-    <div style={{ fontFamily:'DM Sans, sans-serif' }}>
-      {/* Flight tracker */}
-      <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:20, overflow:'hidden', marginBottom:14, position:'sticky', top:80 }}>
-        <div style={{ padding:'14px 18px', borderBottom:'1px solid rgba(0,0,0,.06)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <div style={{ fontFamily:'DM Serif Display, serif', fontSize:15, color:'#1A1710' }}>
-            {isFr ? 'Vols récents' : 'Recent flights'}
-          </div>
-          <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:10, fontWeight:700, color:'#2D8B4E' }}>
-            <div style={{ width:5, height:5, borderRadius:'50%', background:'#2D8B4E', animation:'pulse 2s infinite' }} />
-            {isFr ? '24h' : 'Last 24h'}
-          </div>
-        </div>
-        <style>{`
-          @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-          @keyframes fp1{0%{transform:translate(22px,110px);}100%{transform:translate(232px,28px);}}
-          @keyframes fp2{0%{transform:translate(232px,28px);}100%{transform:translate(22px,110px);}}
-          @keyframes fp3{0%{transform:translate(18px,118px);}100%{transform:translate(236px,50px);}}
-          @keyframes fp4{0%{transform:translate(236px,50px);}100%{transform:translate(18px,118px);}}
-          .fp1{animation:fp1 9s linear infinite;}
-          .fp2{animation:fp2 13s linear infinite 2s;}
-          .fp3{animation:fp3 11s linear infinite 5s;}
-          .fp4{animation:fp4 16s linear infinite 1s;}
-        `}</style>
+    <div style={{ display:'flex', flexDirection:'column' }}>
 
-        {/* Map */}
-        <div style={{ background:'#F7F5F0', height:155, position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(0,0,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.03) 1px,transparent 1px)', backgroundSize:'26px 26px' }} />
-          <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} viewBox="0 0 260 155">
-            <path d="M22 112 Q130 15 236 30" stroke="#C8891C" strokeWidth="1.5" strokeDasharray="5 3" fill="none" opacity="0.45"/>
-            <path d="M22 118 Q122 35 236 52" stroke="#2D8B4E" strokeWidth="1.5" strokeDasharray="5 3" fill="none" opacity="0.35"/>
-            <path d="M22 115 Q126 25 236 41" stroke="#185FA5" strokeWidth="1" strokeDasharray="5 3" fill="none" opacity="0.25"/>
-            <circle cx="22" cy="114" r="6" fill="#C8891C" opacity="0.2"/>
-            <circle cx="22" cy="114" r="3.5" fill="#C8891C"/>
-            <text x="30" y="118" fontSize="9" fill="#3D3829" fontFamily="DM Sans,sans-serif" fontWeight="600">NYC</text>
-            <circle cx="236" cy="30" r="5" fill="#C8891C" opacity="0.2"/>
-            <circle cx="236" cy="30" r="3" fill="#C8891C"/>
-            <text x="204" y="26" fontSize="9" fill="#3D3829" fontFamily="DM Sans,sans-serif" fontWeight="600">DSS</text>
-            <circle cx="236" cy="52" r="5" fill="#2D8B4E" opacity="0.2"/>
-            <circle cx="236" cy="52" r="3" fill="#2D8B4E"/>
-            <text x="204" y="62" fontSize="9" fill="#3D3829" fontFamily="DM Sans,sans-serif" fontWeight="600">CKY</text>
-            <g className="fp1"><circle r="5" cx="0" cy="0" fill="#C8891C"/><text x="-4" y="4" fontSize="7" fill="white" fontFamily="DM Sans,sans-serif">✈</text></g>
-            <g className="fp2"><circle r="4" cx="0" cy="0" fill="#185FA5"/><text x="-4" y="4" fontSize="7" fill="white" fontFamily="DM Sans,sans-serif">✈</text></g>
-            <g className="fp3"><circle r="4" cx="0" cy="0" fill="#2D8B4E"/><text x="-4" y="4" fontSize="7" fill="white" fontFamily="DM Sans,sans-serif">✈</text></g>
-            <g className="fp4"><circle r="3" cx="0" cy="0" fill="#C8891C" opacity="0.7"/><text x="-4" y="4" fontSize="6" fill="white" fontFamily="DM Sans,sans-serif">✈</text></g>
-          </svg>
-        </div>
-
-        {/* 24h count */}
-        <div style={{ padding:'8px 16px', background:'#FFF8EB', borderBottom:'1px solid rgba(0,0,0,.05)', display:'flex', alignItems:'center', gap:6 }}>
-          <ClockIcon size={14} color="#C8891C" />
-          <span style={{ fontSize:11, color:'#8A8070' }}>
-            <strong style={{ color:'#C8891C' }}>8 {isFr ? 'vols' : 'flights'}</strong> {isFr ? 'dans les 24 dernières heures' : 'in the last 24 hours'}
-          </span>
-        </div>
-
-        {/* List */}
-        <div style={{ padding:'4px 12px 8px' }}>
-          {FLIGHTS.map((f, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 0', borderBottom: i < FLIGHTS.length-1 ? '1px solid rgba(0,0,0,.04)' : 'none' }}>
-              <div style={{ width:28, height:28, borderRadius:8, background:'#F7F3ED', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><PlaneIcon size={14} color="#C8891C" /></div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#1A1710' }}>{f.route}</div>
-                <div style={{ fontSize:10, color:'#8A8070', marginTop:1 }}>{f[lang] || f.en}</div>
-              </div>
-              <div style={{ fontSize:10, fontWeight:600, color:'#C8891C', whiteSpace:'nowrap' }}>{f.ago[lang]}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign:'center', padding:'8px', fontSize:10, color:'#B0A090', borderTop:'1px solid rgba(0,0,0,.04)' }}>
-          {isFr ? 'Actualise toutes les 24 heures' : 'Refreshes every 24 hours'}
+      {/* Availability */}
+      <div style={{ marginBottom:22 }}>
+        <label style={labelStyle}>{isFr ? 'Disponibilité' : 'Availability'}</label>
+        <div style={{ position:'relative' }}>
+          <select value={availOption} onChange={e=>setAvailOption(e.target.value)} style={selectStyle}>
+            <option value="">{isFr ? 'Toute période' : 'Any time'}</option>
+            {AVAIL_OPTIONS.map(opt => {
+              const { from, to } = getDateRange(opt.value)
+              const hint = from === to ? from : `${from} → ${to}`
+              return <option key={opt.value} value={opt.value}>{opt[lang]||opt.en} ({hint})</option>
+            })}
+          </select>
+          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
         </div>
       </div>
 
-      {/* Post a trip CTA */}
-      <div style={{ background:'#1A1710', borderRadius:20, padding:'20px', textAlign:'center' }}>
-        <div style={{ fontFamily:'DM Serif Display, serif', fontSize:18, color:'#fff', marginBottom:6 }}>
-          {isFr ? 'Vous voyagez bientôt ?' : 'Traveling soon?'}
-        </div>
-        <p style={{ fontSize:12, color:'rgba(255,255,255,.5)', marginBottom:14, lineHeight:1.65 }}>
-          {isFr ? 'Postez votre voyage et gagnez de l\'argent en portant des colis.' : 'Post your trip and earn money carrying packages.'}
-        </p>
-        <button onClick={() => setView('post')}
-          style={{ width:'100%', padding:'11px', background:'#C8891C', color:'#fff', border:'none', borderRadius:12, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-          + {isFr ? 'Poster un voyage' : 'Post a trip'}
-        </button>
+      {/* Price */}
+      <div style={{ marginBottom:22 }}>
+        <label style={labelStyle}>{isFr ? 'Prix' : 'Price'}</label>
+        <input
+          value={priceFilter} onChange={e=>setPriceFilter(e.target.value)}
+          placeholder={isFr ? 'ex: 10' : 'e.g. $10/kg'}
+          style={{ width:'100%', padding:'10px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:8, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', boxSizing:'border-box', background:'#fff' }}
+        />
       </div>
+
+      {/* Destination */}
+      <div style={{ marginBottom:22 }}>
+        <label style={labelStyle}>{isFr ? 'Ville / Route' : 'Location Service'}</label>
+        <div style={{ position:'relative' }}>
+          <select value={dest} onChange={e=>setDest(e.target.value)} style={selectStyle}>
+            <option value="all">{isFr ? 'Toutes les routes' : 'All routes'}</option>
+            {DESTINATION_GROUPS.map(group => (
+              <optgroup key={group.label.en} label={group.label[lang] || group.label.en}>
+                {group.options.map(o => (
+                  <option key={o.value} value={o.value}>{o[lang] || o.en}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
+        </div>
+      </div>
+
+      {/* Verification */}
+      <div style={{ marginBottom:24 }}>
+        <label style={labelStyle}>{isFr ? 'Vérification' : 'Verification'}</label>
+        <div style={{ position:'relative' }}>
+          <select value={verifyFilter} onChange={e => setVerifyFilter(e.target.value)} style={selectStyle}>
+            {VERIFY_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt[lang] || opt.en}</option>
+            ))}
+          </select>
+          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
+        </div>
+      </div>
+
+      {/* Filter button */}
+      <button
+        onClick={() => { onFilter(); onClose && onClose() }}
+        style={{ width:'100%', padding:'13px', background:'#1A1710', color:'#fff', border:'none', borderRadius:8, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+      >
+        {isFr ? 'Filtrer' : 'Filter'}
+      </button>
     </div>
   )
 }
 
-export default function BrowsePage({ lang, setView, trips, loading, error, user, onLoginRequired, searchFilter, onViewProfile }) {
-  const [dest, setDest]         = useState('all')
-  const [search, setSearch]     = useState('')
-  const [dateFilter, setDateFilter] = useState('')
+export default function BrowsePage({ lang, trips, loading, error, user, onLoginRequired, searchFilter, onViewProfile }) {
+  const [dest, setDest]               = useState('all')
+  const [availOption, setAvailOption] = useState('')
+  const [priceFilter, setPriceFilter] = useState('')
+  const [verifyFilter, setVerifyFilter] = useState('all')
+  const [sortBy, setSortBy]           = useState('date')
+  const [applied, setApplied]         = useState({ dest:'all', dateFrom:'', dateTo:'', price:'', verify:'all' })
+  const [drawerOpen, setDrawerOpen]   = useState(false)
   const isFr = lang === 'fr'
 
   useEffect(() => {
-    if (searchFilter?.dest) setDest(searchFilter.dest)
+    if (searchFilter?.dest) { setDest(searchFilter.dest); setApplied(a => ({ ...a, dest: searchFilter.dest })) }
   }, [searchFilter])
 
-  const filtered = trips.filter(g => {
-    const toCity = g.to_city || g.to || ''
-    const matchDest = dest === 'all' || toCity === dest
-    const q = search.toLowerCase()
-    const matchSearch = !q || g.name?.toLowerCase().includes(q) || (g.from_city||g.from||'').toLowerCase().includes(q) || toCity.toLowerCase().includes(q)
-    const matchDate = !dateFilter || !g.date || (g.date.match(/^\d{4}-\d{2}-\d{2}$/) ? g.date >= dateFilter : true)
-    return matchDest && matchSearch && matchDate
-  })
+  // Close drawer on Escape
+  useEffect(() => {
+    const handler = e => { if (e.key === 'Escape') setDrawerOpen(false) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  const handleFilter = () => {
+    const { from, to } = availOption ? getDateRange(availOption) : { from:'', to:'' }
+    setApplied({ dest, dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
+  }
+
+  const sorted = useMemo(() => {
+    const maxPrice = applied.price ? parseFloat(applied.price) : null
+
+    const filtered = trips.filter(g => {
+      const toCity = g.to_city || g.to || ''
+      const fromCity = g.from_city || g.from || ''
+      const matchDest = applied.dest === 'all' || toCity === applied.dest || fromCity === applied.dest
+      const d = g.date && g.date.match(/^\d{4}-\d{2}-\d{2}$/) ? g.date : null
+      const matchDate = (!applied.dateFrom && !applied.dateTo) || !d ||
+        ((!applied.dateFrom || d >= applied.dateFrom) && (!applied.dateTo || d <= applied.dateTo))
+      const matchVerify =
+        applied.verify === 'all' ||
+        (applied.verify === 'verified' && (g.verified?.phone || g.phone_verified || g.verified?.id || g.id_verified || g.whatsapp_verified))
+      const matchPrice = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
+      return matchDest && matchDate && matchVerify && matchPrice
+    })
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'rating') return (Number(b.rating)||0) - (Number(a.rating)||0)
+      if (sortBy === 'price')  return (parseFloat(String(a.price))||0) - (parseFloat(String(b.price))||0)
+      return 0
+    })
+  }, [trips, applied, sortBy])
+
+  const activeFilterCount = [
+    applied.dest !== 'all',
+    !!applied.dateFrom,
+    !!applied.price,
+    applied.verify !== 'all',
+  ].filter(Boolean).length
 
   return (
     <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>
       <style>{`
         @media (max-width: 768px) {
-          .browse-trust { padding: 10px 16px !important; }
-          .browse-wrap { padding: 20px 16px !important; }
-          .browse-grid { grid-template-columns: 1fr !important; }
-          .browse-panel { display: none !important; }
+          .browse-sidebar-col { display: none !important; }
+          .browse-main-grid   { grid-template-columns: 1fr !important; padding: 16px !important; }
+          .mobile-filter-btn  { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-filter-btn { display: none !important; }
+          .drawer-overlay    { display: none !important; }
         }
       `}</style>
 
       {/* Trust bar */}
-      <div className="browse-trust" style={{ background:'#F0FAF4', borderBottom:'1px solid #C8E6D4', padding:'10px 48px', display:'flex', alignItems:'center', gap:8 }}>
+      <div style={{ background:'#F0FAF4', borderBottom:'1px solid #C8E6D4', padding:'10px 48px', display:'flex', alignItems:'center', gap:8 }}>
         <ShieldCheckIcon size={15} color="#1A5C38" />
         <span style={{ fontSize:12, fontWeight:500, color:'#1A5C38' }}>
-          {isFr ? 'Chaque voyageur est vérifié par téléphone avant d\'apparaître sur Yobbu.' : 'Every traveler is phone-verified before appearing on Yobbu.'}
+          {isFr ? "Chaque voyageur est vérifié par téléphone avant d'apparaître sur Yobbu." : 'Every traveler is phone-verified before appearing on Yobbu.'}
         </span>
       </div>
 
-      <div className="browse-wrap" style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }}>
-        <div className="browse-grid" style={{ display:'grid', gridTemplateColumns:'1fr 280px', gap:24, alignItems:'start' }}>
+      {/* Mobile filter button */}
+      <div className="mobile-filter-btn" style={{ display:'none', padding:'12px 16px', background:'#fff', borderBottom:'1px solid rgba(0,0,0,.07)', gap:10 }}>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'11px', background:'#1A1710', color:'#fff', border:'none', borderRadius:10, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+          </svg>
+          {isFr ? 'Filtres' : 'Filters'}
+          {activeFilterCount > 0 && (
+            <span style={{ background:'#C8891C', color:'#fff', borderRadius:'50%', width:18, height:18, fontSize:11, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+        <div style={{ position:'relative' }}>
+          <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
+            style={{ padding:'11px 28px 11px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:10, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', appearance:'none', background:'#fff', cursor:'pointer' }}>
+            <option value="date">{isFr?'Date':'Date'}</option>
+            <option value="rating">{isFr?'Note':'Rating'}</option>
+            <option value="price">{isFr?'Prix':'Price'}</option>
+          </select>
+          <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:10 }}>▾</span>
+        </div>
+      </div>
 
-          {/* LEFT */}
-          <div>
-            {/* Page header */}
-            <div style={{ marginBottom:28 }}>
-              <h1 style={{ fontFamily:'DM Serif Display, serif', fontSize:36, color:'#1A1710', letterSpacing:'-.8px', marginBottom:6, lineHeight:1.1 }}>
-                {isFr
-                  ? <>Trouvez un <em style={{ fontStyle:'italic', color:'#C8891C' }}>voyageur de confiance</em></>
-                  : <>Find a <em style={{ fontStyle:'italic', color:'#C8891C' }}>trusted traveler</em></>}
-              </h1>
-              <p style={{ fontSize:14, color:'#8A8070' }}>
-                {loading ? '...' : `${filtered.length} ${isFr ? filtered.length === 1 ? 'voyageur disponible' : 'voyageurs disponibles' : filtered.length === 1 ? 'traveler available' : 'travelers available'}`}
-              </p>
-            </div>
+      {/* Mobile drawer overlay */}
+      {drawerOpen && (
+        <div
+          className="drawer-overlay"
+          onClick={() => setDrawerOpen(false)}
+          style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.45)', zIndex:200 }}
+        />
+      )}
 
-            {/* Search + filter row */}
-            <div style={{ display:'flex', gap:10, marginBottom:24, flexWrap:'wrap' }}>
-              <div style={{ flex:1, minWidth:200, position:'relative' }}>
-                <span style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#B0A090', display:'flex' }}><SearchIcon size={14} /></span>
-                <input
-                  value={search} onChange={e => setSearch(e.target.value)}
-                  placeholder={isFr ? 'Rechercher par nom ou ville...' : 'Search by name or city...'}
-                  style={{ width:'100%', padding:'11px 14px 11px 36px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1A1710', fontSize:13, fontFamily:'DM Sans, sans-serif', outline:'none', boxSizing:'border-box' }}
-                />
-              </div>
+      {/* Mobile drawer */}
+      <div style={{
+        position:'fixed', top:0, left:0, bottom:0, width:'85%', maxWidth:320,
+        background:'#fff', zIndex:201, overflowY:'auto',
+        padding:'24px 20px',
+        transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition:'transform .3s cubic-bezier(.4,0,.2,1)',
+        boxShadow: drawerOpen ? '4px 0 32px rgba(0,0,0,.18)' : 'none',
+      }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
+          <span style={{ fontFamily:'DM Serif Display, serif', fontSize:20, color:'#1A1710' }}>
+            {isFr ? 'Filtres' : 'Filters'}
+          </span>
+          <button onClick={() => setDrawerOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'#8A8070', fontSize:20, lineHeight:1, padding:4 }}>✕</button>
+        </div>
+        <SidebarContent
+          lang={lang} dest={dest} setDest={setDest}
+          availOption={availOption} setAvailOption={setAvailOption}
+          priceFilter={priceFilter} setPriceFilter={setPriceFilter}
+          verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
+          onFilter={handleFilter} onClose={() => setDrawerOpen(false)}
+        />
+      </div>
+
+      {/* Main grid */}
+      <div className="browse-main-grid" style={{ maxWidth:1200, margin:'0 auto', padding:'32px 32px', display:'grid', gridTemplateColumns:'260px 1fr', gap:32, alignItems:'start' }}>
+
+        {/* Desktop sidebar */}
+        <div className="browse-sidebar-col">
+          <SidebarContent
+            lang={lang} dest={dest} setDest={setDest}
+            availOption={availOption} setAvailOption={setAvailOption}
+            priceFilter={priceFilter} setPriceFilter={setPriceFilter}
+            verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
+            onFilter={handleFilter}
+          />
+        </div>
+
+        {/* Results */}
+        <div>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+            <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>
+              {loading ? '...' : isFr
+                ? `Affichage 1–${sorted.length} sur ${sorted.length} résultats`
+                : `Showing 1–${sorted.length} of ${sorted.length} results`}
+            </span>
+            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>
+                {isFr ? 'Trier par' : 'Sort by'}
+              </span>
               <div style={{ position:'relative' }}>
-                <select value={dest} onChange={e => setDest(e.target.value)}
-                  style={{ padding:'11px 36px 11px 14px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1A1710', fontSize:13, fontFamily:'DM Sans, sans-serif', outline:'none', cursor:'pointer', appearance:'none' }}>
-                  {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d[lang]||d.en}</option>)}
+                <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
+                  style={{ padding:'6px 28px 6px 10px', border:'1px solid rgba(0,0,0,.15)', borderRadius:6, fontSize:12, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', cursor:'pointer', appearance:'none', background:'#fff', fontWeight:600 }}>
+                  <option value="date">{isFr?'Date':'Date'}</option>
+                  <option value="rating">{isFr?'Note':'Rating'}</option>
+                  <option value="price">{isFr?'Prix':'Price'}</option>
                 </select>
-                <span style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
+                <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:10 }}>▾</span>
               </div>
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={e => setDateFilter(e.target.value)}
-                style={{ padding:'11px 14px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color: dateFilter ? '#1A1710' : '#B0A090', fontSize:13, fontFamily:'DM Sans, sans-serif', outline:'none', cursor:'pointer' }}
-              />
             </div>
+          </div>
 
-            {/* Loading */}
-            {loading && (
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))', gap:14 }}>
-                {[1,2,3,4].map(i => (
-                  <div key={i} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:20, overflow:'hidden' }}>
-                    <div style={{ height:5, background:'linear-gradient(90deg,#F0E0C0,#E8D4A8)' }} />
-                    <div style={{ padding:20 }}>
-                      <div style={{ display:'flex', gap:12, marginBottom:16 }}>
-                        <div style={{ width:50, height:50, borderRadius:'50%', background:'#F0EDE8' }} />
-                        <div style={{ flex:1 }}>
-                          <div style={{ height:14, background:'#F0EDE8', borderRadius:6, marginBottom:8, width:'55%' }} />
-                          <div style={{ height:10, background:'#F0EDE8', borderRadius:6, width:'40%' }} />
-                        </div>
-                      </div>
-                      <div style={{ height:70, background:'#F7F5F0', borderRadius:12, marginBottom:14 }} />
-                      <div style={{ height:36, background:'#F0EDE8', borderRadius:10 }} />
-                    </div>
+          {/* Loading */}
+          {loading && (
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              {[1,2,3,4].map(i => (
+                <div key={i} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:'20px 24px', display:'flex', gap:20, alignItems:'center' }}>
+                  <div style={{ width:64, height:64, borderRadius:'50%', background:'#F0EDE8', flexShrink:0 }}/>
+                  <div style={{ flex:1 }}>
+                    <div style={{ height:18, background:'#F0EDE8', borderRadius:6, width:'40%', marginBottom:10 }}/>
+                    <div style={{ height:12, background:'#F0EDE8', borderRadius:6, width:'60%', marginBottom:8 }}/>
+                    <div style={{ height:12, background:'#F0EDE8', borderRadius:6, width:'50%' }}/>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Error */}
-            {error && !loading && (
-              <div style={{ background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:14, padding:20, fontSize:13, color:'#DC2626' }}>
-                {isFr ? 'Impossible de charger les voyageurs.' : 'Could not load travelers.'} {error}
-              </div>
-            )}
-
-            {/* Empty */}
-            {!loading && !error && filtered.length === 0 && (
-              <div style={{ textAlign:'center', padding:'80px 24px' }}>
-                <div style={{ marginBottom:16, display:'flex', justifyContent:'center' }}><PlaneIcon size={48} color="#E8DDD0" /></div>
-                <div style={{ fontFamily:'DM Serif Display, serif', fontSize:26, color:'#1A1710', marginBottom:8 }}>
-                  {isFr ? 'Aucun voyageur trouvé' : 'No travelers found'}
                 </div>
-                <p style={{ fontSize:14, color:'#8A8070', marginBottom:24, lineHeight:1.7, maxWidth:320, margin:'0 auto 24px' }}>
-                  {isFr ? 'Essayez une autre destination ou revenez bientôt — de nouveaux GPs s\'inscrivent chaque jour.' : 'Try a different destination or check back soon — new GPs join every day.'}
-                </p>
-                <button onClick={() => { setDest('all'); setSearch('') }}
-                  style={{ background:'#C8891C', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-                  {isFr ? 'Voir tous les voyageurs' : 'View all travelers'}
-                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Error */}
+          {error && !loading && (
+            <div style={{ background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:12, padding:20, fontSize:13, color:'#DC2626' }}>
+              {isFr ? 'Impossible de charger les voyageurs.' : 'Could not load travelers.'} {error}
+            </div>
+          )}
+
+          {/* Empty */}
+          {!loading && !error && sorted.length === 0 && (
+            <div style={{ textAlign:'center', padding:'80px 24px' }}>
+              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:26, color:'#1A1710', marginBottom:8 }}>
+                {isFr ? 'Aucun voyageur trouvé' : 'No travelers found'}
               </div>
-            )}
+              <p style={{ fontSize:14, color:'#8A8070', lineHeight:1.7, maxWidth:320, margin:'0 auto 24px' }}>
+                {isFr ? 'Essayez une autre destination ou revenez bientôt.' : 'Try a different destination or check back soon.'}
+              </p>
+              <button
+                onClick={() => { setDest('all'); setVerifyFilter('all'); setApplied({ dest:'all', dateFrom:'', dateTo:'', price:'', verify:'all' }) }}
+                style={{ background:'#C8891C', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+              >
+                {isFr ? 'Voir tous les voyageurs' : 'View all travelers'}
+              </button>
+            </div>
+          )}
 
-            {/* GP Grid */}
-            {!loading && !error && filtered.length > 0 && (
-              <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:14 }}>
-                {filtered.map(gp => (
-                  <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT */}
-          <div className="browse-panel">
-            <FlightPanel lang={lang} setView={setView} />
-          </div>
-
+          {/* Cards */}
+          {!loading && !error && sorted.length > 0 && sorted.map(gp => (
+            <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
+          ))}
         </div>
       </div>
     </div>

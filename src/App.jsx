@@ -30,10 +30,13 @@ export default function App() {
   const { trips, loading, error, addTrip } = useTrips()
   const { user, signOut }               = useAuth()
 
-  // Detect new OAuth users (Google/Facebook) after redirect and show WhatsApp prompt
+  // Detect OAuth sign-in after redirect: navigate to profile + show WhatsApp prompt for new users
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
+        // Navigate to profile page on any sign-in
+        setView('profile')
+
         const u = session.user
         const createdAt  = new Date(u.created_at).getTime()
         const lastSignIn = new Date(u.last_sign_in_at).getTime()
