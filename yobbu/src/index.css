@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-sand text-ink font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gold text-white font-semibold text-sm px-5 py-2 rounded-full
+           hover:bg-gold-dark transition-colors duration-150 font-sans;
+  }
+  .btn-secondary {
+    @apply bg-transparent text-forest font-semibold text-sm px-5 py-2 rounded-full
+           border-2 border-forest hover:bg-forest-light transition-colors duration-150 font-sans;
+  }
+  .btn-outline {
+    @apply bg-transparent text-ink-200 font-medium text-sm px-5 py-2 rounded-lg
+           border border-sand-300 hover:bg-sand-100 transition-colors duration-150 font-sans;
+  }
+  .card {
+    @apply bg-sand rounded-2xl border border-sand-200 p-5 transition-all duration-150
+           hover:border-gold-mid hover:-translate-y-0.5 cursor-pointer;
+  }
+  .pill {
+    @apply text-xs font-medium rounded-full px-3 py-1;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5;
+  }
+  .form-input {
+    @apply w-full text-sm font-sans px-3 py-2.5 rounded-lg border border-sand-300
+           bg-sand text-ink placeholder-ink-300 outline-none
+           focus:border-gold-mid transition-colors duration-150;
+  }
+  .section-label {
+    @apply text-xs font-bold text-ink-300 uppercase tracking-widest;
+  }
+}
