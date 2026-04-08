@@ -81,15 +81,23 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || 'Failed to generate code')
+        // Show detailed error message
+        const errorMsg = data.details || data.error || 'Failed to generate code'
+        setError(errorMsg)
+        console.error('API Error:', data)
         return
       }
       setCode(data.code)
       setBusinessNumber(data.businessNumber)
       setCountdown(600)
       setStep('waiting')
-    } catch {
-      setError(isFr ? 'Erreur réseau. Réessayez.' : 'Network error. Please try again.')
+    } catch (err) {
+      console.error('Network error:', err)
+      setError(
+        isFr 
+          ? 'Erreur de connexion. Vérifiez votre connexion internet ou réessayez.' 
+          : 'Connection error. Check your internet connection or try again.'
+      )
     } finally {
       setLoading(false)
     }

@@ -1,10 +1,25 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+// Validate environment variables
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing required env vars: VITE_SUPABASE_URL/SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
@@ -15,9 +30,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'User ID required' })
   }
 
+  // Check env vars
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Server configuration error: Missing Supabase credentials')
+    return res.status(500).json({ 
+      error: 'Server configuration error',
+      details: 'Missing database credentials'
+    })
+  }
+
   try {
-    // Generate a unique 6-digit code based on user ID + timestamp
-    const timestamp = Date.now()
+    // Generate a unique 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString()
     
     // Store the code with 10-minute expiry
@@ -33,7 +56,18 @@ export default async function handler(req, res) {
       .eq('id', userId)
 
     if (error) {
-      return res.status(500).json({ error: 'Failed to generate code' })
+      console.error('Supabase error:', error)
+      // Check if it's a column not found error
+      if (error.message?.includes('column') || error.message?.includes('whatsapp_inbound_code')) {
+        return res.status(500).json({ 
+          error: 'Database setup required',
+          details: 'Please run the SQL migration to add whatsapp_inbound_code column'
+        })
+      }
+      return res.status(500).json({ 
+        error: 'Failed to generate code',
+        details: error.message 
+      })
     }
 
     // Return the code and instructions
@@ -48,6 +82,10 @@ export default async function handler(req, res) {
       businessNumber: process.env.WHATSAPP_BUSINESS_NUMBER || '+1 (555) 123-4567',
     })
   } catch (err) {
-    res.status(500).json({ error: 'Server error' })
+    console.error('Server error:', err)
+    res.status(500).json({ 
+      error: 'Server error',
+      details: err.message || 'Unknown error'
+    })
   }
 }
