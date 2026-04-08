@@ -70,6 +70,42 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
     return () => clearInterval(checkInterval)
   }, [step, user.id])
 
+  // Manual verification - call API to verify
+  async function checkManualVerification() {
+    setLoading(true)
+    setError('')
+    
+    try {
+      const res = await fetch('/api/manual-verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        const errorMsg = data.details || data.error || 'Verification failed'
+        setError(errorMsg)
+        return false
+      }
+      
+      if (data.status === 'success' || data.status === 'already_verified') {
+        setStep('success')
+        setTimeout(() => { onVerified?.(); onClose() }, 2200)
+        return true
+      }
+      
+      return false
+    } catch (err) {
+      console.error('Manual verification error:', err)
+      setError(isFr ? 'Erreur de vérification. Réessayez.' : 'Verification error. Try again.')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
   async function generateCode() {
     setError('')
     setLoading(true)
@@ -378,6 +414,26 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                 </span>
                 <style>{`@keyframes wa-pulse { 0%,100%{opacity:1} 50%{opacity:.3} }`}</style>
               </div>
+
+              {/* Manual verification button */}
+              <button
+                onClick={checkManualVerification}
+                disabled={loading}
+                style={{
+                  width: '100%', padding: '14px', borderRadius: 12,
+                  border: '2px solid #25D366', background: loading ? '#F0FAF4' : '#fff',
+                  color: '#25D366', fontSize: 14, fontWeight: 600, 
+                  cursor: loading ? 'default' : 'pointer',
+                  fontFamily: "'DM Sans',sans-serif", textAlign: 'center',
+                  marginBottom: 10,
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                {loading 
+                  ? (isFr ? 'Vérification...' : 'Verifying...')
+                  : (isFr ? '✓ J\'ai envoyé le code' : '✓ I sent the code')
+                }
+              </button>
 
               <button
                 onClick={() => setStep('method')}
