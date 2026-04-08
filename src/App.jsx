@@ -33,12 +33,28 @@ export default function App() {
       if (event === 'SIGNED_IN' && session?.user) {
         const u = session.user
         
-        // Check if user has WhatsApp verified
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('whatsapp_verified')
-          .eq('id', u.id)
-          .single()
+        // Wait a moment for profile trigger to create the profile
+        await new Promise(r => setTimeout(r, 500))
+        
+        // Check if user has WhatsApp verified (with retry)
+        let profile = null
+        let retries = 3
+        while (retries > 0) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('whatsapp_verified')
+            .eq('id', u.id)
+            .single()
+          
+          if (data && !error) {
+            profile = data
+            break
+          }
+          
+          // If profile not found, wait and retry
+          await new Promise(r => setTimeout(r, 500))
+          retries--
+        }
         
         // If not verified, show auth modal for WhatsApp verification
         if (!profile?.whatsapp_verified) {
