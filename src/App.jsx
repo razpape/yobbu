@@ -18,6 +18,27 @@ import { supabase } from './lib/supabase'
 
 const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true'
 
+// Handle OAuth callback from Facebook (removes hash fragment issues)
+const handleOAuthCallback = () => {
+  const hash = window.location.hash
+  const search = window.location.search
+  
+  // Check for access_token in URL (OAuth success)
+  if (hash.includes('access_token') || search.includes('code=')) {
+    // Let Supabase handle the session
+    return true
+  }
+  
+  // Check for error in URL
+  if (search.includes('error=')) {
+    console.error('OAuth error:', search)
+    // Clear the error from URL
+    window.history.replaceState({}, document.title, window.location.pathname)
+  }
+  
+  return false
+}
+
 export default function App() {
   const [lang, setLang]                 = useState('en')
   const [view, setView]                 = useState('home')
@@ -27,11 +48,27 @@ export default function App() {
   const { trips, loading, error, addTrip } = useTrips()
   const { user, signOut }               = useAuth()
 
-  // On sign-in: navigate to profile
+  // Check for existing session on mount and handle OAuth callback
   useEffect(() => {
+    // Handle any OAuth errors in URL
+    handleOAuthCallback()
+    
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setView('profile')
+      }
+    })
+    
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         setView('profile')
+        // Clear any auth errors from URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+      if (event === 'SIGNED_OUT') {
+        setView('home')
       }
     })
     return () => subscription.unsubscribe()
