@@ -14,8 +14,6 @@ import PrivacyPage from './pages/PrivacyPage'
 import Admin from './pages/Admin'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
-import WhatsAppVerificationBanner from './components/WhatsAppVerificationBanner'
-import WhatsAppVerificationModal from './components/WhatsAppVerificationModal'
 import { supabase } from './lib/supabase'
 
 const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true'
@@ -24,27 +22,36 @@ export default function App() {
   const [lang, setLang]                 = useState('en')
   const [view, setView]                 = useState('home')
   const [showAuth, setShowAuth]         = useState(false)
-  const [showWaPrompt, setShowWaPrompt] = useState(false)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
   const { trips, loading, error, addTrip } = useTrips()
   const { user, signOut }               = useAuth()
 
-  // Detect OAuth sign-in after redirect: navigate to profile + show WhatsApp prompt for new users
+  // On sign-in: navigate to profile; check if WhatsApp verification is needed
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        // Navigate to profile page on any sign-in
-        setView('profile')
-
         const u = session.user
-        const createdAt  = new Date(u.created_at).getTime()
-        const lastSignIn = new Date(u.last_sign_in_at).getTime()
-        const isNewUser  = Math.abs(createdAt - lastSignIn) < 30000
-        const alreadyPrompted = sessionStorage.getItem('wa_prompted')
-        if (isNewUser && !alreadyPrompted) {
-          sessionStorage.setItem('wa_prompted', '1')
-          setShowWaPrompt(true)
+        
+        // Check if user has WhatsApp verified
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('whatsapp_verified')
+          .eq('id', u.id)
+          .single()
+        
+        // If not verified, show auth modal for WhatsApp verification
+        if (!profile?.whatsapp_verified) {
+          setShowAuth(true)
+        } else {
+          setView('profile')
+        }
+        
+        // Mark phone users as verified (existing behavior)
+        if (u.phone && !profile?.whatsapp_verified) {
+          await supabase.from('profiles').upsert({ id: u.id, whatsapp_verified: true }, { onConflict: 'id' })
+          setShowAuth(false)
+          setView('profile')
         }
       }
     })
@@ -105,8 +112,6 @@ export default function App() {
         user={user} onSignOut={handleSignOut}
         onLoginClick={() => setShowAuth(true)}
       />
-      <WhatsAppVerificationBanner user={user} lang={lang} />
-
       {view === 'home' && (
         <>
           <Hero lang={lang} setView={setView} onSearch={handleSearch} />
@@ -130,21 +135,11 @@ export default function App() {
         <PostTripForm
           lang={lang} setView={setView} onAdd={addTrip} user={user}
           onLoginRequired={() => setShowAuth(true)}
-          onVerifyWhatsApp={() => setShowWaPrompt(true)}
         />
       )}
 
       {showAuth && (
-        <AuthModal lang={lang} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
-      )}
-
-      {showWaPrompt && user && (
-        <WhatsAppVerificationModal
-          user={user}
-          lang={lang}
-          onClose={() => setShowWaPrompt(false)}
-          onVerified={() => setShowWaPrompt(false)}
-        />
+        <AuthModal lang={lang} user={user} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
       )}
     </div>
   )

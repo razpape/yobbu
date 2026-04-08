@@ -17,12 +17,14 @@ const COUNTRY_CODES = [
   { code: '+1514', flag: '🇨🇦' },
 ]
 
-export default function AuthModal({ onClose, onSuccess, lang }) {
-  const [mode, setMode]     = useState('login')   // 'login' | 'signup'
-  const [step, setStep]     = useState('entry')   // 'entry' | 'sms-otp' | 'whatsapp' | 'whatsapp-otp'
-  const [method, setMethod] = useState('phone')   // 'phone' | 'email'
+// steps: 'entry' | 'sms-otp' | 'phone-verify' | 'phone-otp' | 'whatsapp'
 
-  // Auth fields
+export default function AuthModal({ onClose, onSuccess, lang, user: existingUser }) {
+  const [mode, setMode]     = useState('login')
+  const [step, setStep]     = useState('entry')
+  const [method, setMethod] = useState('phone')
+
+  // Entry fields
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName]   = useState('')
   const [phone, setPhone]         = useState('')
@@ -30,40 +32,33 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
   const [password, setPassword]   = useState('')
   const [smsOtp, setSmsOtp]       = useState('')
 
+  // Phone-verify step (email signup users)
+  const [pvCountry, setPvCountry] = useState('+1')
+  const [pvPhone, setPvPhone]     = useState('')
+  const [pvOtp, setPvOtp]         = useState('')
+
   // WhatsApp step
-  const [waCountry, setWaCountry]   = useState('+1')
-  const [waPhone, setWaPhone]       = useState('')
-  const [waOtp, setWaOtp]           = useState('')
-  const [waSending, setWaSending]   = useState(false)
-  const [waVerifying, setWaVerifying] = useState(false)
-  const [waCooldown, setWaCooldown] = useState(0)
-  const [waExpiresAt, setWaExpiresAt] = useState(null)
-  const [waTimeLeft, setWaTimeLeft] = useState(300)
-  const [userId, setUserId]         = useState(null)
+  const [waCountry, setWaCountry] = useState('+1')
+  const [waPhone, setWaPhone]     = useState('')
+  const [userId, setUserId]       = useState(null)
 
   const [loading, setLoading]           = useState(false)
-  const [socialLoading, setSocialLoading] = useState(null) // 'google' | 'facebook'
+  const [socialLoading, setSocialLoading] = useState(null)
   const [error, setError]               = useState(null)
+
+  // If user is already logged in (OAuth), skip to WhatsApp step
+  useEffect(() => {
+    if (existingUser?.id) {
+      setUserId(existingUser.id)
+      setStep('whatsapp')
+    }
+  }, [existingUser])
 
   const isFr = lang === 'fr'
 
-  // WhatsApp cooldown countdown
-  useEffect(() => {
-    if (waCooldown <= 0) return
-    const id = setTimeout(() => setWaCooldown(c => c - 1), 1000)
-    return () => clearTimeout(id)
-  }, [waCooldown])
-
-  // WhatsApp OTP expiry
-  useEffect(() => {
-    if (step !== 'whatsapp-otp' || !waExpiresAt) return
-    const id = setInterval(() => {
-      const secs = Math.max(0, Math.floor((new Date(waExpiresAt) - Date.now()) / 1000))
-      setWaTimeLeft(secs)
-      if (secs === 0) clearInterval(id)
-    }, 1000)
-    return () => clearInterval(id)
-  }, [step, waExpiresAt])
+  // ── helpers ────────────────────────────────────────────────────────────────
+  const markPhoneVerified = (uid) =>
+    supabase.from('profiles').upsert({ id: uid, whatsapp_verified: true }, { onConflict: 'id' })
 
   // ── OAUTH ──────────────────────────────────────────────────────────────────
   const handleOAuth = async (provider) => {
@@ -84,7 +79,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
     }
   }
 
-  // ── PHONE (SMS OTP) ────────────────────────────────────────────────────────
+  // ── PHONE SIGNUP/LOGIN (SMS OTP) ───────────────────────────────────────────
   const handlePhoneSend = async () => {
     setError(null)
     if (!phone) { setError(isFr ? 'Entrez votre numéro.' : 'Enter your phone number.'); return }
@@ -111,7 +106,11 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         await supabase.auth.updateUser({
           data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` },
         })
-        setUserId(data.user?.id)
+        const uid = data.user?.id
+        await markPhoneVerified(uid)
+        setUserId(uid)
+        // Pre-fill WhatsApp with the same verified phone
+        setWaPhone(phone.replace(/^\+\d{1,3}/, ''))
         setStep('whatsapp')
       } else {
         onSuccess()
@@ -120,7 +119,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
     finally { setLoading(false) }
   }
 
-  // ── EMAIL ──────────────────────────────────────────────────────────────────
+  // ── EMAIL SIGNUP/LOGIN ─────────────────────────────────────────────────────
   const handleEmailAuth = async () => {
     setError(null)
     if (!email || !password) {
@@ -136,15 +135,12 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
     try {
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` },
-          },
+          email, password,
+          options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` } },
         })
         if (error) throw error
         setUserId(data.user?.id)
-        setStep('whatsapp')
+        setStep('phone-verify')
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
@@ -154,61 +150,89 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
     finally { setLoading(false) }
   }
 
-  // ── WHATSAPP ───────────────────────────────────────────────────────────────
+  // ── PHONE-VERIFY STEP (email signup users add + verify their phone) ─────────
+  const fullPvPhone = `${pvCountry}${pvPhone.replace(/\D/g, '')}`
+
+  const handlePvSend = async () => {
+    setError(null)
+    if (!pvPhone.trim()) { setError(isFr ? 'Entrez votre numéro.' : 'Enter your phone number.'); return }
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.updateUser({ phone: fullPvPhone })
+      if (error) throw error
+      setStep('phone-otp')
+    } catch (err) { setError(err.message) }
+    finally { setLoading(false) }
+  }
+
+  const handlePvOtp = async () => {
+    setError(null)
+    if (!pvOtp) { setError(isFr ? 'Entrez le code.' : 'Enter the code.'); return }
+    setLoading(true)
+    try {
+      const { data: { user }, error } = await supabase.auth.verifyOtp({
+        phone: fullPvPhone, token: pvOtp, type: 'phone_change',
+      })
+      if (error) throw error
+      const uid = user?.id || userId
+      await markPhoneVerified(uid)
+      setUserId(uid)
+      setWaPhone(pvPhone)
+      setWaCountry(pvCountry)
+      setStep('whatsapp')
+    } catch (err) { setError(err.message) }
+    finally { setLoading(false) }
+  }
+
+  // ── WHATSAPP STEP ──────────────────────────────────────────────────────────
   const fullWaPhone = `${waCountry}${waPhone.replace(/\D/g, '')}`
+  const [waMethod, setWaMethod] = useState('choice') // 'choice' | 'inbound' | 'outbound'
+  const [inboundCode, setInboundCode] = useState('')
+  const [waCountdown, setWaCountdown] = useState(600)
 
-  const sendWaOtp = async () => {
-    setError(null)
-    if (!waPhone.trim()) {
-      setError(isFr ? 'Entrez votre numéro WhatsApp' : 'Enter your WhatsApp number'); return
-    }
-    if (!userId) { onSuccess(); return }
-    setWaSending(true)
+  const generateInboundCode = async () => {
+    setLoading(true)
     try {
-      const res = await fetch('/api/send-whatsapp-otp', {
+      const res = await fetch('/api/generate-inbound-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, phone: fullWaPhone }),
+        body: JSON.stringify({ userId }),
       })
       const data = await res.json()
-      if (!res.ok) {
-        if (data.retryAfter) setWaCooldown(data.retryAfter)
-        setError(data.error || 'Something went wrong')
-        return
+      if (res.ok) {
+        setInboundCode(data.code)
+        setWaCountdown(600)
+        setWaMethod('inbound')
       }
-      setWaExpiresAt(data.expiresAt)
-      setWaTimeLeft(300)
-      setStep('whatsapp-otp')
-    } catch {
-      setError(isFr ? 'Erreur réseau.' : 'Network error.')
-    } finally { setWaSending(false) }
+    } catch {}
+    finally { setLoading(false) }
   }
 
-  const verifyWaOtp = async () => {
-    setError(null)
-    if (waOtp.length < 6) {
-      setError(isFr ? 'Entrez les 6 chiffres' : 'Enter all 6 digits'); return
-    }
-    setWaVerifying(true)
+  // Poll for verification status when in inbound mode
+  useEffect(() => {
+    if (waMethod !== 'inbound') return
+    const timer = setInterval(() => setWaCountdown(c => c > 0 ? c - 1 : 0), 1000)
+    const check = setInterval(async () => {
+      const { data } = await supabase.from('profiles').select('whatsapp_verified').eq('id', userId).single()
+      if (data?.whatsapp_verified) {
+        clearInterval(timer)
+        clearInterval(check)
+        onSuccess()
+      }
+    }, 3000)
+    return () => { clearInterval(timer); clearInterval(check) }
+  }, [waMethod, userId])
+
+  const handleWaSave = async () => {
+    setLoading(true)
     try {
-      const res = await fetch('/api/verify-whatsapp-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, otp: waOtp }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setError(data.error || 'Invalid code')
-        if (data.expired) setStep('whatsapp')
-        return
+      if (waPhone.trim() && userId) {
+        await supabase.auth.updateUser({ data: { whatsapp_phone: fullWaPhone } })
       }
-      onSuccess()
-    } catch {
-      setError(isFr ? 'Erreur réseau.' : 'Network error.')
-    } finally { setWaVerifying(false) }
+    } catch { /* non-critical */ }
+    finally { setLoading(false) }
+    onSuccess()
   }
-
-  const fmtTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
   // ── STYLES ─────────────────────────────────────────────────────────────────
   const s = {
@@ -255,6 +279,13 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
       fontFamily: 'DM Sans, sans-serif', marginTop: 10, textAlign: 'center',
     },
     toggle: { textAlign: 'center', marginTop: 16, fontSize: 13, color: '#8A8070' },
+    phoneRow: { display: 'flex', gap: 8, marginBottom: 14 },
+    countrySelect: {
+      flexShrink: 0, padding: '12px 10px', border: '1px solid rgba(0,0,0,.1)',
+      borderRadius: 10, background: '#fff', fontSize: 13, fontWeight: 500,
+      fontFamily: 'DM Sans, sans-serif', color: '#1A1710', cursor: 'pointer',
+      outline: 'none', appearance: 'none', minWidth: 80,
+    },
   }
 
   return (
@@ -270,22 +301,42 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
                 <div style={s.sub}>{mode === 'login' ? (isFr ? 'Connectez-vous à Yobbu' : 'Sign in to Yobbu') : (isFr ? 'Rejoignez la communauté Yobbu' : 'Join the Yobbu community')}</div>
               </>
             )}
-            {step === 'sms-otp' && <div style={s.title}>{isFr ? 'Vérification SMS' : 'SMS Verification'}</div>}
-            {step === 'whatsapp' && (
+            {step === 'sms-otp' && (
               <>
-                <div style={s.title}>{isFr ? 'Votre compte est créé !' : 'Account created!'}</div>
-                <div style={s.sub}>{isFr ? 'Ajoutez WhatsApp pour vous faire vérifier' : 'Add WhatsApp to get verified'}</div>
+                <div style={s.title}>{isFr ? 'Vérification SMS' : 'SMS Verification'}</div>
+                <div style={s.sub}>{isFr ? `Code envoyé au ${phone}` : `Code sent to ${phone}`}</div>
               </>
             )}
-            {step === 'whatsapp-otp' && <div style={s.title}>{isFr ? 'Code WhatsApp' : 'WhatsApp Code'}</div>}
+            {step === 'phone-verify' && (
+              <>
+                <div style={s.title}>{isFr ? 'Vérification requise' : 'Verification required'}</div>
+                <div style={s.sub}>{isFr ? 'WhatsApp est requis pour continuer' : 'WhatsApp is required to continue'}</div>
+              </>
+            )}
+            {step === 'phone-otp' && (
+              <>
+                <div style={s.title}>{isFr ? 'Code de vérification' : 'Verification code'}</div>
+                <div style={s.sub}>{isFr ? `Code envoyé au ${fullPvPhone}` : `Code sent to ${fullPvPhone}`}</div>
+              </>
+            )}
+            {step === 'whatsapp' && (
+              <>
+                <div style={s.title}>{isFr ? 'Vérification WhatsApp' : 'WhatsApp verification'}</div>
+                <div style={s.sub}>{isFr ? 'Étape requise pour activer votre compte' : 'Required step to activate your account'}</div>
+              </>
+            )}
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#8A8070', lineHeight: 1, padding: 4 }}>✕</button>
+          {step === 'entry' && (
+            <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#8A8070', lineHeight: 1, padding: 4 }}>✕</button>
+          )}
+          {step !== 'entry' && (
+            <div style={{ width: 28 }} /> // Spacer to maintain layout
+          )}
         </div>
 
         {/* ── ENTRY ─────────────────────────────────────────────────────────── */}
         {step === 'entry' && (
           <>
-            {/* Google */}
             <button style={s.social(!!socialLoading)} onClick={() => handleOAuth('google')} disabled={!!socialLoading}>
               {socialLoading === 'google' ? (
                 <span style={{ fontSize: 13 }}>{isFr ? 'Redirection...' : 'Redirecting...'}</span>
@@ -302,7 +353,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               )}
             </button>
 
-            {/* Facebook */}
             <button style={s.social(!!socialLoading)} onClick={() => handleOAuth('facebook')} disabled={!!socialLoading}>
               {socialLoading === 'facebook' ? (
                 <span style={{ fontSize: 13 }}>{isFr ? 'Redirection...' : 'Redirecting...'}</span>
@@ -316,7 +366,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               )}
             </button>
 
-            {/* Divider */}
             <div style={s.divider}>
               <div style={s.line} />
               <span style={{ fontSize: 12, color: '#8A8070', fontWeight: 500 }}>{isFr ? 'ou' : 'or'}</span>
@@ -335,7 +384,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               </button>
             </div>
 
-            {/* Name fields — signup only */}
             {mode === 'signup' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
@@ -349,7 +397,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               </div>
             )}
 
-            {/* Phone method */}
             {method === 'phone' && (
               <>
                 <label style={s.lbl}>{isFr ? 'Numéro de téléphone' : 'Phone number'}</label>
@@ -364,14 +411,10 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               </>
             )}
 
-            {/* Email method */}
             {method === 'email' && (
               <>
                 <label style={s.lbl}>{isFr ? 'Adresse e-mail' : 'Email address'}</label>
-                <input
-                  style={s.inp} type="email" placeholder="aminata@exemple.com"
-                  value={email} onChange={e => setEmail(e.target.value)}
-                />
+                <input style={s.inp} type="email" placeholder="aminata@exemple.com" value={email} onChange={e => setEmail(e.target.value)} />
                 <label style={s.lbl}>{isFr ? 'Mot de passe' : 'Password'}</label>
                 <input
                   style={s.inp} type="password"
@@ -385,7 +428,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               </>
             )}
 
-            {/* Toggle login / signup */}
             <div style={s.toggle}>
               {mode === 'login' ? (isFr ? 'Pas de compte ? ' : 'No account? ') : (isFr ? 'Déjà un compte ? ' : 'Already have one? ')}
               <button
@@ -398,20 +440,18 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
           </>
         )}
 
-        {/* ── SMS OTP ───────────────────────────────────────────────────────── */}
+        {/* ── SMS OTP (phone signup/login) ───────────────────────────────────── */}
         {step === 'sms-otp' && (
           <>
-            <div style={{ background: '#F0FAF4', border: '1px solid #9FD4B8', borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: '#2D8B4E' }}>
-              {isFr ? `Code envoyé au ${phone}` : `Code sent to ${phone}`}
-            </div>
             <label style={s.lbl}>{isFr ? 'Code de vérification' : 'Verification code'}</label>
             <input
               style={{ ...s.inp, letterSpacing: '0.4em', textAlign: 'center', fontSize: 22, fontWeight: 700 }}
-              type="text" placeholder="123456" value={smsOtp}
-              onChange={e => setSmsOtp(e.target.value)}
+              type="text" inputMode="numeric" placeholder="123456" maxLength={6}
+              value={smsOtp}
+              onChange={e => setSmsOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               onKeyDown={e => e.key === 'Enter' && handleSmsVerify()}
             />
-            <button style={s.btn(null, loading)} onClick={handleSmsVerify} disabled={loading}>
+            <button style={s.btn(null, loading || smsOtp.length < 6)} onClick={handleSmsVerify} disabled={loading || smsOtp.length < 6}>
               {loading ? '...' : isFr ? 'Vérifier' : 'Verify'}
             </button>
             <button onClick={() => { setStep('entry'); setSmsOtp(''); setError(null) }} style={s.skip}>
@@ -420,131 +460,235 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
           </>
         )}
 
-        {/* ── WHATSAPP PROMPT ───────────────────────────────────────────────── */}
-        {step === 'whatsapp' && (
+        {/* ── PHONE-VERIFY (email signup — enter phone to verify) ────────────── */}
+        {step === 'phone-verify' && (
           <>
-            {/* Success banner */}
-            <div style={{ background: '#F0FAF4', border: '1px solid #9FD4B8', borderRadius: 10, padding: '10px 14px', marginBottom: 20, fontSize: 13, color: '#2D8B4E', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CheckCircleIcon size={15} color="#2D8B4E" />
-              {isFr ? 'Compte créé avec succès !' : 'Account created successfully!'}
+            {/* Required banner */}
+            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>⚡</span>
+              {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
             </div>
 
-            {/* WhatsApp icon + description */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.35C8.5 21.52 10.21 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm4.93 13.66c-.2.56-1.18 1.08-1.62 1.13-.44.06-.86.2-2.9-.6-2.46-.96-4.04-3.47-4.16-3.63-.12-.17-.97-1.29-.97-2.46 0-1.18.62-1.75.84-2 .2-.23.44-.29.59-.29h.42c.14 0 .32-.01.49.37.18.4.62 1.52.67 1.63.06.1.09.23.02.37-.07.14-.1.22-.2.34-.1.12-.21.27-.3.36-.1.1-.2.21-.09.41.12.2.52.85 1.12 1.38.77.69 1.42.9 1.62 1 .2.1.32.08.44-.05.12-.13.5-.58.64-.78.13-.2.26-.16.44-.1.18.07 1.16.55 1.36.65.2.1.33.15.38.23.06.08.06.46-.14 1.02z"/>
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
-                  {isFr ? 'Vérifiez votre numéro WhatsApp' : 'Verify your WhatsApp number'}
-                </div>
-                <div style={{ fontSize: 12, color: '#25D366', fontWeight: 500, marginTop: 2 }}>
-                  {isFr ? 'Obtenez le badge vérifié ✓' : 'Get the verified badge ✓'}
-                </div>
-              </div>
+            <label style={s.lbl}>{isFr ? 'Numéro de téléphone' : 'Phone number'}</label>
+            <div style={s.phoneRow}>
+              <select value={pvCountry} onChange={e => setPvCountry(e.target.value)} style={s.countrySelect}>
+                {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.code}</option>)}
+              </select>
+              <input
+                style={{ ...s.inp, flex: 1, marginBottom: 0 }}
+                type="tel" placeholder={isFr ? '77 123 45 67' : '555 123 4567'}
+                value={pvPhone} onChange={e => setPvPhone(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handlePvSend()}
+              />
             </div>
 
-            <p style={{ fontSize: 13, color: '#6B6860', lineHeight: 1.6, marginBottom: 18 }}>
-              {isFr
-                ? 'Ajoutez votre numéro WhatsApp pour obtenir le badge de vérification et inspirer confiance aux voyageurs.'
-                : 'Add your WhatsApp number to get a verification badge and build trust with travelers.'}
-            </p>
-
-            {/* Phone input */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={s.lbl}>{isFr ? 'Numéro WhatsApp' : 'WhatsApp Number'}</label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <select
-                  value={waCountry} onChange={e => setWaCountry(e.target.value)}
-                  style={{ flexShrink: 0, padding: '12px 10px', border: '1px solid rgba(0,0,0,.1)', borderRadius: 10, background: '#fff', fontSize: 13, fontWeight: 500, fontFamily: 'DM Sans, sans-serif', color: '#1A1710', cursor: 'pointer', outline: 'none', appearance: 'none', minWidth: 85 }}
-                >
-                  {COUNTRY_CODES.map(c => (
-                    <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
-                  ))}
-                </select>
-                <input
-                  type="tel" value={waPhone} onChange={e => setWaPhone(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && !waSending && sendWaOtp()}
-                  placeholder={isFr ? '77 123 45 67' : '555 123 4567'}
-                  style={{ flex: 1, padding: '12px 14px', border: '1px solid rgba(0,0,0,.1)', borderRadius: 10, fontSize: 14, fontFamily: 'DM Sans, sans-serif', color: '#1A1710', outline: 'none', background: '#fff' }}
-                />
-              </div>
-            </div>
-
-            <button
-              style={s.btn('#25D366', waSending || waCooldown > 0)}
-              onClick={sendWaOtp}
-              disabled={waSending || waCooldown > 0}
-            >
-              {waSending
-                ? (isFr ? 'Envoi...' : 'Sending...')
-                : waCooldown > 0
-                ? (isFr ? `Réessayer dans ${waCooldown}s` : `Retry in ${waCooldown}s`)
-                : (isFr ? 'Vérifier maintenant →' : 'Verify now →')}
+            <button style={s.btn(null, loading || !pvPhone.trim())} onClick={handlePvSend} disabled={loading || !pvPhone.trim()}>
+              {loading ? '...' : isFr ? 'Continuer →' : 'Continue →'}
             </button>
-
-            <button onClick={onSuccess} style={s.skip}>
-              {isFr ? "Passer pour l'instant" : 'Skip for now'}
-            </button>
-
             <p style={{ fontSize: 11, color: '#AAA098', textAlign: 'center', marginTop: 10, lineHeight: 1.5 }}>
               {isFr
-                ? 'Vous pourrez toujours le faire plus tard depuis votre profil.'
-                : 'You can always do this later from your profile.'}
+                ? 'Requis pour activer votre compte. Vous allez recevoir un code SMS.'
+                : 'Required to activate your account. You will receive an SMS code.'}
             </p>
           </>
         )}
 
-        {/* ── WHATSAPP OTP ──────────────────────────────────────────────────── */}
-        {step === 'whatsapp-otp' && (
+        {/* ── PHONE-OTP (email signup — enter code) ─────────────────────────── */}
+        {step === 'phone-otp' && (
           <>
-            <p style={{ fontSize: 13, color: '#6B6860', lineHeight: 1.6, marginBottom: 18, marginTop: 4 }}>
-              {isFr
-                ? <> Vérifiez WhatsApp sur <strong style={{ color: '#1A1710' }}>{fullWaPhone}</strong> et entrez le code à 6 chiffres.</>
-                : <> Check WhatsApp on <strong style={{ color: '#1A1710' }}>{fullWaPhone}</strong> and enter the 6-digit code.</>}
-            </p>
-
-            <label style={s.lbl}>{isFr ? 'Code WhatsApp' : 'WhatsApp Code'}</label>
+            <label style={s.lbl}>{isFr ? 'Code de vérification' : 'Verification code'}</label>
             <input
               style={{ ...s.inp, letterSpacing: '0.4em', textAlign: 'center', fontSize: 22, fontWeight: 700 }}
               type="text" inputMode="numeric" placeholder="123456" maxLength={6}
-              value={waOtp}
-              onChange={e => setWaOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              onKeyDown={e => e.key === 'Enter' && !waVerifying && verifyWaOtp()}
+              value={pvOtp}
+              onChange={e => setPvOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onKeyDown={e => e.key === 'Enter' && handlePvOtp()}
             />
+            <button style={s.btn(null, loading || pvOtp.length < 6)} onClick={handlePvOtp} disabled={loading || pvOtp.length < 6}>
+              {loading ? '...' : isFr ? 'Vérifier' : 'Verify'}
+            </button>
+            <button onClick={() => { setStep('phone-verify'); setPvOtp(''); setError(null) }} style={s.skip}>
+              {isFr ? 'Retour' : 'Back'}
+            </button>
+          </>
+        )}
 
-            {waExpiresAt && (
-              <div style={{ textAlign: 'center', fontSize: 12, color: waTimeLeft < 60 ? '#DC2626' : '#8A8070', marginBottom: 14 }}>
-                {waTimeLeft > 0
-                  ? (isFr ? `Code valide encore ${fmtTime(waTimeLeft)}` : `Code expires in ${fmtTime(waTimeLeft)}`)
-                  : (isFr ? 'Code expiré' : 'Code expired')}
-              </div>
-            )}
+        {/* ── WHATSAPP (add contact number) ─────────────────────────────────── */}
+        {step === 'whatsapp' && waMethod === 'choice' && (
+          <>
+            {/* Required banner */}
+            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>⚡</span>
+              {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
+            </div>
 
+            <p style={{ fontSize: 13, color: '#6B6860', lineHeight: 1.6, marginBottom: 18 }}>
+              {isFr
+                ? "Votre compte nécessite une vérification WhatsApp. Choisissez une méthode :"
+                : "Your account requires WhatsApp verification. Choose a method:"}
+            </p>
+
+            {/* Inbound option */}
             <button
-              style={s.btn('#25D366', waVerifying || waOtp.length < 6)}
-              onClick={verifyWaOtp}
-              disabled={waVerifying || waOtp.length < 6}
+              onClick={generateInboundCode}
+              disabled={loading}
+              style={{
+                width: '100%', padding: '16px', borderRadius: 14, border: '2px solid #25D366',
+                background: '#F0FAF4', cursor: loading ? 'not-allowed' : 'pointer',
+                marginBottom: 12, textAlign: 'left',
+              }}
             >
-              {waVerifying ? (isFr ? 'Vérification...' : 'Verifying...') : (isFr ? 'Confirmer →' : 'Confirm →')}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                  </svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                    {isFr ? '🚀 Envoyer un message' : '🚀 Send us a message'}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8A8070' }}>
+                    {isFr ? 'Plus rapide • 30 secondes' : 'Faster • 30 seconds'}
+                  </div>
+                </div>
+                <span style={{ fontSize: 20, color: '#25D366' }}>→</span>
+              </div>
             </button>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, alignItems: 'center' }}>
-              <button
-                onClick={() => { setStep('whatsapp'); setWaOtp(''); setError(null) }}
-                style={{ fontSize: 13, color: '#C8891C', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontWeight: 500 }}
-              >
-                {isFr ? '← Changer de numéro' : '← Change number'}
-              </button>
-              <button
-                onClick={onSuccess}
-                style={{ fontSize: 13, color: '#8A8070', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
-              >
-                {isFr ? 'Passer' : 'Skip'}
-              </button>
+            {/* Outbound option */}
+            <button
+              onClick={() => setWaMethod('outbound')}
+              style={{
+                width: '100%', padding: '16px', borderRadius: 14, border: '2px solid #E8DDD0',
+                background: '#fff', cursor: 'pointer', textAlign: 'left',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#C8891C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <PhoneIcon size={22} color="white" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                    {isFr ? 'Recevoir un code SMS' : 'Receive SMS code'}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#8A8070' }}>
+                    {isFr ? 'Nous vous envoyons le code' : 'We send you the code'}
+                  </div>
+                </div>
+              </div>
+            </button>
+          </>
+        )}
+
+        {/* ── WHATSAPP INBOUND VERIFICATION ── */}
+        {step === 'whatsapp' && waMethod === 'inbound' && inboundCode && (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1710' }}>
+                {isFr ? 'Envoyez ce code par WhatsApp' : 'Send this code via WhatsApp'}
+              </div>
             </div>
+
+            {/* Code display */}
+            <div style={{
+              background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+              borderRadius: 16, padding: 24, textAlign: 'center', marginBottom: 20, color: 'white'
+            }}>
+              <div style={{ fontSize: 11, opacity: 0.9, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                {isFr ? 'Votre code' : 'Your code'}
+              </div>
+              <div>
+                {inboundCode.split('').map((digit, i) => (
+                  <span key={i} style={{
+                    display: 'inline-block', width: 36, height: 48, background: 'rgba(255,255,255,0.2)',
+                    borderRadius: 8, margin: '0 3px', fontSize: 24, fontWeight: 700, lineHeight: '48px'
+                  }}>{digit}</span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ background: '#F7F5F0', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+              <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#6B6860', lineHeight: 1.8 }}>
+                <li>{isFr ? 'Ouvrez WhatsApp' : 'Open WhatsApp'}</li>
+                <li>{isFr ? 'Envoyez ce code à notre numéro' : 'Send this code to our number'}</li>
+                <li>{isFr ? 'Attendez la confirmation' : 'Wait for confirmation'}</li>
+              </ol>
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 12, color: waCountdown < 60 ? '#DC2626' : '#8A8070' }}>
+                ⏱ {isFr ? `Expire dans ${Math.floor(waCountdown/60)}:${String(waCountdown%60).padStart(2,'0')}` : `Expires in ${Math.floor(waCountdown/60)}:${String(waCountdown%60).padStart(2,'0')}`}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 12, background: '#F0FAF4', borderRadius: 10, marginBottom: 12 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#25D366', animation: 'pulse 1.5s infinite' }} />
+              <span style={{ fontSize: 13, color: '#2D8B4E' }}>
+                {isFr ? 'En attente de votre message...' : 'Waiting for your message...'}
+              </span>
+            </div>
+
+            <button onClick={() => setWaMethod('choice')} style={s.skip}>
+              ← {isFr ? 'Changer de méthode' : 'Change method'}
+            </button>
+            <p style={{ fontSize: 11, color: '#AAA098', textAlign: 'center', marginTop: 10, lineHeight: 1.5 }}>
+              {isFr
+                ? 'La vérification est requise pour continuer'
+                : 'Verification is required to continue'}
+            </p>
+          </>
+        )}
+
+        {/* ── WHATSAPP OUTBOUND (traditional) ── */}
+        {step === 'whatsapp' && waMethod === 'outbound' && (
+          <>
+            {/* Required banner */}
+            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>⚡</span>
+              {isFr ? 'Numéro WhatsApp requis' : 'WhatsApp number required'}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.35C8.5 21.52 10.21 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm4.93 13.66c-.2.56-1.18 1.08-1.62 1.13-.44.06-.86.2-2.9-.6-2.46-.96-4.04-3.47-4.16-3.63-.12-.17-.97-1.29-.97-2.46 0-1.18.62-1.75.84-2 .2-.23.44-.29.59-.29h.42c.14 0 .32-.01.49.37.18.4.62 1.52.67 1.63.06.1.09.23.02.37-.07.14-.1.22-.2.34-.1.12-.21.27-.3.36-.1.1-.2.21-.09.41.12.2.52.85 1.12 1.38.77.69 1.42.9 1.62 1 .2.1.32.08.44-.05.12-.13.5-.58.64-.78.13-.2.26-.16.44-.1.18.07 1.16.55 1.36.65.2.1.33.15.38.23.06.08.06.46-.14 1.02z"/>
+                </svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1710' }}>
+                  {isFr ? 'Votre numéro WhatsApp' : 'Your WhatsApp number'}
+                </div>
+                <div style={{ fontSize: 11, color: '#8A8070', marginTop: 1 }}>
+                  {isFr ? 'Les expéditeurs vous contacteront ici' : 'Senders will contact you here'}
+                </div>
+              </div>
+            </div>
+
+            <label style={s.lbl}>{isFr ? 'Numéro WhatsApp' : 'WhatsApp number'}</label>
+            <div style={s.phoneRow}>
+              <select value={waCountry} onChange={e => setWaCountry(e.target.value)} style={s.countrySelect}>
+                {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.code}</option>)}
+              </select>
+              <input
+                style={{ ...s.inp, flex: 1, marginBottom: 0 }}
+                type="tel" placeholder={isFr ? '77 123 45 67' : '555 123 4567'}
+                value={waPhone} onChange={e => setWaPhone(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleWaSave()}
+              />
+            </div>
+
+            <button style={s.btn('#25D366', loading)} onClick={handleWaSave} disabled={loading}>
+              {loading ? '...' : isFr ? 'Continuer →' : 'Continue →'}
+            </button>
+            <button onClick={() => setWaMethod('choice')} style={s.skip}>
+              ← {isFr ? 'Changer de méthode' : 'Change method'}
+            </button>
+            <p style={{ fontSize: 11, color: '#AAA098', textAlign: 'center', marginTop: 10, lineHeight: 1.5 }}>
+              {isFr
+                ? 'Ce numéro est requis pour activer votre compte'
+                : 'This number is required to activate your account'}
+            </p>
           </>
         )}
 
@@ -555,7 +699,6 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
           </div>
         )}
 
-        {/* Security note */}
         {step === 'entry' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 16, padding: '8px 12px', background: '#F7F3ED', borderRadius: 8 }}>
             <LockIcon size={12} color="#8A8070" />

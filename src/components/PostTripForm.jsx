@@ -1,33 +1,33 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { LockIcon, WarningIcon, CheckCircleIcon, PhoneIcon } from './Icons'
+import { LockIcon, CheckCircleIcon } from './Icons'
 
-const CITIES_FROM = ['New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels']
-const CITIES_TO   = ['Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou']
+const CITIES_FROM = [
+  'New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels',
+  'Madrid', 'Barcelona', 'Bilbao', 'Marseille', 'Lyon', 'Milan', 'Rome', 'Lisbon',
+  'Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou',
+  'Casablanca', 'Nouakchott', 'Bissau', 'Freetown', 'Banjul',
+]
+const CITIES_TO = [
+  'Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou',
+  'Casablanca', 'Nouakchott', 'Bissau', 'Freetown', 'Banjul',
+  'New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels',
+  'Madrid', 'Barcelona', 'Bilbao', 'Marseille', 'Lyon', 'Milan', 'Rome', 'Lisbon',
+]
 
-export default function PostTripForm({ lang, setView, user, onLoginRequired, onVerifyWhatsApp, inline = false }) {
+export default function PostTripForm({ lang, setView, user, onLoginRequired, inline = false }) {
   const isFr = lang === 'fr'
 
   const meta     = user?.user_metadata || {}
   const fullName = meta.full_name || meta.name || `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || ''
 
-  const [form, setForm]           = useState({
-    from_city: '', to_city: '', date: '', space: '', price: '', phone: user?.phone || '', note: ''
+  const defaultPhone = meta.whatsapp_phone || user?.phone || ''
+  const [form, setForm]       = useState({
+    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: ''
   })
-  const [loading, setLoading]     = useState(false)
-  const [success, setSuccess]     = useState(false)
-  const [error, setError]         = useState(null)
-  const [waVerified, setWaVerified] = useState(null) // null = loading, true/false = known
-
-  useEffect(() => {
-    if (!user) return
-    supabase
-      .from('profiles')
-      .select('whatsapp_verified')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => setWaVerified(data?.whatsapp_verified ?? false))
-  }, [user])
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError]     = useState(null)
 
   // Not logged in — show message
   if (!user) {
@@ -106,27 +106,6 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, onV
           {isFr ? 'Votre annonce sera examinée et publiée sous peu.' : 'Your listing will be reviewed and published shortly.'}
         </p>
 
-        {/* WhatsApp nudge on success if not verified */}
-        {waVerified === false && onVerifyWhatsApp && (
-          <div style={{ background:'#F0FAF4', border:'1px solid #9FD4B8', borderRadius:14, padding:'16px 18px', marginBottom:24, textAlign:'left' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-              <PhoneIcon size={18} color="#1A5C38" />
-              <span style={{ fontSize:14, fontWeight:700, color:'#1A5C38' }}>
-                {isFr ? 'Une dernière étape' : 'One last step'}
-              </span>
-            </div>
-            <p style={{ fontSize:13, color:'#2D6A4F', lineHeight:1.55, margin:'0 0 12px' }}>
-              {isFr
-                ? 'Vérifiez votre WhatsApp pour que les voyageurs puissent vous contacter.'
-                : 'Verify your WhatsApp so travelers can reach you.'}
-            </p>
-            <button onClick={onVerifyWhatsApp}
-              style={{ width:'100%', padding:'11px', borderRadius:10, border:'none', background:'#25D366', color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-              {isFr ? 'Vérifier mon WhatsApp →' : 'Verify my WhatsApp →'}
-            </button>
-          </div>
-        )}
-
         <button onClick={() => setView('profile')}
           style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
           {isFr ? 'Voir mon profil' : 'View my profile'}
@@ -152,30 +131,6 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, onV
           <p style={{ fontSize:14, color:'#8A8070' }}>
             {isFr ? 'Votre annonce sera examinée avant publication.' : 'Your listing will be reviewed before going live.'}
           </p>
-        </div>
-      )}
-
-      {/* WhatsApp verification warning */}
-      {waVerified === false && (
-        <div style={{ background:'#FFFBEB', border:'1px solid #FCD34D', borderRadius:14, padding:'14px 18px', marginBottom:20, display:'flex', alignItems:'flex-start', gap:12 }}>
-          <WarningIcon size={20} color="#92400E" style={{ flexShrink:0 }} />
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:13, fontWeight:700, color:'#92400E', marginBottom:3 }}>
-              {isFr ? 'Votre contact sera masqué' : 'Your contact will be hidden'}
-            </div>
-            <div style={{ fontSize:12, color:'#B45309', lineHeight:1.5 }}>
-              {isFr
-                ? 'Les voyageurs ne pourront pas vous contacter tant que vous n\'avez pas vérifié votre WhatsApp.'
-                : "Travelers won't be able to contact you until you verify your WhatsApp number."}
-            </div>
-          </div>
-          {onVerifyWhatsApp && (
-            <button
-              onClick={onVerifyWhatsApp}
-              style={{ flexShrink:0, padding:'7px 14px', borderRadius:8, border:'none', background:'#C8891C', color:'#fff', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'DM Sans, sans-serif', whiteSpace:'nowrap' }}>
-              {isFr ? 'Vérifier →' : 'Verify →'}
-            </button>
-          )}
         </div>
       )}
 
@@ -227,7 +182,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, onV
           </div>
         </div>
 
-        <label style={lbl}>{isFr ? 'Numéro WhatsApp' : 'WhatsApp number'}</label>
+        <label style={lbl}>{isFr ? 'Numéro de téléphone' : 'Phone number'}</label>
         <input style={inp} type="tel" placeholder="+1 (212) 555-0100" value={form.phone} onChange={e => set('phone', e.target.value)} />
 
         <label style={lbl}>{isFr ? 'Note (optionnel)' : 'Note (optional)'}</label>

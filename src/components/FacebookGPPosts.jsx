@@ -1,8 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
-const CITIES_FROM = ['New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels']
-const CITIES_TO   = ['Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou']
+const CITIES_FROM = [
+  'New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels',
+  'Madrid', 'Barcelona', 'Bilbao', 'Marseille', 'Lyon', 'Milan', 'Rome', 'Lisbon',
+  'Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou',
+  'Casablanca', 'Nouakchott', 'Bissau', 'Freetown', 'Banjul',
+]
+const CITIES_TO = [
+  'Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Cotonou',
+  'Casablanca', 'Nouakchott', 'Bissau', 'Freetown', 'Banjul',
+  'New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels',
+  'Madrid', 'Barcelona', 'Bilbao', 'Marseille', 'Lyon', 'Milan', 'Rome', 'Lisbon',
+]
 
 const MONTHS_PATTERN = [
   'january','février','february','fevrier','janvier','march','mars',

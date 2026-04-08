@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { PlaneIcon, SettingsIcon, BellIcon, HelpIcon, EditIcon, TrashIcon, CheckCircleIcon, WarningIcon } from '../components/Icons'
+import WhatsAppVerificationReminder from '../components/WhatsAppVerificationReminder'
+import WhatsAppInboundVerification from '../components/WhatsAppInboundVerification'
 
 const FLIGHTS = [
   { route: 'New York → Dakar',   detail: { en: 'Air Senegal · 7h direct',    fr: 'Air Sénégal · 7h direct' },    time: { en: '2h ago',  fr: 'il y a 2h' } },
@@ -118,6 +120,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [loading, setLoading]     = useState(true)
   const [editingTrip, setEditingTrip] = useState(null)
   const [saving, setSaving]       = useState(false)
+  const [showWaVerification, setShowWaVerification] = useState(false)
 
   const t        = T[lang]
   const meta     = user?.user_metadata || {}
@@ -319,6 +322,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
         {/* MAIN CONTENT */}
         <div>
+          {/* WhatsApp Verification Reminder */}
+          <WhatsAppVerificationReminder 
+            user={user} 
+            lang={lang} 
+            onVerifyClick={() => setShowWaVerification(true)} 
+          />
 
           {/* TRIPS */}
           {section === 'trips' && (
@@ -473,6 +482,16 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         </div>
 
       </div>
+
+      {/* WhatsApp Verification Modal */}
+      {showWaVerification && (
+        <WhatsAppInboundVerification
+          user={user}
+          lang={lang}
+          onClose={() => setShowWaVerification(false)}
+          onVerified={() => setShowWaVerification(false)}
+        />
+      )}
     </div>
   )
 }

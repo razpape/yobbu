@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import FacebookGPPosts from '../components/FacebookGPPosts'
+import FacebookGPExtractor from '../components/FacebookGPExtractor'
 
 const ADMIN_EMAIL = 'papamamadous@outlook.com'
 
@@ -198,8 +199,8 @@ export default function AdminPanel({ onSignOut }) {
               date:  trip.date,
             }),
           })
-            .then(r => r.json().then(data => { if (!r.ok) console.error('Rejection email error:', data) }))
-            .catch(err => console.error('Rejection email fetch error:', err))
+            .then(r => r.json().then(data => { if (!r.ok) {/* Silent fail */} }))
+            .catch(err => {/* Silent fail */})
         }
       }
       setTrips(prev => prev.map(t => t.id === id ? { ...t, suspended: !suspended } : t))
@@ -223,8 +224,8 @@ export default function AdminPanel({ onSignOut }) {
               date:  trip.date,
             }),
           })
-            .then(r => r.json().then(data => { if (!r.ok) console.error('Email error:', data) }))
-            .catch(err => console.error('Email fetch error:', err))
+            .then(r => r.json().then(data => { if (!r.ok) {/* Silent fail */} }))
+            .catch(err => {/* Silent fail */})
         }
       }
       setTrips(prev => prev.map(t => t.id === id ? { ...t, approved: !approved } : t))
@@ -382,6 +383,7 @@ export default function AdminPanel({ onSignOut }) {
             { key:'travelers', label:`Travelers (${trips.length})` },
             { key:'pending',   label:`Pending (${pending.length})` },
             { key:'facebook',  label:'📘 Facebook GP Posts' },
+            { key:'ai-extract', label:'🤖 AI Extractor' },
             { key:'users',     label:`Users (${users.length})` },
           ].map(({ key, label }) => (
             <button key={key} style={s.tab(tab === key)} onClick={() => setTab(key)}>{label}</button>
@@ -389,7 +391,7 @@ export default function AdminPanel({ onSignOut }) {
         </div>
 
         {/* Search */}
-        {tab !== 'users' && tab !== 'facebook' && (
+        {tab !== 'users' && tab !== 'facebook' && tab !== 'ai-extract' && (
           <div style={{ marginBottom:14 }}>
             <input style={s.search} placeholder="Search by name, city..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
@@ -502,6 +504,11 @@ export default function AdminPanel({ onSignOut }) {
         {/* FACEBOOK GP POSTS TAB */}
         {tab === 'facebook' && (
           <FacebookGPPosts showToast={showToast} />
+        )}
+
+        {/* AI EXTRACTOR TAB */}
+        {tab === 'ai-extract' && (
+          <FacebookGPExtractor showToast={showToast} />
         )}
 
         {/* USERS TAB */}
