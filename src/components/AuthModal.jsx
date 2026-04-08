@@ -19,7 +19,7 @@ const COUNTRY_CODES = [
 
 // steps: 'entry' | 'sms-otp' | 'phone-verify' | 'phone-otp' | 'whatsapp'
 
-export default function AuthModal({ onClose, onSuccess, lang, user: existingUser }) {
+export default function AuthModal({ onClose, onSuccess, lang }) {
   const [mode, setMode]     = useState('login')
   const [step, setStep]     = useState('entry')
   const [method, setMethod] = useState('phone')
@@ -45,14 +45,6 @@ export default function AuthModal({ onClose, onSuccess, lang, user: existingUser
   const [loading, setLoading]           = useState(false)
   const [socialLoading, setSocialLoading] = useState(null)
   const [error, setError]               = useState(null)
-
-  // If user is already logged in (OAuth), skip to WhatsApp step
-  useEffect(() => {
-    if (existingUser?.id) {
-      setUserId(existingUser.id)
-      setStep('whatsapp')
-    }
-  }, [existingUser])
 
   const isFr = lang === 'fr'
 

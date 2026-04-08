@@ -27,48 +27,11 @@ export default function App() {
   const { trips, loading, error, addTrip } = useTrips()
   const { user, signOut }               = useAuth()
 
-  // On sign-in: navigate to profile; check if WhatsApp verification is needed
+  // On sign-in: navigate to profile
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
-        const u = session.user
-        
-        // Wait a moment for profile trigger to create the profile
-        await new Promise(r => setTimeout(r, 500))
-        
-        // Check if user has WhatsApp verified (with retry)
-        let profile = null
-        let retries = 3
-        while (retries > 0) {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('whatsapp_verified')
-            .eq('id', u.id)
-            .single()
-          
-          if (data && !error) {
-            profile = data
-            break
-          }
-          
-          // If profile not found, wait and retry
-          await new Promise(r => setTimeout(r, 500))
-          retries--
-        }
-        
-        // If not verified, show auth modal for WhatsApp verification
-        if (!profile?.whatsapp_verified) {
-          setShowAuth(true)
-        } else {
-          setView('profile')
-        }
-        
-        // Mark phone users as verified (existing behavior)
-        if (u.phone && !profile?.whatsapp_verified) {
-          await supabase.from('profiles').upsert({ id: u.id, whatsapp_verified: true }, { onConflict: 'id' })
-          setShowAuth(false)
-          setView('profile')
-        }
+        setView('profile')
       }
     })
     return () => subscription.unsubscribe()
@@ -155,7 +118,7 @@ export default function App() {
       )}
 
       {showAuth && (
-        <AuthModal lang={lang} user={user} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
+        <AuthModal lang={lang} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
       )}
     </div>
   )
