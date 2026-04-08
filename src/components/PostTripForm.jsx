@@ -23,7 +23,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
   const defaultPhone = meta.whatsapp_phone || user?.phone || ''
   const [form, setForm]       = useState({
-    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: ''
+    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: '', flight_number: ''
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -81,6 +81,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         space:      form.space,
         price:      form.price,
         note:       form.note,
+        flight_number: form.flight_number || null,
         approved:   false,
         user_id:    user.id,
         user_email: user.email || null,
@@ -187,6 +188,20 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
         <label style={lbl}>{isFr ? 'Note (optionnel)' : 'Note (optional)'}</label>
         <textarea style={{ ...inp, minHeight:80, resize:'vertical' }} placeholder={isFr ? "Ex: Je livre à domicile, j'accepte les médicaments..." : 'Ex: Home delivery available, I accept medicine...'} value={form.note} onChange={e => set('note', e.target.value)} />
+
+        {/* Flight number - recommended for security */}
+        <div style={{ background:'#F0FAF4', border:'1px solid #25D366', borderRadius:10, padding:'12px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:10 }}>
+          <span style={{ fontSize:20 }}>✈️</span>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:600, color:'#1A1710' }}>
+              {isFr ? 'Numéro de vol (recommandé)' : 'Flight number (recommended)'}
+            </div>
+            <div style={{ fontSize:11, color:'#2D8B4E', marginTop:2 }}>
+              {isFr ? 'Ajoute votre numéro de vol pour plus de confiance' : 'Add your flight number for more trust and security'}
+            </div>
+          </div>
+        </div>
+        <input style={inp} placeholder={isFr ? 'Ex: AA1234, DL567' : 'Ex: AA1234, DL567'} value={form.flight_number} onChange={e => set('flight_number', e.target.value)} />
 
         {error && (
           <div style={{ background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:10, padding:'10px 14px', marginBottom:16, fontSize:13, color:'#DC2626' }}>

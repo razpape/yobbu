@@ -193,6 +193,11 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               <div style={{ width:'100%', height:1.5, background:'linear-gradient(90deg,#C8891C,#E5A630,#C8891C)', position:'relative' }}>
                 <span style={{ position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)', fontSize:12 }}>✈</span>
               </div>
+              {gp.flight_number && (
+                <span style={{ fontSize:10, fontWeight:600, color:'#25D366', background:'#F0FAF4', border:'1px solid #25D366', borderRadius:20, padding:'1px 8px', whiteSpace:'nowrap', display:'flex', alignItems:'center', gap:3 }}>
+                  <span>✈️</span> {gp.flight_number}
+                </span>
+              )}
               {gp.date && (
                 <span style={{ fontSize:10, fontWeight:600, color:'#C8891C', background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:20, padding:'1px 8px', whiteSpace:'nowrap' }}>
                   {gp.date}
