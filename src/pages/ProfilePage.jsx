@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { PlaneIcon, SettingsIcon, BellIcon, HelpIcon, EditIcon, TrashIcon, CheckCircleIcon, WarningIcon } from '../components/Icons'
+import { PlaneIcon, SettingsIcon, BellIcon, HelpIcon, EditIcon, TrashIcon, CheckCircleIcon, WarningIcon, ShieldCheckIcon } from '../components/Icons'
 import WhatsAppVerificationReminder from '../components/WhatsAppVerificationReminder'
 import WhatsAppInboundVerification from '../components/WhatsAppInboundVerification'
+import TrustBadges from '../components/TrustBadges'
+import IDVerificationUpload from '../components/IDVerificationUpload'
+import SocialProfileLinks from '../components/SocialProfileLinks'
 
 const FLIGHTS = [
   { route: 'New York → Dakar',   detail: { en: 'Air Senegal · 7h direct',    fr: 'Air Sénégal · 7h direct' },    time: { en: '2h ago',  fr: 'il y a 2h' } },
@@ -179,11 +182,13 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     return items
   })
 
+  const isFr = lang === 'fr'
   const menuItems = [
-    { key:'trips',         Icon: PlaneIcon,    label: t.menuTrips },
-    { key:'settings',      Icon: SettingsIcon, label: t.menuSettings },
-    { key:'notifications', Icon: BellIcon,     label: t.menuNotif, badge: notifications.length },
-    { key:'help',          Icon: HelpIcon,     label: t.menuHelp },
+    { key:'trips',         Icon: PlaneIcon,       label: t.menuTrips },
+    { key:'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Trust & Verification' },
+    { key:'settings',      Icon: SettingsIcon,    label: t.menuSettings },
+    { key:'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifications.length },
+    { key:'help',          Icon: HelpIcon,        label: t.menuHelp },
   ]
 
   return (
@@ -390,6 +395,65 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                   {t.postNew}
                 </button>
               )}
+            </div>
+          )}
+
+          {/* VERIFICATION & TRUST */}
+          {section === 'verification' && (
+            <div style={s.section}>
+              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:20, color:'#1A1710', marginBottom:16 }}>
+                {lang === 'fr' ? 'Vérification et Confiance' : 'Trust & Verification'}
+              </div>
+              
+              {/* Current Badges Display */}
+              <div style={{ background:'#FDFBF7', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:16, marginBottom:20 }}>
+                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:12, textTransform:'uppercase', letterSpacing:'.06em' }}>
+                  {lang === 'fr' ? 'Vos badges actuels' : 'Your current badges'}
+                </div>
+                <TrustBadges profile={user} lang={lang} size="md" />
+              </div>
+              
+              {/* Stats */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
+                <div style={{ background:'#F0FAF4', border:'1px solid #25D366', borderRadius:12, padding:14, textAlign:'center' }}>
+                  <div style={{ fontFamily:'DM Serif Display, serif', fontSize:24, color:'#2D8B4E', lineHeight:1 }}>
+                    {trips.filter(tr => tr.approved).length}
+                  </div>
+                  <div style={{ fontSize:11, color:'#2D8B4E', marginTop:3 }}>
+                    {lang === 'fr' ? 'Voyages complétés' : 'Completed trips'}
+                  </div>
+                </div>
+                <div style={{ background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:12, padding:14, textAlign:'center' }}>
+                  <div style={{ fontFamily:'DM Serif Display, serif', fontSize:24, color:'#C8891C', lineHeight:1 }}>
+                    {trips.filter(tr => tr.approved).length >= 5 ? '⭐' : `${trips.filter(tr => tr.approved).length}/5`}
+                  </div>
+                  <div style={{ fontSize:11, color:'#C8891C', marginTop:3 }}>
+                    {lang === 'fr' ? 'Vers Super Voyageur' : 'To Super Traveler'}
+                  </div>
+                </div>
+              </div>
+              
+              {/* ID Verification */}
+              <div style={{ marginBottom:16 }}>
+                <IDVerificationUpload user={user} lang={lang} />
+              </div>
+              
+              {/* Social Profiles */}
+              <div style={{ marginBottom:16 }}>
+                <SocialProfileLinks profile={user} lang={lang} />
+              </div>
+              
+              {/* Trust Info */}
+              <div style={{ background:'#F0F4F8', borderRadius:12, padding:16 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:'#1A1710', marginBottom:8 }}>
+                  {lang === 'fr' ? 'Pourquoi la vérification est importante' : 'Why verification matters'}
+                </div>
+                <div style={{ fontSize:12, color:'#5A6578', lineHeight:1.7 }}>
+                  {lang === 'fr' 
+                    ? '• Les expéditeurs font plus confiance aux voyageurs vérifiés\n• Plus de chances d\'être contacté pour des livraisons\n• Badges spéciaux après 5+ voyages réussis'
+                    : '• Senders trust verified travelers more\n• Higher chance of getting delivery requests\n• Special badges after 5+ successful trips'}
+                </div>
+              </div>
             </div>
           )}
 

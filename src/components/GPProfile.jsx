@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ContactModal from './ContactModal'
+import TrustBadges from './TrustBadges'
 import { ShieldCheckIcon, LockIcon, PlaneIcon } from './Icons'
 
 const CITY_CODES = {
@@ -136,6 +137,10 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                     {isFr ? 'Communauté' : 'Community'}
                   </span>
                 )}
+              </div>
+              {/* Trust Badges from new system */}
+              <div style={{ marginTop: 10 }}>
+                <TrustBadges profile={gp} lang={lang} size="md" />
               </div>
             </div>
           </div>
