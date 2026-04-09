@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       success: true,
       message: 'OTP sent successfully',
       isNewUser: !existingUser,
-     // DEBUG: Remove in production
+      debugCode: otp, // DEBUG: Remove in production
     })
 
   } catch (err) {
