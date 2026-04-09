@@ -7,7 +7,7 @@ import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 import BrowsePage from './components/BrowsePage'
 import PostTripForm from './components/PostTripForm'
-import AuthModal from './components/AuthModal'
+import PhoneAuth from './pages/PhoneAuth'
 import GPProfile from './components/GPProfile'
 import ProfilePage from './pages/ProfilePage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -42,7 +42,6 @@ const handleOAuthCallback = () => {
 export default function App() {
   const [lang, setLang]                 = useState('en')
   const [view, setView]                 = useState('home')
-  const [showAuth, setShowAuth]         = useState(false)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
   const { trips, loading, error, addTrip } = useTrips()
@@ -78,8 +77,7 @@ export default function App() {
 
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
-  const handleAuthSuccess = () => {
-    setShowAuth(false)
+  const handlePhoneAuthComplete = () => {
     setView('profile')
   }
 
@@ -121,12 +119,22 @@ export default function App() {
     return <PrivacyPage lang={lang} setView={setView} />
   }
 
+  // Phone Auth flow (new)
+  if (view === 'phone-auth') {
+    return (
+      <PhoneAuth 
+        lang={lang} 
+        onComplete={handlePhoneAuthComplete}
+      />
+    )
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
       <Navbar
         lang={lang} setLang={setLang} setView={setView}
         user={user} onSignOut={handleSignOut}
-        onLoginClick={() => setShowAuth(true)}
+        onLoginClick={() => setView('phone-auth')}
       />
       {view === 'home' && (
         <>
@@ -142,7 +150,7 @@ export default function App() {
         <BrowsePage
           lang={lang} setView={setView} trips={trips} loading={loading}
           error={error} searchFilter={searchFilter} user={user}
-          onLoginRequired={() => setShowAuth(true)}
+          onLoginRequired={() => setView('phone-auth')}
           onViewProfile={handleViewGp}
         />
       )}
@@ -150,13 +158,10 @@ export default function App() {
       {view === 'post' && (
         <PostTripForm
           lang={lang} setView={setView} onAdd={addTrip} user={user}
-          onLoginRequired={() => setShowAuth(true)}
+          onLoginRequired={() => setView('phone-auth')}
         />
       )}
 
-      {showAuth && (
-        <AuthModal lang={lang} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
-      )}
     </div>
   )
 }
