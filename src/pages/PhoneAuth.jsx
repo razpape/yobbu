@@ -28,6 +28,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
   const [user, setUser] = useState(null)
+  const [debugCode, setDebugCode] = useState('') // DEBUG: Remove in production
 
   // Countdown timer for OTP resend
   useEffect(() => {
@@ -55,6 +56,11 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       
       if (!res.ok) {
         throw new Error(data.error || 'Failed to send code')
+      }
+      
+      // DEBUG: Store code for display (remove in production)
+      if (data.debugCode) {
+        setDebugCode(data.debugCode)
       }
       
       setCountdown(30)
@@ -327,6 +333,26 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         onChange={setOtpCode}
         lang={lang}
       />
+      
+      {/* DEBUG: Show code for testing (remove in production) */}
+      {debugCode && (
+        <div style={{ 
+          marginTop: 16, 
+          padding: 12, 
+          background: '#F0F7FF', 
+          border: '1px dashed #185FA5',
+          borderRadius: 8,
+          color: '#185FA5',
+          fontSize: 14,
+          textAlign: 'center',
+          fontFamily: 'monospace',
+        }}>
+          <div style={{ fontSize: 11, marginBottom: 4, color: '#5A7A95' }}>
+            {isFr ? 'CODE DE DÉBOGAGE (TEST)' : 'DEBUG CODE (TESTING)'}
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>{debugCode}</div>
+        </div>
+      )}
       
       {error && (
         <div style={{ 
