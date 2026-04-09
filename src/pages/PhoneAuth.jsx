@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { Package, Smartphone, ArrowLeft, Shield, Sparkles } from 'lucide-react'
 import PhoneInput from '../components/auth/PhoneInput'
 import OTPInput from '../components/auth/OTPInput'
 import PINInput from '../components/auth/PINInput'
@@ -212,7 +213,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         margin: '0 auto 32px',
         boxShadow: '0 8px 30px rgba(200, 137, 28, 0.3)',
       }}>
-        <span style={{ fontSize: 48 }}>📦</span>
+        <Package size={48} color="#fff" strokeWidth={1.5} />
       </div>
       
       <h1 style={{ 
@@ -320,7 +321,6 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           style={{ 
             background: 'none', 
             border: 'none', 
-            fontSize: 20, 
             cursor: 'pointer',
             width: 40,
             height: 40,
@@ -332,7 +332,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
             transition: 'background 0.2s',
           }}
         >
-          ←
+          <ArrowLeft size={24} />
         </button>
       </div>
       
@@ -377,7 +377,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           alignItems: 'center',
           gap: 8,
         }}>
-          <span>⚠️</span>
+          <span style={{ color: '#DC2626', fontSize: 16 }}>!</span>
           {error}
         </div>
       )}
@@ -430,7 +430,6 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           style={{ 
             background: 'none', 
             border: 'none', 
-            fontSize: 20, 
             cursor: 'pointer',
             width: 40,
             height: 40,
@@ -441,7 +440,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
             color: '#1A1710',
           }}
         >
-          ←
+          <ArrowLeft size={24} />
         </button>
       </div>
       
@@ -457,7 +456,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           justifyContent: 'center',
           margin: '0 auto 24px',
         }}>
-          <span style={{ fontSize: 32 }}>📱</span>
+          <Smartphone size={32} color="#C8891C" />
         </div>
         
         <h2 style={{ 
@@ -732,7 +731,9 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
 
   const renderBiometric = () => (
     <div style={{ padding: '40px 24px', textAlign: 'center' }}>
-      <div style={{ fontSize: 64, marginBottom: 24 }}>👆</div>
+      <div style={{ width: 64, height: 64, background: '#F0F0ED', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+        <Shield size={32} color="#C8891C" />
+      </div>
       <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 12 }}>
         {isFr ? 'Utiliser Face ID ?' : 'Use Face ID?'}
       </h2>
@@ -779,7 +780,9 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
 
   const renderComplete = () => (
     <div style={{ padding: '60px 24px', textAlign: 'center' }}>
-      <div style={{ fontSize: 80, marginBottom: 24 }}>🎉</div>
+      <div style={{ width: 80, height: 80, background: 'linear-gradient(135deg, #C8891C20 0%, #C8891C10 100%)', borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+        <Sparkles size={40} color="#C8891C" />
+      </div>
       <h2 style={{ fontSize: 28, fontWeight: 700, color: '#1A1710', marginBottom: 12 }}>
         {isFr ? 'Bienvenue !' : 'Welcome!'}
       </h2>
