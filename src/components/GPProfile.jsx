@@ -256,6 +256,30 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                   </div>
                 </div>
               )}
+              
+              {/* Book Flight Link */}
+              <a 
+                href={`https://www.google.com/travel/flights?q=Flights%20from%20${fromCode}%20to%20${toCode}%20on%20${gp.date || 'next-week'}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: 6, 
+                  marginTop: 12, 
+                  padding: '8px 14px', 
+                  background: '#185FA5', 
+                  color: '#fff', 
+                  borderRadius: 8, 
+                  fontSize: 13, 
+                  fontWeight: 600, 
+                  textDecoration: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                {isFr ? 'Réserver ce vol' : 'Book this flight'}
+              </a>
             </div>
           )}
         </div>
