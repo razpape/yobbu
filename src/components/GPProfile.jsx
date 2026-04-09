@@ -184,6 +184,36 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
               </div>
             ))}
           </div>
+          
+          {/* Flight Price Info */}
+          {(fromCity === 'New York' && toCity === 'Dakar') && (
+            <div style={{ marginTop: 20, padding: 16, background: '#F0F7FF', border: '1px solid #B8D4E8', borderRadius: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#185FA5"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#185FA5', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                  {isFr ? 'Prix du vol (estimation)' : 'Flight Price (estimate)'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#185FA5', fontWeight: 700 }}>
+                    $850 – $1,400
+                  </div>
+                  <div style={{ fontSize: 12, color: '#5A7A95', marginTop: 2 }}>
+                    {isFr ? 'New York (JFK) → Dakar (DSS)' : 'New York (JFK) → Dakar (DSS)'}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 11, color: '#5A7A95' }}>
+                    {isFr ? 'Durée: 8-10h' : 'Duration: 8-10h'}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#8A8070', marginTop: 4, fontStyle: 'italic' }}>
+                    * {isFr ? 'Prix indicatifs, sujets à variation' : 'Indicative prices, subject to change'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Contact */}
