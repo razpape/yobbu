@@ -185,6 +185,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const isFr = lang === 'fr'
   const menuItems = [
     { key:'trips',         Icon: PlaneIcon,       label: t.menuTrips },
+    { key:'flights',       Icon: PlaneIcon,       label: isFr ? 'Vols' : 'Book Flights' },
     { key:'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Trust & Verification' },
     { key:'settings',      Icon: SettingsIcon,    label: t.menuSettings },
     { key:'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifications.length },
@@ -395,6 +396,115 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                   {t.postNew}
                 </button>
               )}
+            </div>
+          )}
+
+          {/* FLIGHTS */}
+          {section === 'flights' && (
+            <div style={s.section}>
+              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:20, color:'#1A1710', marginBottom:16 }}>
+                {lang === 'fr' ? 'Réserver un vol' : 'Book a Flight'}
+              </div>
+              
+              <div style={{ background:'#F0F7FF', border:'1px solid #B8D4E8', borderRadius:12, padding:16, marginBottom:20 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#185FA5"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#185FA5' }}>
+                    {lang === 'fr' ? 'Rechercher des vols' : 'Search for flights'}
+                  </span>
+                </div>
+                
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:12 }}>
+                  <div>
+                    <label style={{...s.lbl, color:'#5A7A95'}}>{lang === 'fr' ? 'Départ' : 'From'}</label>
+                    <select style={{...s.inp, marginBottom:0, borderColor:'#B8D4E8'}}>
+                      <option>New York (JFK)</option>
+                      <option>Atlanta (ATL)</option>
+                      <option>Paris (CDG)</option>
+                      <option>London (LHR)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{...s.lbl, color:'#5A7A95'}}>{lang === 'fr' ? 'Arrivée' : 'To'}</label>
+                    <select style={{...s.inp, marginBottom:0, borderColor:'#B8D4E8'}}>
+                      <option>Dakar (DSS)</option>
+                      <option>Conakry (CKY)</option>
+                      <option>Abidjan (ABJ)</option>
+                      <option>Accra (ACC)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div style={{ marginBottom:12 }}>
+                  <label style={{...s.lbl, color:'#5A7A95'}}>{lang === 'fr' ? 'Date' : 'Date'}</label>
+                  <input type="date" style={{...s.inp, marginBottom:0, borderColor:'#B8D4E8'}} />
+                </div>
+                
+                <a 
+                  href="https://www.google.com/travel/flights"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    display:'inline-flex', 
+                    alignItems:'center', 
+                    gap:6, 
+                    padding:'10px 16px', 
+                    background:'#185FA5', 
+                    color:'#fff', 
+                    borderRadius:8, 
+                    fontSize:13, 
+                    fontWeight:600, 
+                    textDecoration:'none'
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                  {lang === 'fr' ? 'Chercher sur Google Flights' : 'Search on Google Flights'}
+                </a>
+              </div>
+              
+              {/* Popular Routes */}
+              <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:12, textTransform:'uppercase', letterSpacing:'.06em' }}>
+                {lang === 'fr' ? 'Routes populaires' : 'Popular routes'}
+              </div>
+              
+              {[
+                { from: 'New York', to: 'Dakar', price: '$850 - $1,400', duration: '8-10h' },
+                { from: 'Paris', to: 'Dakar', price: '$400 - $900', duration: '5-6h' },
+                { from: 'Atlanta', to: 'Dakar', price: '$950 - $1,600', duration: '9-11h' },
+              ].map((route, i) => (
+                <a
+                  key={i}
+                  href={`https://www.google.com/travel/flights?q=Flights%20from%20${route.from}%20to%20${route.to}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    display:'flex', 
+                    alignItems:'center', 
+                    justifyContent:'space-between',
+                    padding:'12px 14px', 
+                    background:'#FDFBF7', 
+                    border:'1px solid rgba(0,0,0,.06)', 
+                    borderRadius:10, 
+                    marginBottom:8,
+                    textDecoration:'none',
+                    cursor:'pointer'
+                  }}
+                >
+                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <div style={{ width:32, height:32, borderRadius:8, background:'#FFF8EB', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <PlaneIcon size={14} color="#C8891C" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#1A1710' }}>{route.from} → {route.to}</div>
+                      <div style={{ fontSize:11, color:'#8A8070' }}>{route.duration}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign:'right' }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#C8891C' }}>{route.price}</div>
+                    <div style={{ fontSize:10, color:'#8A8070' }}>{lang === 'fr' ? 'Voir les vols' : 'View flights'}</div>
+                  </div>
+                </a>
+              ))}
             </div>
           )}
 
