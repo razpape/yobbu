@@ -28,8 +28,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
   const [user, setUser] = useState(null)
-  const [debugCode, setDebugCode] = useState('') // DEBUG: Remove in production
-
+  
   // Countdown timer for OTP resend
   useEffect(() => {
     if (countdown > 0) {
@@ -52,10 +51,17 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         body: JSON.stringify({ phone }),
       })
       
-      const data = await res.json()
+      const text = await res.text()
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch (e) {
+        console.error('Non-JSON response:', text.substring(0, 200))
+        throw new Error(isFr ? 'Erreur serveur. Réessayez.' : 'Server error. Please try again.')
+      }
       
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to send code')
+        throw new Error(data.error || (isFr ? 'Erreur lors de l\'envoi' : 'Failed to send code'))
       }
       
       // DEBUG: Store code for display (remove in production)
@@ -63,7 +69,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         setDebugCode(data.debugCode)
       }
       
-      setCountdown(30)
+      setCountdown(60)
       setStep(STEPS.OTP)
     } catch (err) {
       setError(err.message || (isFr ? 'Erreur lors de l\'envoi' : 'Error sending code'))
@@ -338,24 +344,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       {debugCode && (
         <div style={{ 
           marginTop: 16, 
-          padding: 12, 
-          background: '#F0F7FF', 
-          border: '1px dashed #185FA5',
-          borderRadius: 8,
-          color: '#185FA5',
-          fontSize: 14,
-          textAlign: 'center',
-          fontFamily: 'monospace',
-        }}>
-          <div style={{ fontSize: 11, marginBottom: 4, color: '#5A7A95' }}>
-            {isFr ? 'CODE DE DÉBOGAGE (TEST)' : 'DEBUG CODE (TESTING)'}
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>{debugCode}</div>
-        </div>
-      )}
-      
-      {error && (
-        <div style={{ 
+    
           marginTop: 16, 
           padding: 12, 
           background: '#FEF2F2', 
