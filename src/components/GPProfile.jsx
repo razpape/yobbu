@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ContactModal from './ContactModal'
 import TrustBadges from './TrustBadges'
 import { ShieldCheckIcon, LockIcon, PlaneIcon } from './Icons'
@@ -31,6 +31,8 @@ function Stars({ rating, size = 14 }) {
 
 export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const [showModal, setShowModal] = useState(false)
+  const [flightPrices, setFlightPrices] = useState(null)
+  const [priceLoading, setPriceLoading] = useState(false)
   const isFr = lang === 'fr'
 
   const fromCity = gp.from_city || gp.from || ''
@@ -40,6 +42,23 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const rating   = Number(gp.rating) || 5.0
   const initials = gp.initials || gp.name?.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || 'GP'
   const price    = formatPrice(gp.price)
+
+  // Fetch live flight prices
+  useEffect(() => {
+    if (!fromCity || !toCity) return
+    
+    setPriceLoading(true)
+    fetch(`/api/flight-prices?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}`)
+      .then(res => res.json())
+      .then(data => {
+        setFlightPrices(data)
+        setPriceLoading(false)
+      })
+      .catch(err => {
+        console.error('Flight price fetch error:', err)
+        setPriceLoading(false)
+      })
+  }, [fromCity, toCity])
 
   const sendWhatsApp = (message) => {
     const phone = gp.phone?.replace(/\D/g, '')
@@ -185,33 +204,58 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             ))}
           </div>
           
-          {/* Flight Price Info */}
-          {(fromCity === 'New York' && toCity === 'Dakar') && (
+          {/* Flight Price Info - Live */}
+          {fromCity && toCity && (
             <div style={{ marginTop: 20, padding: 16, background: '#F0F7FF', border: '1px solid #B8D4E8', borderRadius: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#185FA5"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#185FA5', textTransform: 'uppercase', letterSpacing: '.05em' }}>
-                  {isFr ? 'Prix du vol (estimation)' : 'Flight Price (estimate)'}
+                  {priceLoading ? (isFr ? 'Chargement des prix...' : 'Loading prices...') : 
+                   flightPrices?.source === 'live' ? (isFr ? 'Prix du vol (live)' : 'Flight Price (live)') :
+                   (isFr ? 'Prix du vol (estimation)' : 'Flight Price (estimate)')}
                 </span>
+                {flightPrices?.source === 'live' && (
+                  <span style={{ fontSize: 10, background: '#185FA5', color: '#fff', padding: '2px 6px', borderRadius: 10, marginLeft: 4 }}>
+                    LIVE
+                  </span>
+                )}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#185FA5', fontWeight: 700 }}>
-                    $850 – $1,400
+              
+              {priceLoading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 16, height: 16, border: '2px solid #B8D4E8', borderTop: '2px solid #185FA5', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                  <span style={{ fontSize: 13, color: '#5A7A95' }}>
+                    {isFr ? 'Recherche des meilleurs tarifs...' : 'Searching for best fares...'}
+                  </span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#185FA5', fontWeight: 700 }}>
+                      {flightPrices?.prices ? 
+                        `$${flightPrices.prices.low} – $${flightPrices.prices.high}` :
+                        '$850 – $1,400'
+                      }
+                    </div>
+                    <div style={{ fontSize: 12, color: '#5A7A95', marginTop: 2 }}>
+                      {fromCode} → {toCode}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 12, color: '#5A7A95', marginTop: 2 }}>
-                    {isFr ? 'New York (JFK) → Dakar (DSS)' : 'New York (JFK) → Dakar (DSS)'}
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, color: '#5A7A95' }}>
+                      {flightPrices?.prices?.duration || '8-10h'}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#8A8070', marginTop: 4, fontStyle: 'italic' }}>
+                      * {isFr ? 'Prix indicatifs, sujets à variation' : 'Indicative prices, subject to change'}
+                    </div>
+                    {flightPrices?.source === 'live' && (
+                      <div style={{ fontSize: 10, color: '#2D8B4E', marginTop: 2 }}>
+                        ✓ {isFr ? 'Mis à jour aujourd\'hui' : 'Updated today'}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 11, color: '#5A7A95' }}>
-                    {isFr ? 'Durée: 8-10h' : 'Duration: 8-10h'}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#8A8070', marginTop: 4, fontStyle: 'italic' }}>
-                    * {isFr ? 'Prix indicatifs, sujets à variation' : 'Indicative prices, subject to change'}
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>
