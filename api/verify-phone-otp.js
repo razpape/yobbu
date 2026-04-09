@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Same OTP store as send-phone-otp
+// OTP storage now in Supabase table 'otp_codes'
+// Keeping Map for fallback during transition
 const otpStore = new Map()
 
 export default async function handler(req, res) {
@@ -28,36 +30,79 @@ export default async function handler(req, res) {
   }
 
   try {
-    const key = `otp:${phone}`
-    const stored = otpStore.get(key)
+    console.log('Verify OTP request:', { phone, code, storeSize: otpStore.size })
+    
+    // Try to get OTP from Supabase first (serverless compatible)
+    let stored = null
+    let fromDb = false
+    
+    const { data: dbOtp, error: dbError } = await supabase
+      .from('otp_codes')
+      .select('*')
+      .eq('phone', phone)
+      .single()
+    
+    if (!dbError && dbOtp) {
+      stored = {
+        code: dbOtp.code,
+        expiresAt: new Date(dbOtp.expires_at).getTime(),
+        attempts: dbOtp.attempts || 0
+      }
+      fromDb = true
+      console.log('Found OTP in database')
+    } else {
+      // Fallback to memory store
+      const key = `otp:${phone}`
+      stored = otpStore.get(key)
+      console.log('Stored OTP from memory:', stored ? 'found' : 'NOT FOUND')
+    }
 
     // Check if OTP exists and not expired
     if (!stored) {
+      console.log('OTP not found for phone:', phone)
       return res.status(400).json({ error: 'Code expired. Please request a new one.' })
     }
 
     if (stored.expiresAt < Date.now()) {
-      otpStore.delete(key)
+      if (!fromDb) {
+        const key = `otp:${phone}`
+        otpStore.delete(key)
+      }
       return res.status(400).json({ error: 'Code expired. Please request a new one.' })
     }
 
     // Check attempts
     if (stored.attempts >= 5) {
-      otpStore.delete(key)
-      return res.status(400). json({ error: 'Too many attempts. Please request a new code.' })
+      if (!fromDb) {
+        const key = `otp:${phone}`
+        otpStore.delete(key)
+      }
+      return res.status(400).json({ error: 'Too many attempts. Please request a new code.' })
     }
 
     // Verify code
     if (stored.code !== code) {
       stored.attempts++
+      // Update attempts in database if using DB
+      if (fromDb) {
+        await supabase.from('otp_codes').update({ attempts: stored.attempts }).eq('phone', phone)
+      } else {
+        const key = `otp:${phone}`
+        otpStore.set(key, stored)
+      }
       const remaining = 5 - stored.attempts
       return res.status(400).json({ 
         error: `Invalid code. ${remaining} attempts remaining.` 
       })
     }
 
-    // OTP verified - delete it
-    otpStore.delete(key)
+    // OTP verified - delete it from memory/DB
+    if (fromDb) {
+      await supabase.from('otp_codes').delete().eq('phone', phone)
+    } else {
+      const key = `otp:${phone}`
+      otpStore.delete(key)
+    }
 
     // Check if user exists
     let { data: user, error: userError } = await supabase

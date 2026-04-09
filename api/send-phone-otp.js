@@ -9,7 +9,8 @@ const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
-// Simple in-memory OTP store (use Redis in production)
+// OTP stored in Supabase table 'otp_codes' for serverless compatibility
+// Old Map kept for fallback during transition
 const otpStore = new Map()
 
 export default async function handler(req, res) {
@@ -32,30 +33,35 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Rate limiting - check last send time
-    const key = `otp:${phone}`
-    const lastSent = otpStore.get(`${key}:time`)
-    if (lastSent && Date.now() - lastSent < 60000) {
-      return res.status(429).json({ 
-        error: 'Please wait 1 minute before requesting another code',
-        retryAfter: Math.ceil((60000 - (Date.now() - lastSent)) / 1000)
-      })
+    // Rate limiting - check last send time in Supabase
+    const { data: existingOtp, error: checkError } = await supabase
+      .from('otp_codes')
+      .select('created_at')
+      .eq('phone', phone)
+      .single()
+    
+    if (!checkError && existingOtp) {
+      const lastSent = new Date(existingOtp.created_at).getTime()
+      if (Date.now() - lastSent < 60000) {
+        return res.status(429).json({ 
+          error: 'Please wait 1 minute before requesting another code',
+          retryAfter: Math.ceil((60000 - (Date.now() - lastSent)) / 1000)
+        })
+      }
     }
 
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
     
-    // Store OTP with 10-minute expiry
-    const expiresAt = Date.now() + 10 * 60 * 1000
-    otpStore.set(key, { code: otp, expiresAt, attempts: 0 })
-    otpStore.set(`${key}:time`, Date.now())
-
-    // Clean up expired entries (simple cleanup)
-    for (const [k, v] of otpStore.entries()) {
-      if (v.expiresAt && v.expiresAt < Date.now()) {
-        otpStore.delete(k)
-      }
-    }
+    // Store OTP in Supabase (for serverless compatibility)
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
+    await supabase.from('otp_codes').upsert({
+      phone: phone,
+      code: otp,
+      expires_at: expiresAt,
+      attempts: 0,
+      created_at: new Date().toISOString()
+    }, { onConflict: 'phone' })
 
     // Send SMS via Twilio if credentials exist
     console.log('Twilio check:', { 
@@ -108,7 +114,7 @@ export default async function handler(req, res) {
       success: true,
       message: 'OTP sent successfully',
       isNewUser: !existingUser,
-      debugCode: otp, // DEBUG: Remove in production
+     // DEBUG: Remove in production
     })
 
   } catch (err) {
