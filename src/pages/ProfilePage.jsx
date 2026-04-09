@@ -6,6 +6,7 @@ import WhatsAppInboundVerification from '../components/WhatsAppInboundVerificati
 import TrustBadges from '../components/TrustBadges'
 import IDVerificationUpload from '../components/IDVerificationUpload'
 import SocialProfileLinks from '../components/SocialProfileLinks'
+import ProfitCalculator from '../components/ProfitCalculator'
 
 const FLIGHTS = [
   { route: 'New York → Dakar',   detail: { en: 'Air Senegal · 7h direct',    fr: 'Air Sénégal · 7h direct' },    time: { en: '2h ago',  fr: 'il y a 2h' } },
@@ -461,6 +462,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                   {lang === 'fr' ? 'Chercher sur Google Flights' : 'Search on Google Flights'}
                 </a>
               </div>
+
+              {/* Profit Calculator */}
+              <ProfitCalculator lang={lang} />
               
               {/* Popular Routes */}
               <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:12, textTransform:'uppercase', letterSpacing:'.06em' }}>
