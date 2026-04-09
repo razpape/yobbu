@@ -192,186 +192,341 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
 
   // Render steps
   const renderWelcome = () => (
-    <div style={{ textAlign: 'center', padding: '40px 24px' }}>
-      <div style={{ fontSize: 64, marginBottom: 24 }}>📦✈️</div>
-      <h1 style={{ fontSize: 28, fontWeight: 700, color: '#1A1710', marginBottom: 12 }}>
-        {isFr ? 'Yobbu' : 'Yobbu'}
+    <div style={{ 
+      textAlign: 'center', 
+      padding: '60px 32px 40px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    }}>
+      {/* Logo/Icon */}
+      <div style={{ 
+        width: 100, 
+        height: 100, 
+        background: 'linear-gradient(135deg, #C8891C 0%, #A07015 100%)',
+        borderRadius: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '0 auto 32px',
+        boxShadow: '0 8px 30px rgba(200, 137, 28, 0.3)',
+      }}>
+        <span style={{ fontSize: 48 }}>📦</span>
+      </div>
+      
+      <h1 style={{ 
+        fontSize: 32, 
+        fontWeight: 800, 
+        color: '#1A1710', 
+        marginBottom: 16,
+        letterSpacing: '-0.5px',
+      }}>
+        Yobbu
       </h1>
-      <p style={{ fontSize: 16, color: '#6B6860', marginBottom: 40, lineHeight: 1.6 }}>
+      
+      <p style={{ 
+        fontSize: 17, 
+        color: '#6B6860', 
+        marginBottom: 48, 
+        lineHeight: 1.6,
+        maxWidth: 320,
+        margin: '0 auto 48px',
+      }}>
         {isFr 
           ? 'Envoyez des colis avec des voyageurs qui vont dans votre direction'
-          : 'Send packages with travelers going your way'}
+          : 'Send packages with travelers going your way. Fast, secure, and affordable.'}
       </p>
       
+      {/* Primary CTA */}
       <button
         onClick={() => setStep(STEPS.PHONE)}
         style={{
           width: '100%',
-          padding: '16px 24px',
+          padding: '18px 24px',
           background: '#C8891C',
           color: '#fff',
           border: 'none',
-          borderRadius: 14,
+          borderRadius: 16,
           fontSize: 17,
           fontWeight: 600,
           cursor: 'pointer',
-          marginBottom: 12,
+          marginBottom: 16,
+          boxShadow: '0 4px 20px rgba(200, 137, 28, 0.3)',
+          transition: 'transform 0.2s, box-shadow 0.2s',
         }}
       >
         {isFr ? 'Continuer avec le téléphone' : 'Continue with Phone'}
       </button>
       
+      {/* Secondary CTA */}
       <button
         onClick={() => onComplete?.(null, 'browse')}
         style={{
           width: '100%',
-          padding: '14px 24px',
+          padding: '16px 24px',
           background: 'transparent',
-          color: '#8A8070',
+          color: '#6B6860',
           border: '2px solid #E8DDD0',
-          borderRadius: 14,
-          fontSize: 15,
+          borderRadius: 16,
+          fontSize: 16,
           fontWeight: 500,
           cursor: 'pointer',
+          marginBottom: 32,
         }}
       >
         {isFr ? 'Parcourir d\'abord' : 'Browse First'}
       </button>
       
-      <p style={{ marginTop: 24, fontSize: 13, color: '#8A8070' }}>
-        {isFr ? 'Déjà un compte ? ' : 'Already have an account? '}
-        <button 
-          onClick={() => setStep(STEPS.PHONE)}
-          style={{ color: '#C8891C', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-        >
-          {isFr ? 'Se connecter' : 'Log In'}
-        </button>
-      </p>
+      {/* Footer */}
+      <div style={{ marginTop: 'auto', paddingTop: 24 }}>
+        <p style={{ fontSize: 14, color: '#8A8070' }}>
+          {isFr ? 'Déjà un compte ? ' : 'Already have an account? '}
+          <button 
+            onClick={() => setStep(STEPS.PHONE)}
+            style={{ 
+              color: '#C8891C', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer', 
+              fontWeight: 600,
+              fontSize: 14,
+            }}
+          >
+            {isFr ? 'Se connecter' : 'Log In'}
+          </button>
+        </p>
+        
+        <p style={{ marginTop: 16, fontSize: 12, color: '#A8A095', maxWidth: 280, margin: '16px auto 0' }}>
+          {isFr 
+            ? 'En continuant, vous acceptez nos Conditions et notre Politique de confidentialité'
+            : 'By continuing, you agree to our Terms and Privacy Policy'}
+        </p>
+      </div>
     </div>
   )
 
   const renderPhone = () => (
-    <div style={{ padding: '24px' }}>
-      <button 
-        onClick={() => setStep(STEPS.WELCOME)}
-        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginBottom: 24 }}
-      >
-        ←
-      </button>
+    <div style={{ 
+      padding: '40px 32px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Header with back button */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
+        <button 
+          onClick={() => setStep(STEPS.WELCOME)}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            fontSize: 20, 
+            cursor: 'pointer',
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            color: '#1A1710',
+            transition: 'background 0.2s',
+          }}
+        >
+          ←
+        </button>
+      </div>
       
-      <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 8 }}>
+      {/* Title */}
+      <h2 style={{ 
+        fontSize: 28, 
+        fontWeight: 700, 
+        color: '#1A1710', 
+        marginBottom: 12,
+      }}>
         {isFr ? 'Quel est votre numéro ?' : 'What\'s your number?'}
       </h2>
-      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 32 }}>
-        {isFr ? 'Nous vous enverrons un code de vérification.' : 'We\'ll send you a verification code.'}
+      <p style={{ 
+        fontSize: 15, 
+        color: '#6B6860', 
+        marginBottom: 40,
+        lineHeight: 1.5,
+      }}>
+        {isFr ? 'Nous vous enverrons un code de vérification par SMS.' : 'We\'ll send you a verification code via SMS.'}
       </p>
       
-      <PhoneInput
-        value={phone}
-        onChange={setPhone}
-        onValid={setPhoneValid}
-        lang={lang}
-      />
+      {/* Phone Input */}
+      <div style={{ marginBottom: 24 }}>
+        <PhoneInput
+          value={phone}
+          onChange={setPhone}
+          onValid={setPhoneValid}
+          lang={lang}
+        />
+      </div>
       
       {error && (
         <div style={{ 
-          marginTop: 16, 
-          padding: 12, 
+          marginBottom: 16, 
+          padding: 14, 
           background: '#FEF2F2', 
-          borderRadius: 8,
+          borderRadius: 12,
+          border: '1px solid #FECACA',
           color: '#DC2626',
           fontSize: 14,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
         }}>
+          <span>⚠️</span>
           {error}
         </div>
       )}
       
-      <button
-        onClick={handlePhoneSubmit}
-        disabled={!phoneValid || loading}
-        style={{
-          width: '100%',
-          marginTop: 24,
-          padding: '16px 24px',
-          background: phoneValid && !loading ? '#C8891C' : '#E8DDD0',
-          color: phoneValid && !loading ? '#fff' : '#8A8070',
-          border: 'none',
-          borderRadius: 14,
-          fontSize: 17,
-          fontWeight: 600,
-          cursor: phoneValid && !loading ? 'pointer' : 'not-allowed',
-        }}
-      >
-        {loading 
-          ? (isFr ? 'Envoi...' : 'Sending...')
-          : (isFr ? 'Continuer' : 'Continue')
-        }
-      </button>
-      
-      <p style={{ marginTop: 24, fontSize: 12, color: '#8A8070', textAlign: 'center' }}>
-        {isFr 
-          ? 'En continuant, vous acceptez nos Conditions et notre Politique de confidentialité'
-          : 'By continuing, you agree to our Terms and Privacy Policy'}
-      </p>
+      {/* Continue Button - Fixed at bottom */}
+      <div style={{ marginTop: 'auto', paddingTop: 24 }}>
+        <button
+          onClick={handlePhoneSubmit}
+          disabled={!phoneValid || loading}
+          style={{
+            width: '100%',
+            padding: '18px 24px',
+            background: phoneValid && !loading ? '#C8891C' : '#E8DDD0',
+            color: phoneValid && !loading ? '#fff' : '#8A8070',
+            border: 'none',
+            borderRadius: 16,
+            fontSize: 17,
+            fontWeight: 600,
+            cursor: phoneValid && !loading ? 'pointer' : 'not-allowed',
+            boxShadow: phoneValid && !loading ? '0 4px 20px rgba(200, 137, 28, 0.3)' : 'none',
+            transition: 'all 0.2s',
+          }}
+        >
+          {loading 
+            ? (isFr ? 'Envoi en cours...' : 'Sending...')
+            : (isFr ? 'Continuer' : 'Continue')
+          }
+        </button>
+        
+        <p style={{ marginTop: 20, fontSize: 12, color: '#A8A095', textAlign: 'center' }}>
+          {isFr 
+            ? 'En continuant, vous acceptez nos Conditions'
+            : 'By continuing, you agree to our Terms'}
+        </p>
+      </div>
     </div>
   )
 
   const renderOtp = () => (
-    <div style={{ padding: '24px' }}>
-      <button 
-        onClick={() => setStep(STEPS.PHONE)}
-        style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', marginBottom: 24 }}
-      >
-        ←
-      </button>
+    <div style={{ 
+      padding: '40px 32px',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
+        <button 
+          onClick={() => setStep(STEPS.PHONE)}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            fontSize: 20, 
+            cursor: 'pointer',
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            color: '#1A1710',
+          }}
+        >
+          ←
+        </button>
+      </div>
       
-      <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 8 }}>
-        {isFr ? 'Entrez le code' : 'Enter the code'}
-      </h2>
-      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 32 }}>
-        {isFr 
-          ? `Envoyé à ${phone}` 
-          : `Sent to ${phone}`}
-      </p>
+      {/* Title */}
+      <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div style={{ 
+          width: 64, 
+          height: 64, 
+          background: 'linear-gradient(135deg, #C8891C20 0%, #C8891C10 100%)',
+          borderRadius: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 24px',
+        }}>
+          <span style={{ fontSize: 32 }}>📱</span>
+        </div>
+        
+        <h2 style={{ 
+          fontSize: 26, 
+          fontWeight: 700, 
+          color: '#1A1710', 
+          marginBottom: 12,
+        }}>
+          {isFr ? 'Entrez le code' : 'Enter the code'}
+        </h2>
+        <p style={{ fontSize: 15, color: '#6B6860', marginBottom: 8 }}>
+          {isFr 
+            ? `Code envoyé à ${phone}` 
+            : `Code sent to ${phone}`}
+        </p>
+      </div>
       
-      <OTPInput
-        length={6}
-        onComplete={handleOtpComplete}
-        onChange={setOtpCode}
-        lang={lang}
-      />
+      {/* OTP Input */}
+      <div style={{ marginBottom: 32 }}>
+        <OTPInput
+          length={6}
+          onComplete={handleOtpComplete}
+          onChange={setOtpCode}
+          lang={lang}
+        />
+      </div>
       
       {/* DEBUG: Show code for testing (remove in production) */}
       {debugCode && (
         <div style={{ 
-          marginTop: 16, 
-          padding: 12, 
-          background: '#F0F7FF', 
-          border: '1px dashed #185FA5',
-          borderRadius: 8,
-          color: '#185FA5',
-          fontSize: 14,
+          marginBottom: 24, 
+          padding: 16, 
+          background: 'linear-gradient(135deg, #F0F7FF 0%, #E8F4FD 100%)', 
+          border: '2px dashed #185FA5',
+          borderRadius: 12,
           textAlign: 'center',
-          fontFamily: 'monospace',
         }}>
-          <div style={{ fontSize: 11, marginBottom: 4, color: '#5A7A95' }}>
-            {isFr ? 'CODE DE DÉBOGAGE (TEST)' : 'DEBUG CODE (TESTING)'}
+          <div style={{ fontSize: 11, marginBottom: 8, color: '#5A7A95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
+            {isFr ? 'Code de débogage (test)' : 'Debug Code (Testing)'}
           </div>
-          <div style={{ fontSize: 20, fontWeight: 700 }}>{debugCode}</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#185FA5', fontFamily: 'monospace', letterSpacing: 4 }}>{debugCode}</div>
         </div>
       )}
       
+      {/* Loading */}
       {loading && (
-        <div style={{ marginTop: 24, textAlign: 'center', color: '#8A8070' }}>
-          {isFr ? 'Vérification...' : 'Verifying...'}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ 
+            width: 24, 
+            height: 24, 
+            border: '3px solid #E8DDD0', 
+            borderTopColor: '#C8891C',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 12px',
+          }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <p style={{ color: '#6B6860', fontSize: 14 }}>
+            {isFr ? 'Vérification en cours...' : 'Verifying...'}
+          </p>
         </div>
       )}
       
-      <div style={{ marginTop: 32, textAlign: 'center' }}>
+      {/* Resend / Change Number */}
+      <div style={{ marginTop: 'auto', textAlign: 'center', paddingTop: 24 }}>
         {countdown > 0 ? (
-          <span style={{ color: '#8A8070', fontSize: 14 }}>
-            {isFr ? 'Renvoyer dans' : 'Resend in'} {countdown}s
-          </span>
+          <p style={{ color: '#8A8070', fontSize: 14 }}>
+            {isFr ? 'Renvoyer dans' : 'Resend in'} <span style={{ fontWeight: 600, color: '#C8891C' }}>{countdown}s</span>
+          </p>
         ) : (
           <button
             onClick={handlePhoneSubmit}
@@ -380,27 +535,29 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
               border: 'none', 
               color: '#C8891C', 
               fontWeight: 600,
-              fontSize: 14,
+              fontSize: 15,
               cursor: 'pointer',
+              padding: '8px 16px',
             }}
           >
             {isFr ? 'Renvoyer le code' : 'Resend code'}
           </button>
         )}
-        <br />
-        <button
-          onClick={() => setStep(STEPS.PHONE)}
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: '#8A8070', 
-            fontSize: 13,
-            cursor: 'pointer',
-            marginTop: 12,
-          }}
-        >
-          {isFr ? 'Changer de numéro' : 'Change number'}
-        </button>
+        
+        <div style={{ marginTop: 16 }}>
+          <button
+            onClick={() => setStep(STEPS.PHONE)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: '#8A8070', 
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
+          >
+            {isFr ? 'Changer de numéro' : 'Change number'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -660,23 +817,55 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
     }
   }
 
+  // Responsive styles
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#F7F5F0',
+      background: 'linear-gradient(135deg, #C8891C 0%, #1A1710 100%)',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: step === STEPS.WELCOME ? 'center' : 'flex-start',
+      alignItems: 'center',
+      padding: isMobile ? 0 : '40px 20px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     }}>
       <div style={{
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 480,
         background: '#fff',
-        minHeight: step === STEPS.WELCOME ? 'auto' : '100vh',
-        borderRadius: step === STEPS.WELCOME ? 20 : 0,
-        boxShadow: step === STEPS.WELCOME ? '0 20px 60px rgba(0,0,0,0.15)' : 'none',
-        overflow: 'hidden',
+        minHeight: isMobile ? '100vh' : 'auto',
+        maxHeight: isMobile ? '100vh' : '90vh',
+        borderRadius: isMobile ? 0 : 24,
+        boxShadow: isMobile ? 'none' : '0 25px 80px rgba(0,0,0,0.3)',
+        overflow: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
       }}>
+        {/* Progress bar */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          background: '#E8DDD0',
+          zIndex: 10,
+        }}>
+          <div style={{
+            height: '100%',
+            background: '#C8891C',
+            width: step === STEPS.WELCOME ? '15%' : 
+                   step === STEPS.PHONE ? '30%' :
+                   step === STEPS.OTP ? '45%' :
+                   step === STEPS.PIN_CREATE ? '60%' :
+                   step === STEPS.PIN_CONFIRM ? '75%' :
+                   step === STEPS.PROFILE ? '85%' : '100%',
+            transition: 'width 0.3s ease',
+          }} />
+        </div>
+        
         {renderStep()}
       </div>
     </div>
