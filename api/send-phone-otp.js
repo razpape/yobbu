@@ -1,9 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
-import crypto from 'crypto'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Twilio credentials
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
 // Simple in-memory OTP store (use Redis in production)
 const otpStore = new Map()
@@ -53,9 +57,34 @@ export default async function handler(req, res) {
       }
     }
 
-    // TODO: Send actual SMS via Twilio or other provider
-    // For now, return OTP in development mode
-    console.log(`OTP for ${phone}: ${otp}`)
+    // Send SMS via Twilio if credentials exist
+    if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
+      try {
+        const twilioResponse = await fetch(
+          `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              From: twilioPhoneNumber,
+              To: phone,
+              Body: `Your Yobbu verification code: ${otp}. Valid for 10 minutes.`,
+            }),
+          }
+        )
+        
+        if (!twilioResponse.ok) {
+          console.error('Twilio error:', await twilioResponse.text())
+        }
+      } catch (smsError) {
+        console.error('SMS send failed:', smsError)
+      }
+    } else {
+      console.log(`[DEV] OTP for ${phone}: ${otp}`)
+    }
 
     // Check if user exists
     const { data: existingUser } = await supabase
@@ -67,8 +96,6 @@ export default async function handler(req, res) {
     res.status(200).json({
       success: true,
       message: 'OTP sent successfully',
-      // Only return OTP in development!
-      ...(process.env.NODE_ENV === 'development' && { otp }),
       isNewUser: !existingUser,
     })
 
