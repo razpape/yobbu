@@ -58,8 +58,16 @@ export default async function handler(req, res) {
     }
 
     // Send SMS via Twilio if credentials exist
+    console.log('Twilio check:', { 
+      hasSid: !!twilioAccountSid, 
+      hasToken: !!twilioAuthToken, 
+      hasNumber: !!twilioPhoneNumber,
+      sidPrefix: twilioAccountSid?.substring(0, 10) 
+    })
+    
     if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
       try {
+        console.log('Sending SMS to:', phone)
         const twilioResponse = await fetch(
           `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
           {
@@ -76,8 +84,11 @@ export default async function handler(req, res) {
           }
         )
         
+        const twilioData = await twilioResponse.text()
+        console.log('Twilio response:', twilioResponse.status, twilioData)
+        
         if (!twilioResponse.ok) {
-          console.error('Twilio error:', await twilioResponse.text())
+          console.error('Twilio error:', twilioData)
         }
       } catch (smsError) {
         console.error('SMS send failed:', smsError)
