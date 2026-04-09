@@ -178,7 +178,7 @@ export default async function handler(req, res) {
     })
 
   } catch (err) {
-    console.error('Verify OTP error:', err)
-    res.status(500).json({ error: 'Verification failed' })
+    console.error('Verify OTP error:', err.message, err.stack)
+    res.status(500).json({ error: 'Verification failed: ' + err.message })
   }
 }
