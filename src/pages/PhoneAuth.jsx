@@ -5,6 +5,102 @@ import PhoneInput from '../components/auth/PhoneInput'
 import OTPInput from '../components/auth/OTPInput'
 import PINInput from '../components/auth/PINInput'
 
+function ProfileStep({ isFr, onComplete }) {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [role, setRole] = useState('')
+
+  return (
+    <div style={{ padding: '24px' }}>
+      <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 8 }}>
+        {isFr ? 'Complétez votre profil' : 'Complete your profile'}
+      </h2>
+      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 32 }}>
+        {isFr ? 'Comment devrions-nous vous appeler ?' : 'What should we call you?'}
+      </p>
+
+      <div style={{ marginBottom: 20 }}>
+        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 8 }}>
+          {isFr ? 'Prénom' : 'First Name'}
+        </label>
+        <input
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder={isFr ? 'Votre prénom' : 'Your first name'}
+          style={{ width: '100%', padding: '14px 16px', border: '2px solid #E8DDD0', borderRadius: 12, fontSize: 16, outline: 'none', boxSizing: 'border-box' }}
+        />
+      </div>
+
+      <div style={{ marginBottom: 24 }}>
+        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 8 }}>
+          {isFr ? 'Nom (optionnel)' : 'Last Name (optional)'}
+        </label>
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder={isFr ? 'Votre nom' : 'Your last name'}
+          style={{ width: '100%', padding: '14px 16px', border: '2px solid #E8DDD0', borderRadius: 12, fontSize: 16, outline: 'none', boxSizing: 'border-box' }}
+        />
+      </div>
+
+      <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 12 }}>
+        {isFr ? 'Je veux :' : 'I want to:'}
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
+        {[
+          { id: 'sender',   label: isFr ? 'Envoyer des colis'        : 'Send packages' },
+          { id: 'traveler', label: isFr ? 'Voyager avec des colis'    : 'Travel with packages' },
+          { id: 'both',     label: isFr ? 'Les deux'                  : 'Both' },
+        ].map((option) => (
+          <label
+            key={option.id}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '14px 16px',
+              border: `2px solid ${role === option.id ? '#C8891C' : '#E8DDD0'}`,
+              borderRadius: 12,
+              background: role === option.id ? '#FDF0E8' : '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            <input
+              type="radio" name="role" value={option.id}
+              checked={role === option.id}
+              onChange={() => setRole(option.id)}
+              style={{ width: 20, height: 20, accentColor: '#C8891C' }}
+            />
+            <span style={{ fontSize: 15, color: '#1A1710' }}>{option.label}</span>
+          </label>
+        ))}
+      </div>
+
+      <button
+        onClick={() => onComplete({ firstName, lastName, role })}
+        disabled={!firstName || !role}
+        style={{
+          width: '100%', padding: '16px 24px',
+          background: firstName && role ? '#C8891C' : '#E8DDD0',
+          color: firstName && role ? '#fff' : '#8A8070',
+          border: 'none', borderRadius: 14, fontSize: 17, fontWeight: 600,
+          cursor: firstName && role ? 'pointer' : 'not-allowed',
+        }}
+      >
+        {isFr ? 'Continuer' : 'Continue'}
+      </button>
+
+      <button
+        onClick={() => onComplete({ firstName, lastName, role: 'both' })}
+        style={{ width: '100%', marginTop: 12, padding: '12px', background: 'transparent', color: '#8A8070', border: 'none', fontSize: 14, cursor: 'pointer' }}
+      >
+        {isFr ? "Passer pour l'instant" : 'Skip for now'}
+      </button>
+    </div>
+  )
+}
+
 const STEPS = {
   WELCOME: 'welcome',
   PHONE: 'phone',
@@ -29,8 +125,6 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
   const [user, setUser] = useState(null)
-  const [debugCode, setDebugCode] = useState('') // DEBUG: Remove in production
-  
   // Countdown timer for OTP resend
   useEffect(() => {
     if (countdown > 0) {
@@ -66,11 +160,6 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         throw new Error(data.error || (isFr ? 'Erreur lors de l\'envoi' : 'Failed to send code'))
       }
       
-      // DEBUG: Store code for display (remove in production)
-      if (data.debugCode) {
-        setDebugCode(data.debugCode)
-      }
-      
       setCountdown(60)
       setStep(STEPS.OTP)
     } catch (err) {
@@ -92,12 +181,27 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         body: JSON.stringify({ phone, code }),
       })
       
-      const data = await res.json()
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Invalid code')
+      const text = await res.text()
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch (e) {
+        console.error('Non-JSON response:', text.substring(0, 200))
+        throw new Error(isFr ? 'Erreur serveur. Réessayez.' : 'Server error. Please try again.')
       }
-      
+
+      if (!res.ok) {
+        throw new Error(data.error || (isFr ? 'Code incorrect' : 'Invalid code'))
+      }
+
+      // Set the Supabase session so the user is logged in
+      if (data.session) {
+        await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        })
+      }
+
       // Check if new or existing user
       if (data.isNewUser) {
         setUser(data.user)
@@ -484,23 +588,6 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         />
       </div>
       
-      {/* DEBUG: Show code for testing (remove in production) */}
-      {debugCode && (
-        <div style={{ 
-          marginBottom: 24, 
-          padding: 16, 
-          background: 'linear-gradient(135deg, #F0F7FF 0%, #E8F4FD 100%)', 
-          border: '2px dashed #185FA5',
-          borderRadius: 12,
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 11, marginBottom: 8, color: '#5A7A95', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {isFr ? 'Code de débogage (test)' : 'Debug Code (Testing)'}
-          </div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#185FA5', fontFamily: 'monospace', letterSpacing: 4 }}>{debugCode}</div>
-        </div>
-      )}
-      
       {/* Loading */}
       {loading && (
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -602,132 +689,9 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
     </div>
   )
 
-  const renderProfile = () => {
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [role, setRole] = useState('')
-    
-    return (
-      <div style={{ padding: '24px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 8 }}>
-          {isFr ? 'Complétez votre profil' : 'Complete your profile'}
-        </h2>
-        <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 32 }}>
-          {isFr ? 'Comment devrions-nous vous appeler ?' : 'What should we call you?'}
-        </p>
-        
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 8 }}>
-            {isFr ? 'Prénom' : 'First Name'}
-          </label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder={isFr ? 'Votre prénom' : 'Your first name'}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #E8DDD0',
-              borderRadius: 12,
-              fontSize: 16,
-              outline: 'none',
-            }}
-          />
-        </div>
-        
-        <div style={{ marginBottom: 24 }}>
-          <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 8 }}>
-            {isFr ? 'Nom (optionnel)' : 'Last Name (optional)'}
-          </label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder={isFr ? 'Votre nom' : 'Your last name'}
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #E8DDD0',
-              borderRadius: 12,
-              fontSize: 16,
-              outline: 'none',
-            }}
-          />
-        </div>
-        
-        <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 12 }}>
-          {isFr ? 'Je veux :' : 'I want to:'}
-        </p>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
-          {[
-            { id: 'sender', label: isFr ? 'Envoyer des colis' : 'Send packages' },
-            { id: 'traveler', label: isFr ? 'Voyager avec des colis' : 'Travel with packages' },
-            { id: 'both', label: isFr ? 'Les deux' : 'Both' },
-          ].map((option) => (
-            <label
-              key={option.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '14px 16px',
-                border: `2px solid ${role === option.id ? '#C8891C' : '#E8DDD0'}`,
-                borderRadius: 12,
-                background: role === option.id ? '#FDF0E8' : '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              <input
-                type="radio"
-                name="role"
-                value={option.id}
-                checked={role === option.id}
-                onChange={() => setRole(option.id)}
-                style={{ width: 20, height: 20, accentColor: '#C8891C' }}
-              />
-              <span style={{ fontSize: 15, color: '#1A1710' }}>{option.label}</span>
-            </label>
-          ))}
-        </div>
-        
-        <button
-          onClick={() => handleProfileComplete({ firstName, lastName, role })}
-          disabled={!firstName || !role}
-          style={{
-            width: '100%',
-            padding: '16px 24px',
-            background: firstName && role ? '#C8891C' : '#E8DDD0',
-            color: firstName && role ? '#fff' : '#8A8070',
-            border: 'none',
-            borderRadius: 14,
-            fontSize: 17,
-            fontWeight: 600,
-            cursor: firstName && role ? 'pointer' : 'not-allowed',
-          }}
-        >
-          {isFr ? 'Continuer' : 'Continue'}
-        </button>
-        
-        <button
-          onClick={() => handleProfileComplete({ firstName, lastName, role: 'both' })}
-          style={{
-            width: '100%',
-            marginTop: 12,
-            padding: '12px',
-            background: 'transparent',
-            color: '#8A8070',
-            border: 'none',
-            fontSize: 14,
-            cursor: 'pointer',
-          }}
-        >
-          {isFr ? 'Passer pour l\'instant' : 'Skip for now'}
-        </button>
-      </div>
-    )
-  }
+  const renderProfile = () => (
+    <ProfileStep isFr={isFr} onComplete={handleProfileComplete} />
+  )
 
   const renderBiometric = () => (
     <div style={{ padding: '40px 24px', textAlign: 'center' }}>

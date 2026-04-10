@@ -109,7 +109,7 @@ export default function App() {
         gp={selectedGp}
         lang={lang}
         user={user}
-        onLoginRequired={() => setShowAuth(true)}
+        onLoginRequired={() => setView('phone-auth')}
         onBack={() => setView('browse')}
       />
     )

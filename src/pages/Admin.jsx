@@ -3,7 +3,7 @@ import AdminLogin from './AdminLogin'
 import AdminPanel from './AdminPanel'
 import { supabase } from '../lib/supabase'
 
-const ADMIN_EMAIL = 'papamamadous@outlook.com'
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL
 
 export default function Admin() {
   const [user, setUser] = useState(null)

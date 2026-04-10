@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import FacebookGPPosts from '../components/FacebookGPPosts'
 import FacebookGPExtractor from '../components/FacebookGPExtractor'
 
-const ADMIN_EMAIL = 'papamamadous@outlook.com'
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL
 
 const BAD_WORDS = ['scam','fraud','fake','spam','sex','porn','nude','drugs','weapon','hack','cheat','steal','robbery','violence']
 
