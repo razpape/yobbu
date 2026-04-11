@@ -1,6 +1,73 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { LockIcon, CheckCircleIcon } from './Icons'
+
+const AREAS = {
+  'New York':      ['Bronx', 'Brooklyn', 'Queens', 'Manhattan', 'Harlem', 'Staten Island', 'Yonkers', 'Jamaica', 'Flushing', 'Flatbush', 'Crown Heights', 'Canarsie', 'East New York', 'Bedford-Stuyvesant'],
+  'Paris':         ['Paris 1er', 'Paris 10e', 'Paris 18e', 'Paris 19e', 'Paris 20e', 'Saint-Denis', 'Aubervilliers', 'Montreuil', 'Bobigny', 'Évry', 'Créteil', 'Vitry-sur-Seine', 'Colombes'],
+  'Washington DC': ['DC', 'Silver Spring', 'Hyattsville', 'Takoma Park', 'Suitland', 'Bladensburg', 'Capitol Heights', 'Maryland', 'Virginia', 'Alexandria'],
+  'Atlanta':       ['Atlanta', 'Decatur', 'Stone Mountain', 'Clarkston', 'College Park', 'East Point', 'Forest Park', 'Norcross', 'Smyrna'],
+  'Houston':       ['Houston', 'Stafford', 'Missouri City', 'Pearland', 'Sugar Land', 'Alief', 'Katy', 'Humble', 'Friendswood'],
+  'London':        ['London', 'Peckham', 'Brixton', 'Hackney', 'Lewisham', 'Woolwich', 'Tottenham', 'Walthamstow', 'Stratford', 'Barking'],
+  'Montreal':      ['Montréal', 'Laval', 'Côte-des-Neiges', 'Saint-Michel', 'Montréal-Nord', 'LaSalle', 'Longueuil', 'Brossard'],
+  'Brussels':      ['Bruxelles', 'Molenbeek', 'Anderlecht', 'Schaerbeek', 'Etterbeek', 'Ixelles', 'Forest', 'Laeken'],
+  'Madrid':        ['Madrid', 'Lavapiés', 'Tetuán', 'Vallecas', 'Alcorcón', 'Leganés', 'Móstoles', 'Getafe'],
+  'Barcelona':     ['Barcelona', 'Badalona', 'L\'Hospitalet', 'Cornellà', 'Santa Coloma', 'Mataró'],
+  'Marseille':     ['Marseille', 'Aix-en-Provence', 'Aubagne', 'Vitrolles', 'Martigues'],
+  'Lyon':          ['Lyon', 'Villeurbanne', 'Vénissieux', 'Bron', 'Vaulx-en-Velin', 'Saint-Priest'],
+  'Dakar':         ['Dakar', 'Médina', 'Plateau', 'HLM', 'Grand Yoff', 'Parcelles Assainies', 'Guédiawaye', 'Pikine', 'Rufisque', 'Yoff', 'Ouakam', 'Ngor', 'Almadies', 'Sacré-Cœur', 'Point E', 'Liberté', 'Mermoz', 'Sicap', 'Fass', 'Gueule Tapée'],
+  'Conakry':       ['Conakry', 'Kaloum', 'Dixinn', 'Ratoma', 'Matoto', 'Matam', 'Almamya', 'Boulbinet', 'Coronthie', 'Kipé', 'Lambandji', 'Hamdallaye'],
+  'Abidjan':       ['Abidjan', 'Cocody', 'Plateau', 'Marcory', 'Treichville', 'Adjamé', 'Yopougon', 'Abobo', 'Koumassi', 'Attécoubé', 'Port-Bouët', 'Bingerville'],
+  'Bamako':        ['Bamako', 'Commune I', 'Commune II', 'Commune III', 'Commune IV', 'Commune V', 'Commune VI', 'Badalabougou', 'Hamdallaye', 'Lafiabougou', 'Kalaban-Coro'],
+  'Lomé':          ['Lomé', 'Bè', 'Tokoin', 'Agoè', 'Adidogomé', 'Nyékonakpoè', 'Kodjoviakopé'],
+  'Accra':         ['Accra', 'Tema', 'Madina', 'Osu', 'Dansoman', 'Achimota', 'Adabraka', 'Lapaz', 'Tesano', 'Nungua'],
+  'Cotonou':       ['Cotonou', 'Cadjehoun', 'Akpakpa', 'Fidjrossè', 'Agla', 'Menontin', 'Zogbo', 'Jéricho'],
+  'Casablanca':    ['Casablanca', 'Hay Hassani', 'Sidi Bernoussi', 'Ain Chock', 'Ben M\'Sick', 'Mohammedia', 'Derb Sultan'],
+}
+
+function AreaInput({ value, onChange, placeholder, city, style: extraStyle }) {
+  const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const inputRef = useRef()
+  const suggestions = city && AREAS[city]
+    ? AREAS[city].filter(a => a.toLowerCase().includes(value.toLowerCase()) && a.toLowerCase() !== value.toLowerCase())
+    : []
+  const show = focused && value.length >= 1 && suggestions.length > 0
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setTimeout(() => setFocused(false), 150)}
+        placeholder={placeholder}
+        style={extraStyle}
+        autoComplete="off"
+      />
+      {show && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100,
+          background: '#fff', border: '1px solid rgba(0,0,0,.12)', borderRadius: 10,
+          boxShadow: '0 8px 24px rgba(0,0,0,.1)', maxHeight: 200, overflowY: 'auto',
+          marginTop: 2,
+        }}>
+          {suggestions.slice(0, 8).map(s => (
+            <div key={s}
+              onMouseDown={() => { onChange(s); setFocused(false) }}
+              style={{ padding: '10px 14px', fontSize: 14, color: '#1A1710', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontFamily: 'DM Sans, sans-serif' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#FFF8EB'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const CITIES_FROM = [
   'New York', 'Paris', 'Washington DC', 'Atlanta', 'Houston', 'London', 'Montreal', 'Brussels',
@@ -23,7 +90,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
   const defaultPhone = meta.whatsapp_phone || user?.phone || ''
   const [form, setForm]       = useState({
-    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: '', flight_number: ''
+    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: '', flight_number: '',
+    pickup_area: '', dropoff_area: '',
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -80,8 +148,10 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         date:       form.date,
         space:      form.space,
         price:      form.price,
-        note:       form.note,
+        note:          form.note,
         flight_number: form.flight_number || null,
+        pickup_area:   form.pickup_area   || null,
+        dropoff_area:  form.dropoff_area  || null,
         approved:   false,
         user_id:    user.id,
         user_email: user.email || null,
@@ -185,6 +255,35 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
         <label style={lbl}>{isFr ? 'Numéro de téléphone' : 'Phone number'}</label>
         <input style={inp} type="tel" placeholder="+1 (212) 555-0100" value={form.phone} onChange={e => set('phone', e.target.value)} />
+
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+          <div>
+            <label style={lbl}>{isFr ? 'Zone de ramassage' : 'Pickup area'}</label>
+            <AreaInput
+              value={form.pickup_area}
+              onChange={v => set('pickup_area', v)}
+              placeholder={isFr ? 'Ex: Bronx, Médina...' : 'Ex: Bronx, Queens...'}
+              city={form.from_city}
+              style={inp}
+            />
+            <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+              {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
+            </div>
+          </div>
+          <div>
+            <label style={lbl}>{isFr ? 'Zone de livraison' : 'Dropoff area'}</label>
+            <AreaInput
+              value={form.dropoff_area}
+              onChange={v => set('dropoff_area', v)}
+              placeholder={isFr ? 'Ex: Médina, Plateau...' : 'Ex: Médina, Plateau...'}
+              city={form.to_city}
+              style={inp}
+            />
+            <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+              {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
+            </div>
+          </div>
+        </div>
 
         <label style={lbl}>{isFr ? 'Note (optionnel)' : 'Note (optional)'}</label>
         <textarea style={{ ...inp, minHeight:80, resize:'vertical' }} placeholder={isFr ? "Ex: Je livre à domicile, j'accepte les médicaments..." : 'Ex: Home delivery available, I accept medicine...'} value={form.note} onChange={e => set('note', e.target.value)} />

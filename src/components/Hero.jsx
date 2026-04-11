@@ -24,7 +24,7 @@ const TRAVELERS = [
   { initials: 'IK', name: 'Ibrahima K.', from: 'JFK', fromCity: 'New York', to: 'DSS', toCity: 'Dakar', date: 'May 5', deliveries: 11, rating: 4.7, verified: true, color: '#185FA5' },
 ]
 
-export default function Hero({ lang, setView, onSearch }) {
+export default function Hero({ lang, setView, onSearch, onSend }) {
   const isFr = lang === 'fr'
   const [dest, setDest] = useState('')
   const [from, setFrom] = useState('')
@@ -159,12 +159,20 @@ export default function Hero({ lang, setView, onSearch }) {
             </div>
 
             {/* Search button */}
-            <button className="mobile-btn-find" onClick={handleSearch}>
+            <button className="mobile-btn-find" onClick={handleSearch} style={{ marginBottom: 10 }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
                 <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
               </svg>
               {isFr ? 'Rechercher' : 'Search'}
+            </button>
+
+            {/* Sender CTA */}
+            <button
+              onClick={() => onSend?.() || setView('send')}
+              style={{ width:'100%', padding:'14px', background:'transparent', border:'1.5px solid #E5E1DB', borderRadius:14, fontFamily:"'DM Sans', sans-serif", fontSize:15, fontWeight:600, color:'#1A1710', cursor:'pointer', marginBottom:14 }}
+            >
+              {isFr ? 'Poster une demande de colis →' : 'Post a package request →'}
             </button>
 
             {/* Accommodations toggle */}
@@ -224,6 +232,17 @@ export default function Hero({ lang, setView, onSearch }) {
                   style={{ display:'flex', alignItems:'center', gap:10, background:'#C8891C', color:'#fff', border:'none', padding:'0 32px', fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', transition:'all .25s', whiteSpace:'nowrap' }}>
                   {isFr ? 'Trouver' : 'Find travelers'}
                   <span className="arrow-circle" style={{ display:'flex', alignItems:'center', justifyContent:'center', width:28, height:28, background:'rgba(255,255,255,.25)', borderRadius:'50%', transition:'transform .2s' }}>→</span>
+                </button>
+              </div>
+
+              {/* Sender CTA */}
+              <div className="anim-5" style={{ display:'flex', alignItems:'center', gap:12, marginBottom: 20 }}>
+                <span style={{ fontSize:13, color:'#8A8070' }}>{isFr ? 'Vous avez un colis ?' : 'Have a package to send?'}</span>
+                <button
+                  onClick={() => onSend?.() || setView('send')}
+                  style={{ fontSize:13, fontWeight:700, color:'#C8891C', background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Sans', sans-serif", textDecoration:'underline', textUnderlineOffset:3 }}
+                >
+                  {isFr ? 'Poster une demande →' : 'Post a request →'}
                 </button>
               </div>
 

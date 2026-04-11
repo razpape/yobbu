@@ -11,6 +11,7 @@ import PhoneAuth from './pages/PhoneAuth'
 import GPProfile from './components/GPProfile'
 import ProfilePage from './pages/ProfilePage'
 import PrivacyPage from './pages/PrivacyPage'
+import SendPackagePage from './pages/SendPackagePage'
 import Admin from './pages/Admin'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
@@ -119,6 +120,17 @@ export default function App() {
     return <PrivacyPage lang={lang} setView={setView} />
   }
 
+  if (view === 'send') {
+    return (
+      <SendPackagePage
+        lang={lang}
+        user={user}
+        onBack={() => setView('browse')}
+        onLoginRequired={() => setView('phone-auth')}
+      />
+    )
+  }
+
   // Phone Auth flow (new)
   if (view === 'phone-auth') {
     return (
@@ -138,7 +150,7 @@ export default function App() {
       />
       {view === 'home' && (
         <>
-          <Hero lang={lang} setView={setView} onSearch={handleSearch} />
+          <Hero lang={lang} setView={setView} onSearch={handleSearch} onSend={() => setView('send')} />
           <WhyYobbu lang={lang} />
           <HowItWorks lang={lang} />
           <FAQ lang={lang} />

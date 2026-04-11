@@ -4,7 +4,7 @@ import { ShieldCheckIcon } from './Icons'
 
 const DESTINATION_GROUPS = [
   {
-    label: { en: '🇺🇸 USA Origins', fr: '🇺🇸 Origines USA' },
+    label: { en: 'USA Origins', fr: 'Origines USA' },
     options: [
       { value: 'New York',      en: 'New York City (NYC)', fr: 'New York (NYC)' },
       { value: 'Washington DC', en: 'Washington, D.C. (IAD)', fr: 'Washington D.C. (IAD)' },
@@ -12,14 +12,14 @@ const DESTINATION_GROUPS = [
     ],
   },
   {
-    label: { en: '🇪🇺 Europe Origins', fr: '🇪🇺 Origines Europe' },
+    label: { en: 'Europe Origins', fr: 'Origines Europe' },
     options: [
       { value: 'Paris',  en: 'Paris (CDG)',  fr: 'Paris (CDG)' },
       { value: 'London', en: 'London (LHR)', fr: 'Londres (LHR)' },
     ],
   },
   {
-    label: { en: '🌍 Africa Destinations', fr: '🌍 Destinations Afrique' },
+    label: { en: 'Africa Destinations', fr: 'Destinations Afrique' },
     options: [
       { value: 'Dakar',   en: 'Dakar, Senegal',          fr: 'Dakar, Sénégal' },
       { value: 'Lagos',   en: 'Lagos, Nigeria',           fr: 'Lagos, Nigéria' },
@@ -133,18 +133,148 @@ function SidebarContent({ lang, dest, setDest, availOption, setAvailOption, pric
   )
 }
 
+const POPULAR_ROUTES = [
+  { from: 'New York',      to: 'Dakar',   count: 12 },
+  { from: 'Paris',         to: 'Dakar',   count: 9  },
+  { from: 'Washington DC', to: 'Conakry', count: 7  },
+  { from: 'Atlanta',       to: 'Abidjan', count: 5  },
+  { from: 'London',        to: 'Lagos',   count: 4  },
+]
+
+function RightSidebar({ lang, trips }) {
+  const isFr = lang === 'fr'
+
+  // Compute route counts from real trip data, fall back to static
+  const routeCounts = useMemo(() => {
+    if (!trips || trips.length === 0) return POPULAR_ROUTES
+    const map = {}
+    trips.forEach(t => {
+      const from = t.from_city || t.from || ''
+      const to   = t.to_city   || t.to   || ''
+      if (!from || !to) return
+      const key = `${from}||${to}`
+      map[key] = (map[key] || 0) + 1
+    })
+    const result = Object.entries(map)
+      .map(([key, count]) => { const [from, to] = key.split('||'); return { from, to, count } })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+    return result.length ? result : POPULAR_ROUTES
+  }, [trips])
+
+  const maxCount = Math.max(...routeCounts.map(r => r.count), 1)
+
+  const tips = isFr
+    ? [
+        'Vérifiez toujours que le voyageur est vérifié avant de payer.',
+        'Convenez du prix avant de remettre le colis.',
+        'Prenez une photo du colis avant l\'envoi.',
+      ]
+    : [
+        'Always check the traveler is verified before sending payment.',
+        'Agree on the price before handing over the package.',
+        'Take a photo of your package before drop-off.',
+      ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+      {/* Popular routes */}
+      <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid #F0EDE8' }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1A1710', letterSpacing: '-.1px' }}>
+            {isFr ? 'Routes populaires' : 'Popular routes'}
+          </div>
+          <div style={{ fontSize: 11, color: '#A09080', marginTop: 2 }}>
+            {isFr ? 'Basé sur les voyages actifs' : 'Based on active trips'}
+          </div>
+        </div>
+        <div style={{ padding: '12px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {routeCounts.map((r, i) => (
+            <div key={i}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {r.from}
+                  </span>
+                  <span style={{ color: '#C8C0B4', fontSize: 10, flexShrink: 0 }}>→</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {r.to}
+                  </span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#C8891C', flexShrink: 0, marginLeft: 8 }}>
+                  {r.count} {isFr ? (r.count > 1 ? 'voyages' : 'voyage') : (r.count > 1 ? 'trips' : 'trip')}
+                </span>
+              </div>
+              <div style={{ height: 4, background: '#F0EDE8', borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${Math.round((r.count / maxCount) * 100)}%`,
+                  background: i === 0 ? 'linear-gradient(90deg, #C8891C, #E6A832)' : '#D4C4A8',
+                  borderRadius: 4,
+                  transition: 'width .4s ease',
+                }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Safety tips */}
+      <div style={{ background: 'linear-gradient(145deg, #1A1710 0%, #2A2318 100%)', borderRadius: 16, padding: '18px 18px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <ShieldCheckIcon size={15} color="#C8891C" />
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-.1px' }}>
+            {isFr ? 'Conseils de sécurité' : 'Safety tips'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {tips.map((tip, i) => (
+            <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#C8891C22', border: '1px solid #C8891C55', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#C8891C' }}>{i + 1}</span>
+              </div>
+              <span style={{ fontSize: 11.5, color: '#C8B898', lineHeight: 1.55 }}>{tip}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Trust badge */}
+      <div style={{ background: '#F0FAF4', border: '1.5px solid #C8E6D4', borderRadius: 16, padding: '14px 18px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        <ShieldCheckIcon size={20} color="#1A5C38" style={{ flexShrink: 0, marginTop: 1 }} />
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 800, color: '#1A4028', marginBottom: 3 }}>
+            {isFr ? '100% vérifiés par téléphone' : '100% phone-verified'}
+          </div>
+          <div style={{ fontSize: 11, color: '#2D6B46', lineHeight: 1.5 }}>
+            {isFr
+              ? 'Chaque voyageur a confirmé son numéro WhatsApp avant d\'être publié.'
+              : 'Every traveler has confirmed their WhatsApp number before being listed.'}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  )
+}
+
 export default function BrowsePage({ lang, trips, loading, error, user, onLoginRequired, searchFilter, onViewProfile }) {
   const [dest, setDest]               = useState('all')
   const [availOption, setAvailOption] = useState('')
   const [priceFilter, setPriceFilter] = useState('')
   const [verifyFilter, setVerifyFilter] = useState('all')
   const [sortBy, setSortBy]           = useState('date')
-  const [applied, setApplied]         = useState({ dest:'all', dateFrom:'', dateTo:'', price:'', verify:'all' })
+  const [applied, setApplied]         = useState({ dest:'all', from:'', dateFrom:'', dateTo:'', price:'', verify:'all' })
   const [drawerOpen, setDrawerOpen]   = useState(false)
   const isFr = lang === 'fr'
 
   useEffect(() => {
-    if (searchFilter?.dest) { setDest(searchFilter.dest); setApplied(a => ({ ...a, dest: searchFilter.dest })) }
+    if (!searchFilter) return
+    const newApplied = { ...applied }
+    if (searchFilter.dest) { setDest(searchFilter.dest); newApplied.dest = searchFilter.dest }
+    if (searchFilter.from) { newApplied.from = searchFilter.from }
+    setApplied(newApplied)
   }, [searchFilter])
 
   // Close drawer on Escape
@@ -156,7 +286,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
   const handleFilter = () => {
     const { from, to } = availOption ? getDateRange(availOption) : { from:'', to:'' }
-    setApplied({ dest, dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
+    setApplied({ dest, from: '', dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
   }
 
   const sorted = useMemo(() => {
@@ -166,6 +296,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       const toCity = g.to_city || g.to || ''
       const fromCity = g.from_city || g.from || ''
       const matchDest = applied.dest === 'all' || toCity === applied.dest || fromCity === applied.dest
+      const matchFrom = !applied.from || fromCity === applied.from
       const d = g.date && g.date.match(/^\d{4}-\d{2}-\d{2}$/) ? g.date : null
       const matchDate = (!applied.dateFrom && !applied.dateTo) || !d ||
         ((!applied.dateFrom || d >= applied.dateFrom) && (!applied.dateTo || d <= applied.dateTo))
@@ -173,7 +304,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         applied.verify === 'all' ||
         (applied.verify === 'verified' && (g.verified?.phone || g.phone_verified || g.verified?.id || g.id_verified || g.whatsapp_verified))
       const matchPrice = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
-      return matchDest && matchDate && matchVerify && matchPrice
+      return matchDest && matchFrom && matchDate && matchVerify && matchPrice
     })
 
     return [...filtered].sort((a, b) => {
@@ -194,13 +325,22 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
     <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>
       <style>{`
         @media (max-width: 768px) {
-          .browse-sidebar-col { display: none !important; }
-          .browse-main-grid   { grid-template-columns: 1fr !important; padding: 16px !important; }
-          .mobile-filter-btn  { display: flex !important; }
+          .browse-sidebar-col  { display: none !important; }
+          .browse-main-grid    { grid-template-columns: 1fr !important; padding: 16px !important; }
+          .mobile-filter-btn   { display: flex !important; }
+          .browse-cards-grid   { grid-template-columns: 1fr !important; }
+        }
+        @media (min-width: 769px) and (max-width: 1100px) {
+          .browse-cards-grid { grid-template-columns: 1fr !important; }
+          .browse-right-col  { display: none !important; }
+          .browse-main-grid  { grid-template-columns: 260px 1fr !important; }
         }
         @media (min-width: 769px) {
           .mobile-filter-btn { display: none !important; }
           .drawer-overlay    { display: none !important; }
+        }
+        @media (max-width: 1100px) {
+          .browse-right-col  { display: none !important; }
         }
       `}</style>
 
@@ -273,7 +413,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       </div>
 
       {/* Main grid */}
-      <div className="browse-main-grid" style={{ maxWidth:1200, margin:'0 auto', padding:'32px 32px', display:'grid', gridTemplateColumns:'260px 1fr', gap:32, alignItems:'start' }}>
+      <div className="browse-main-grid" style={{ maxWidth:1380, margin:'0 auto', padding:'32px 32px', display:'grid', gridTemplateColumns:'260px 1fr 290px', gap:28, alignItems:'start' }}>
 
         {/* Desktop sidebar */}
         <div className="browse-sidebar-col">
@@ -353,10 +493,20 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           )}
 
           {/* Cards */}
-          {!loading && !error && sorted.length > 0 && sorted.map(gp => (
-            <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
-          ))}
+          {!loading && !error && sorted.length > 0 && (
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              {sorted.map(gp => (
+                <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Right sidebar */}
+        <div className="browse-right-col" style={{ position: 'sticky', top: 24 }}>
+          <RightSidebar lang={lang} trips={trips} />
+        </div>
+
       </div>
     </div>
   )

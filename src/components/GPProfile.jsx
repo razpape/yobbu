@@ -204,6 +204,26 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             ))}
           </div>
           
+          {/* Pickup / Dropoff */}
+          {(gp.pickup_area || gp.dropoff_area) && (
+            <div style={{ display:'flex', gap:16, marginBottom:20, flexWrap:'wrap' }}>
+              {gp.pickup_area && (
+                <div style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#5A5248', background:'#F5F3EF', border:'1px solid #E5E1DB', borderRadius:8, padding:'6px 12px' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span style={{ fontWeight:500 }}>{isFr ? 'Ramassage:' : 'Pickup:'}</span>
+                  <span style={{ fontWeight:700, color:'#1A1710' }}>{gp.pickup_area}</span>
+                </div>
+              )}
+              {gp.dropoff_area && (
+                <div style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, color:'#5A5248', background:'#F5F3EF', border:'1px solid #E5E1DB', borderRadius:8, padding:'6px 12px' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span style={{ fontWeight:500 }}>{isFr ? 'Livraison:' : 'Dropoff:'}</span>
+                  <span style={{ fontWeight:700, color:'#1A1710' }}>{gp.dropoff_area}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Flight Price Info - Live */}
           {fromCity && toCity && (
             <div style={{ marginTop: 20, padding: 16, background: '#F0F7FF', border: '1px solid #B8D4E8', borderRadius: 12 }}>
@@ -290,7 +310,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             {isFr ? `Contacter ${gp.name?.split(' ')[0]}` : `Contact ${gp.name?.split(' ')[0]}`}
           </div>
 
-          {!gp.whatsapp_verified ? (
+          {!gp.phone_verified ? (
             /* ── Unverified: contact locked ── */
             <div style={{ background:'#F9F7F4', border:'1px solid rgba(0,0,0,.08)', borderRadius:14, padding:'20px 20px', marginTop:16, textAlign:'center' }}>
               <div style={{ display:'flex', justifyContent:'center', marginBottom:10 }}><LockIcon size={32} color="#C0B8B0" /></div>

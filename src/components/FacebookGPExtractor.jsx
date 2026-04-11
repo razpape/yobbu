@@ -36,6 +36,7 @@ const lbl = { fontSize:10, color:'#666', display:'block', marginBottom:4, textTr
 export default function FacebookGPExtractor({ showToast }) {
   const [posts, setPosts]             = useState([])
   const [loading, setLoading]         = useState(true)
+  const [dailyStats, setDailyStats]   = useState({ today: 0, withName: 0, withPhone: 0, total: 0 })
 
   // AI extraction states
   const [extractState, setExtractState] = useState(null) // null | 'uploading' | 'analyzing' | 'review' | 'error'
@@ -44,25 +45,39 @@ export default function FacebookGPExtractor({ showToast }) {
   const [confidence, setConfidence]   = useState(0)
   const [errorMsg, setErrorMsg]       = useState('')
   const [saving, setSaving]           = useState(false)
+  const [selectedPhone, setSelectedPhone] = useState('')
 
   // Post management
   const [importing, setImporting]     = useState(null)
   const [editingPost, setEditingPost] = useState(null)
   const [showDetails, setShowDetails] = useState({})
+  const [filterDest, setFilterDest]   = useState('all')
 
   const fileRef = useRef()
 
   // ── Fetch existing posts ────────────────────────────────────────────────
 
+  const DAILY_GOAL = 25
+
   useEffect(() => { fetchPosts() }, [])
 
   async function fetchPosts() {
     setLoading(true)
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+
     const { data } = await supabase
       .from('facebook_posts')
       .select('*')
       .order('created_at', { ascending: false })
-    setPosts(data || [])
+
+    const all = data || []
+    const todayCount = all.filter(p => new Date(p.created_at) >= todayStart).length
+    const withName   = all.filter(p => p.name && p.name.trim()).length
+    const withPhone  = all.filter(p => p.phone && p.phone.trim()).length
+
+    setPosts(all)
+    setDailyStats({ today: todayCount, withName, withPhone, total: all.length })
     setLoading(false)
   }
 
@@ -121,12 +136,18 @@ export default function FacebookGPExtractor({ showToast }) {
         }
 
         const extracted = JSON.parse(content)
+        // Normalize phones — AI may return phones (array) or legacy phone (string)
+        if (!Array.isArray(extracted.phones)) {
+          extracted.phones = extracted.phone ? [extracted.phone] : []
+        }
+        delete extracted.phone
         // Ensure all fields exist
-        const fields = ['name','phone','from_city','to_city','date','space','price','note']
+        const fields = ['name','from_city','to_city','date','space','price','note']
         for (const f of fields) { if (!(f in extracted)) extracted[f] = null }
         if (!('confidence' in extracted)) extracted.confidence = 0
 
         setDraft(extracted)
+        setSelectedPhone(extracted.phones[0] || '')
         setConfidence(extracted.confidence || 0)
         setExtractState('review')
       } catch (err) {
@@ -145,28 +166,60 @@ export default function FacebookGPExtractor({ showToast }) {
     setDraftImg(null)
     setConfidence(0)
     setErrorMsg('')
+    setSelectedPhone('')
   }
 
   // ── Save & import ─────────────────────────────────────────────────────
 
   async function savePost() {
-    if (!draft.name && !draft.phone) {
+    if (!draft.name && !selectedPhone && (!draft.phones || draft.phones.length === 0)) {
       showToast?.('Add at least a name or phone number')
       return
     }
     setSaving(true)
+    const { phones, confidence, ...rest } = draft
+    const chosenPhone = selectedPhone || phones?.[0] || null
+    // Store extra phones in note if multiple found
+    const extraPhones = phones?.length > 1 ? phones.filter(p => p !== chosenPhone) : []
+    const noteWithExtras = extraPhones.length > 0
+      ? `${rest.note || ''}\nOther numbers: ${extraPhones.join(', ')}`.trim()
+      : (rest.note || null)
+
     const { data, error } = await supabase
       .from('facebook_posts')
-      .insert({ ...draft, screenshot_url: draftImg, status: 'new', source: 'ai_extraction' })
+      .insert({
+        name:           rest.name || null,
+        phone:          chosenPhone,
+        from_city:      rest.from_city || null,
+        to_city:        rest.to_city || null,
+        date:           rest.date || null,
+        space:          rest.space || null,
+        price:          rest.price || null,
+        note:           noteWithExtras,
+        screenshot_url: draftImg,
+        status:         'new',
+      })
       .select()
       .single()
 
     if (!error) {
-      setPosts(prev => [data, ...prev])
+      setPosts(prev => {
+        const next = [data, ...prev]
+        const todayStart = new Date(); todayStart.setHours(0,0,0,0)
+        setDailyStats({
+          today:     next.filter(p => new Date(p.created_at) >= todayStart).length,
+          withName:  next.filter(p => p.name?.trim()).length,
+          withPhone: next.filter(p => p.phone?.trim()).length,
+          total:     next.length,
+        })
+        return next
+      })
       showToast?.('Saved!')
       resetExtraction()
     } else {
+      console.error('Save failed:', error)
       showToast?.('Save failed: ' + error.message)
+      setErrorMsg(error.message)
     }
     setSaving(false)
   }
@@ -273,6 +326,34 @@ export default function FacebookGPExtractor({ showToast }) {
         </div>
       )}
 
+      {/* ── Daily goal + stats ──────────────────────────────────────── */}
+      {(() => {
+        const todayDone  = dailyStats.today  >= DAILY_GOAL
+        const nameDone   = dailyStats.withName  >= DAILY_GOAL
+        const phoneDone  = dailyStats.withPhone >= DAILY_GOAL
+        const statCard = ({ label, n, done, color }) => (
+          <div style={{ background:'#1a1a1a', border:`1px solid ${done ? color + '44' : '#2a2a2a'}`, borderRadius:12, padding:'14px 16px' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+              <span style={{ fontSize:11, color:'#666', fontWeight:600, textTransform:'uppercase', letterSpacing:'.06em' }}>{label}</span>
+              <span style={{ fontSize:11, fontWeight:800, color: done ? color : '#C8810A' }}>{n} / {DAILY_GOAL}</span>
+            </div>
+            <div style={{ height:6, background:'#2a2a2a', borderRadius:3 }}>
+              <div style={{ height:'100%', borderRadius:3, background: done ? color : '#C8810A', width:`${Math.min(100, Math.round(n/DAILY_GOAL*100))}%`, transition:'width .4s' }} />
+            </div>
+            <div style={{ fontSize:10, color:'#555', marginTop:5 }}>
+              {done ? 'Goal reached!' : `${DAILY_GOAL - n} more to go`}
+            </div>
+          </div>
+        )
+        return (
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10, marginBottom:20 }}>
+            {statCard({ label:"Today's contacts", n: dailyStats.today,     done: todayDone, color:'#22c55e' })}
+            {statCard({ label:'Names collected',  n: dailyStats.withName,  done: nameDone,  color:'#818cf8' })}
+            {statCard({ label:'Phones collected', n: dailyStats.withPhone, done: phoneDone, color:'#4ade80' })}
+          </div>
+        )
+      })()}
+
       {/* ── Upload zone ─────────────────────────────────────────────── */}
       {!extractState && (
         <div
@@ -371,13 +452,56 @@ export default function FacebookGPExtractor({ showToast }) {
                 placeholder="Traveler name..."
                 style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #7C3AED', marginBottom:12 }}
               />
-              <label style={lbl}>Phone / WhatsApp</label>
-              <input
-                value={draft.phone || ''}
-                onChange={e => setD('phone', e.target.value)}
-                placeholder="+1 212 555 0100"
-                style={{ ...inp, marginBottom:16 }}
-              />
+
+              {/* ── Phone selector — handles multiple ── */}
+              <label style={lbl}>
+                Phone / WhatsApp
+                {draft.phones?.length > 1 && (
+                  <span style={{ marginLeft:6, fontSize:9, background:'rgba(124,58,237,.2)', color:'#A78BFA', borderRadius:4, padding:'1px 6px', fontWeight:700, border:'1px solid rgba(124,58,237,.3)' }}>
+                    {draft.phones.length} found
+                  </span>
+                )}
+              </label>
+              {draft.phones?.length > 1 ? (
+                <div style={{ marginBottom:16 }}>
+                  {draft.phones.map((ph, i) => (
+                    <label key={ph} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', marginBottom:6, borderRadius:8, border:`2px solid ${selectedPhone === ph ? '#7C3AED' : '#333'}`, background: selectedPhone === ph ? 'rgba(124,58,237,.1)' : '#111', cursor:'pointer' }}>
+                      <input
+                        type="radio"
+                        name="phone_select"
+                        checked={selectedPhone === ph}
+                        onChange={() => setSelectedPhone(ph)}
+                        style={{ accentColor:'#7C3AED', flexShrink:0 }}
+                      />
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:600, color:'#fff', fontFamily:'monospace' }}>{ph}</div>
+                        {i === 0 && <div style={{ fontSize:10, color:'#555' }}>First number in post</div>}
+                      </div>
+                      <a href={`https://wa.me/${ph.replace(/\D/g,'')}`} target="_blank" rel="noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        style={{ fontSize:10, color:'#4ade80', textDecoration:'none', fontWeight:600 }}>
+                        WA
+                      </a>
+                    </label>
+                  ))}
+                  <div style={{ marginTop:4 }}>
+                    <label style={{ ...lbl, marginBottom:4 }}>Or enter manually</label>
+                    <input
+                      value={draft.phones.includes(selectedPhone) ? '' : selectedPhone}
+                      onChange={e => setSelectedPhone(e.target.value)}
+                      placeholder="Custom number..."
+                      style={inp}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <input
+                  value={selectedPhone}
+                  onChange={e => setSelectedPhone(e.target.value)}
+                  placeholder="+1 212 555 0100"
+                  style={{ ...inp, marginBottom:16 }}
+                />
+              )}
 
               {/* ── Trip details ── */}
               <button
@@ -415,6 +539,11 @@ export default function FacebookGPExtractor({ showToast }) {
                 </div>
               )}
 
+              {errorMsg && (
+                <div style={{ fontSize:12, color:'#f87171', background:'rgba(239,68,68,.08)', border:'1px solid rgba(239,68,68,.2)', borderRadius:8, padding:'8px 12px', marginBottom:10 }}>
+                  {errorMsg}
+                </div>
+              )}
               <div style={{ display:'flex', gap:8 }}>
                 <Btn type="import" onClick={savePost} disabled={saving}>
                   {saving ? 'Saving...' : '✓ Save contact'}
@@ -427,6 +556,25 @@ export default function FacebookGPExtractor({ showToast }) {
       )}
 
       {/* ── Posts list ───────────────────────────────────────────────── */}
+      {!loading && posts.length > 0 && (() => {
+        const destinations = ['all', ...new Set(posts.map(p => p.to_city).filter(Boolean))]
+        return (
+          <div style={{ display:'flex', gap:6, marginBottom:14, flexWrap:'wrap' }}>
+            {destinations.map(dest => (
+              <button key={dest} onClick={() => setFilterDest(dest)} style={{
+                fontSize:11, fontWeight:700, padding:'5px 12px', borderRadius:20, cursor:'pointer',
+                fontFamily:"'Inter',sans-serif",
+                background: filterDest === dest ? '#C8810A' : '#1a1a1a',
+                color:      filterDest === dest ? '#fff'     : '#666',
+                border:     `1px solid ${filterDest === dest ? '#C8810A' : '#2a2a2a'}`,
+              }}>
+                {dest === 'all' ? `All (${posts.length})` : dest}
+              </button>
+            ))}
+          </div>
+        )
+      })()}
+
       {loading ? (
         <div style={{ color:'#555', padding:'40px 0', textAlign:'center' }}>Loading...</div>
       ) : posts.length === 0 ? (
@@ -436,7 +584,7 @@ export default function FacebookGPExtractor({ showToast }) {
         </div>
       ) : (
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          {posts.map(post => (
+          {posts.filter(p => filterDest === 'all' || p.to_city === filterDest).map(post => (
             <div key={post.id} style={{ background:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:12, padding:'16px 20px', display:'flex', alignItems:'center', gap:16 }}>
 
               {/* Screenshot thumbnail */}
@@ -461,8 +609,15 @@ export default function FacebookGPExtractor({ showToast }) {
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize:13, color: post.phone ? '#4ade80' : '#555', fontWeight: post.phone ? 600 : 400 }}>
-                  {post.phone || 'No phone number'}
+                <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+                  <span style={{ fontSize:13, color: post.phone ? '#4ade80' : '#555', fontWeight: post.phone ? 600 : 400, fontFamily:'monospace' }}>
+                    {post.phone || 'No phone number'}
+                  </span>
+                  {post.phones_all && (
+                    <span title={post.phones_all} style={{ fontSize:10, color:'#A78BFA', background:'rgba(124,58,237,.15)', borderRadius:4, padding:'1px 6px', fontWeight:600, cursor:'help', border:'1px solid rgba(124,58,237,.25)' }}>
+                      +{post.phones_all.split(',').length - 1} more
+                    </span>
+                  )}
                 </div>
 
                 {(post.from_city || post.to_city || post.date) && (

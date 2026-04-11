@@ -18,10 +18,11 @@ Dates: Format as YYYY-MM-DD. If the year is missing, assume 2026. Parse French d
 
 Price: Extract numerical value only. Convert "10 dollars" to 10. Keep the currency if specified (e.g., "$10/kg" → "10", "5 euros/kg" → "5"). If price per kg is mentioned, just extract the number.
 
-Phone: Standardize to E.164 format (e.g., +12125550199). Handle formats like:
+Phone: Extract ALL phone numbers found in the post into an array. Standardize each to E.164 format (e.g., +12125550199). Handle formats like:
 - "212-555-0100" → "+12125550100"
 - "+221 77 123 45 67" → "+221771234567"
 - "00 33 6 12 34 56 78" → "+33612345678"
+If only one number is found, still return it as a single-element array. If none found, return [].
 
 Space: Extract available kilograms as a number (e.g., "20kg disponible" → 20).
 
@@ -32,7 +33,7 @@ Strictness: If a field is not found, return null. Do not hallucinate data.
 Output: Return ONLY a valid JSON object with exactly these fields:
 {
   "name": string | null,
-  "phone": string | null,
+  "phones": string[],
   "from_city": string | null,
   "to_city": string | null,
   "date": string | null,
@@ -42,6 +43,7 @@ Output: Return ONLY a valid JSON object with exactly these fields:
   "confidence": number
 }
 
+The "phones" field is always an array (empty array if no phones found).
 The "note" field should contain a brief summary of the post text (max 300 chars).
 The "confidence" field should be 0-100 indicating how confident you are in the extraction.
 

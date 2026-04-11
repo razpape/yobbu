@@ -42,9 +42,10 @@ function Btn({ type, children, onClick }) {
 export default function AdminPanel({ onSignOut }) {
   const [trips, setTrips]         = useState([])
   const [users, setUsers]         = useState([])
-  const [tab, setTab]             = useState('travelers')
+  const [tab, setTab]             = useState('overview')
   const [loading, setLoading]     = useState(true)
   const [usersLoading, setUsersLoading] = useState(false)
+  const [quickStats, setQuickStats] = useState({ totalUsers: 0, newUsersWeek: 0, newTripsWeek: 0 })
   const [search, setSearch]       = useState('')
   const [userSearch, setUserSearch] = useState('')
   const [userFilter, setUserFilter] = useState('all')  // all|verified|unverified|admin|whatsapp
@@ -65,8 +66,17 @@ export default function AdminPanel({ onSignOut }) {
 
   async function fetchAll() {
     setLoading(true)
-    const { data } = await supabase.from('trips').select('*').order('created_at', { ascending: false })
-    setTrips(data || [])
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+    const [{ data: tripsData }, { count: totalUsers }, { count: newUsersWeek }, { count: newTripsWeek }] = await Promise.all([
+      supabase.from('trips').select('*').order('created_at', { ascending: false }),
+      supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', weekAgo),
+      supabase.from('trips').select('*', { count: 'exact', head: true }).gte('created_at', weekAgo),
+    ])
+
+    setTrips(tripsData || [])
+    setQuickStats({ totalUsers: totalUsers || 0, newUsersWeek: newUsersWeek || 0, newTripsWeek: newTripsWeek || 0 })
     setLoading(false)
   }
 
@@ -355,12 +365,17 @@ export default function AdminPanel({ onSignOut }) {
 
       <div className="admin-body" style={s.body}>
         {/* Stats */}
-        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:24 }}>
-          <StatCard n={trips.length} label="Total listings" />
+        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:12 }}>
+          <StatCard n={quickStats.totalUsers} label="Total users" />
+          <StatCard n={quickStats.newUsersWeek} label="New users this week" color="#818cf8" />
+          <StatCard n={quickStats.newTripsWeek} label="New trips this week" color="#38bdf8" />
           <StatCard n={pending.length} label="Pending approval" color="#fbbf24" />
+        </div>
+        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:24 }}>
+          <StatCard n={trips.length} label="Total listings" />
           <StatCard n={active.length} label="Active listings" color="#4ade80" />
-          <StatCard n={users.filter(u=>u.whatsapp_verified).length} label="WA Verified users" color="#22c55e" />
-          <StatCard n={users.filter(u=>!u.whatsapp_verified).length} label="Unverified users" color="#f87171" />
+          <StatCard n={users.filter(u=>u.whatsapp_verified).length} label="WA Verified" color="#22c55e" />
+          <StatCard n={users.filter(u=>!u.whatsapp_verified).length} label="Unverified" color="#f87171" />
         </div>
 
         {/* Pending alert */}
@@ -380,10 +395,11 @@ export default function AdminPanel({ onSignOut }) {
         {/* Tabs */}
         <div className="admin-tabs" style={s.tabs}>
           {[
+            { key:'overview',  label:'Overview' },
             { key:'travelers', label:`Travelers (${trips.length})` },
             { key:'pending',   label:`Pending (${pending.length})` },
-            { key:'facebook',  label:'📘 Facebook GP Posts' },
-            { key:'ai-extract', label:'🤖 AI Extractor' },
+            { key:'facebook',  label:'Facebook GP Posts' },
+            { key:'ai-extract', label:'AI Extractor' },
             { key:'users',     label:`Users (${users.length})` },
           ].map(({ key, label }) => (
             <button key={key} style={s.tab(tab === key)} onClick={() => setTab(key)}>{label}</button>
@@ -396,6 +412,165 @@ export default function AdminPanel({ onSignOut }) {
             <input style={s.search} placeholder="Search by name, city..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
         )}
+
+        {/* OVERVIEW TAB */}
+        {tab === 'overview' && (() => {
+          // Top routes
+          const routeCounts = {}
+          trips.forEach(t => {
+            if (t.from_city && t.to_city) {
+              const key = `${t.from_city} → ${t.to_city}`
+              routeCounts[key] = (routeCounts[key] || 0) + 1
+            }
+          })
+          const topRoutes = Object.entries(routeCounts).sort((a,b)=>b[1]-a[1]).slice(0,5)
+
+          // Flagged trips
+          const flaggedTrips = trips.filter(t => flagged(t) && t.approved && !t.suspended)
+
+          // Recent activity (last 10 trips sorted by created_at)
+          const recentActivity = [...trips].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10)
+
+          // Verification funnel (using loaded users or quickStats)
+          const phoneVerified    = trips.filter(t=>t.phone_verified).length
+          const idVerified       = trips.filter(t=>t.id_verified).length
+          const communityVerified= trips.filter(t=>t.community_verified).length
+
+          const sectionTitle = (t) => (
+            <div style={{ fontSize:13, fontWeight:700, color:'#888', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>{t}</div>
+          )
+          const card = { background:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:12, padding:'18px 20px' }
+
+          return (
+            <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+
+              {/* Top row: flagged alert + funnel */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+
+                {/* Flagged content */}
+                <div style={card}>
+                  {sectionTitle('Flagged Content')}
+                  {flaggedTrips.length === 0 ? (
+                    <div style={{ fontSize:13, color:'#555' }}>No flagged listings right now.</div>
+                  ) : (
+                    <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                      {flaggedTrips.slice(0,5).map(t => (
+                        <div key={t.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px 10px', background:'rgba(251,191,36,.06)', border:'1px solid rgba(251,191,36,.15)', borderRadius:8 }}>
+                          <div>
+                            <div style={{ fontSize:13, fontWeight:600, color:'#fbbf24' }}>{t.name}</div>
+                            <div style={{ fontSize:11, color:'#666' }}>{t.from_city} → {t.to_city}</div>
+                          </div>
+                          <div style={{ display:'flex', gap:6 }}>
+                            <Btn type="suspend" onClick={() => toggleSuspend(t.id, t.suspended)}>Suspend</Btn>
+                            <Btn type="ban" onClick={() => deleteTrip(t.id)}>Delete</Btn>
+                          </div>
+                        </div>
+                      ))}
+                      {flaggedTrips.length > 5 && (
+                        <div style={{ fontSize:12, color:'#666' }}>+{flaggedTrips.length - 5} more — see Travelers tab</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Verification funnel */}
+                <div style={card}>
+                  {sectionTitle('Verification Funnel')}
+                  <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                    {[
+                      { label:'Total listings', n: trips.length, color:'#666' },
+                      { label:'Phone verified',    n: phoneVerified,     color:'#38bdf8' },
+                      { label:'ID verified',       n: idVerified,        color:'#818cf8' },
+                      { label:'Community verified',n: communityVerified, color:'#4ade80' },
+                    ].map(({ label, n, color }) => (
+                      <div key={label}>
+                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                          <span style={{ fontSize:12, color:'#888' }}>{label}</span>
+                          <span style={{ fontSize:12, fontWeight:700, color }}>{n}</span>
+                        </div>
+                        <div style={{ height:5, background:'#2a2a2a', borderRadius:3 }}>
+                          <div style={{ height:'100%', borderRadius:3, background:color, width: trips.length ? `${Math.round(n/trips.length*100)}%` : '0%', transition:'width .4s' }} />
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ marginTop:6, paddingTop:10, borderTop:'1px solid #2a2a2a', display:'flex', gap:16 }}>
+                      <div>
+                        <div style={{ fontSize:11, color:'#666' }}>WA Verified users</div>
+                        <div style={{ fontSize:18, fontWeight:800, color:'#22c55e' }}>{users.filter(u=>u.whatsapp_verified).length || quickStats.totalUsers > 0 ? users.filter(u=>u.whatsapp_verified).length : '—'}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize:11, color:'#666' }}>Unverified users</div>
+                        <div style={{ fontSize:18, fontWeight:800, color:'#f87171' }}>{users.length > 0 ? users.filter(u=>!u.whatsapp_verified).length : '—'}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom row: top routes + recent activity */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+
+                {/* Top routes */}
+                <div style={card}>
+                  {sectionTitle('Top Routes')}
+                  {topRoutes.length === 0 ? (
+                    <div style={{ fontSize:13, color:'#555' }}>No routes yet.</div>
+                  ) : (
+                    <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                      {topRoutes.map(([route, count], i) => (
+                        <div key={route} style={{ display:'flex', alignItems:'center', gap:12 }}>
+                          <div style={{ width:22, height:22, borderRadius:'50%', background: i===0?'#C8810A':i===1?'#6b7280':'#2a2a2a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:'#fff', flexShrink:0 }}>
+                            {i+1}
+                          </div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:13, color:'#ddd', fontWeight:500 }}>{route}</div>
+                            <div style={{ height:4, marginTop:4, background:'#2a2a2a', borderRadius:2 }}>
+                              <div style={{ height:'100%', borderRadius:2, background:'#C8810A', width:`${Math.round(count/topRoutes[0][1]*100)}%` }} />
+                            </div>
+                          </div>
+                          <div style={{ fontSize:13, fontWeight:700, color:'#C8810A', minWidth:24, textAlign:'right' }}>{count}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Recent activity */}
+                <div style={card}>
+                  {sectionTitle('Recent Activity')}
+                  {recentActivity.length === 0 ? (
+                    <div style={{ fontSize:13, color:'#555' }}>No activity yet.</div>
+                  ) : (
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                      {recentActivity.map(t => {
+                        const ago = t.created_at ? Math.floor((Date.now()-new Date(t.created_at))/60000) : null
+                        const agoLabel = ago === null ? '' : ago < 60 ? `${ago}m ago` : ago < 1440 ? `${Math.floor(ago/60)}h ago` : `${Math.floor(ago/1440)}d ago`
+                        return (
+                          <div key={t.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'6px 0', borderBottom:'1px solid #222' }}>
+                            <div style={{ width:8, height:8, borderRadius:'50%', background: t.approved ? '#22c55e' : '#fbbf24', flexShrink:0 }} />
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontSize:12, fontWeight:600, color:'#ddd', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                                {t.name} — {t.from_city} → {t.to_city}
+                              </div>
+                            </div>
+                            <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
+                              <span style={{ fontSize:10, fontWeight:700, color: t.approved ? '#22c55e' : '#fbbf24' }}>
+                                {t.approved ? 'Live' : 'Pending'}
+                              </span>
+                              {flagged(t) && <span style={{ fontSize:10, color:'#fbbf24', fontWeight:700 }}>FLAG</span>}
+                              <span style={{ fontSize:10, color:'#555' }}>{agoLabel}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          )
+        })()}
 
         {/* TRAVELERS TAB */}
         {tab === 'travelers' && (
@@ -463,42 +638,77 @@ export default function AdminPanel({ onSignOut }) {
 
         {/* PENDING TAB */}
         {tab === 'pending' && (
-          <div className="admin-table-scroll">
-          <table style={s.table}>
-            <thead>
-              <tr>{['Traveler','Route','Date','Space','Price','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
-            </thead>
-            <tbody>
-              {pending.length === 0 ? (
-                <tr><td colSpan={6} style={{ ...s.td, textAlign:'center', color:'#555' }}>No listings pending approval.</td></tr>
-              ) : pending.map(trip => (
-                <tr key={trip.id}>
-                  <td style={s.td}>
-                    <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      <div style={{ width:34, height:34, borderRadius:'50%', background: trip.bg || '#C8810A', color: trip.color || '#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700 }}>
-                        {trip.initials || trip.name?.slice(0,2).toUpperCase()}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight:600, color:'#fff' }}>{trip.name}</div>
-                        <div style={{ fontSize:11, color:'#555' }}>Submitted recently</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ ...s.td, color:'#aaa' }}>{trip.from_city} → {trip.to_city}</td>
-                  <td style={{ ...s.td, color:'#aaa' }}>{trip.date}</td>
-                  <td style={{ ...s.td, color:'#aaa' }}>~{trip.space} kg</td>
-                  <td style={{ ...s.td, color:'#C8810A', fontWeight:600 }}>{trip.price}</td>
-                  <td style={s.td}>
-                    <div style={{ display:'flex', gap:6 }}>
-                      <Btn type="approve" onClick={() => toggleApproved(trip.id, false)}>Approve</Btn>
-                      <Btn type="reject"  onClick={() => deleteTrip(trip.id)}>Reject</Btn>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
+          <>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+              <span style={{ fontSize:13, color:'#666' }}>
+                {pending.length === 0 ? 'All caught up.' : `${pending.length} listing${pending.length > 1 ? 's' : ''} waiting — oldest first`}
+              </span>
+              {pending.length > 0 && (
+                <button
+                  style={{ ...btn.base, ...btn.approve }}
+                  onClick={async () => {
+                    if (!window.confirm(`Approve all ${pending.length} pending listings?`)) return
+                    const ids = pending.map(t => t.id)
+                    const { error } = await supabase.from('trips').update({ approved: true }).in('id', ids)
+                    if (!error) {
+                      setTrips(prev => prev.map(t => ids.includes(t.id) ? { ...t, approved: true } : t))
+                      showToast(`✓ ${ids.length} listings approved`)
+                    }
+                  }}
+                >
+                  ✓ Approve All
+                </button>
+              )}
+            </div>
+            <div className="admin-table-scroll">
+            <table style={s.table}>
+              <thead>
+                <tr>{['Traveler','Route','Travel Date','Space','Price','Submitted','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
+              </thead>
+              <tbody>
+                {pending.length === 0 ? (
+                  <tr><td colSpan={7} style={{ ...s.td, textAlign:'center', color:'#555' }}>No listings pending approval.</td></tr>
+                ) : [...pending].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).map(trip => {
+                  const submittedAt = trip.created_at ? new Date(trip.created_at) : null
+                  const daysAgo = submittedAt ? Math.floor((Date.now() - submittedAt) / 86400000) : null
+                  const ageLabel = daysAgo === null ? '—' : daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : `${daysAgo}d ago`
+                  const isOld = daysAgo !== null && daysAgo >= 3
+                  return (
+                    <tr key={trip.id}>
+                      <td style={s.td}>
+                        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                          <div style={{ width:34, height:34, borderRadius:'50%', background: trip.bg || '#C8810A', color: trip.color || '#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700 }}>
+                            {trip.initials || trip.name?.slice(0,2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight:600, color:'#fff' }}>{trip.name}</div>
+                            <div style={{ fontSize:11, color:'#555' }}>{trip.phone || '—'}</div>
+                          </div>
+                          {flagged(trip) && <span style={{ fontSize:10, background:'rgba(251,191,36,.15)', color:'#fbbf24', borderRadius:4, padding:'1px 6px', fontWeight:700 }}>FLAGGED</span>}
+                        </div>
+                      </td>
+                      <td style={{ ...s.td, color:'#aaa' }}>{trip.from_city} → {trip.to_city}</td>
+                      <td style={{ ...s.td, color:'#aaa' }}>{trip.date || '—'}</td>
+                      <td style={{ ...s.td, color:'#aaa' }}>{trip.space ? `~${trip.space} kg` : '—'}</td>
+                      <td style={{ ...s.td, color:'#C8810A', fontWeight:600 }}>{trip.price || '—'}</td>
+                      <td style={{ ...s.td }}>
+                        <span style={{ fontSize:12, fontWeight:600, color: isOld ? '#f87171' : '#aaa' }}>
+                          {ageLabel}
+                        </span>
+                      </td>
+                      <td style={s.td}>
+                        <div style={{ display:'flex', gap:6 }}>
+                          <Btn type="approve" onClick={() => toggleApproved(trip.id, false)}>Approve</Btn>
+                          <Btn type="reject"  onClick={() => deleteTrip(trip.id)}>Reject</Btn>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            </div>
+          </>
         )}
 
         {/* FACEBOOK GP POSTS TAB */}
