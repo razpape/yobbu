@@ -307,7 +307,10 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       return matchDest && matchFrom && matchDate && matchVerify && matchPrice
     })
 
+    const avOrder = { open: 0, full: 1, unavailable: 2 }
     return [...filtered].sort((a, b) => {
+      const avDiff = (avOrder[a.availability_status] ?? 0) - (avOrder[b.availability_status] ?? 0)
+      if (avDiff !== 0) return avDiff
       if (sortBy === 'rating') return (Number(b.rating)||0) - (Number(a.rating)||0)
       if (sortBy === 'price')  return (parseFloat(String(a.price))||0) - (parseFloat(String(b.price))||0)
       return 0

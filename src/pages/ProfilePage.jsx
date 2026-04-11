@@ -79,6 +79,11 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     if (!error) setTrips(prev => prev.filter(tr => tr.id !== id))
   }
 
+  async function updateAvailability(id, status) {
+    const { error } = await supabase.from('trips').update({ availability_status: status }).eq('id', id).eq('user_id', user.id)
+    if (!error) setTrips(prev => prev.map(tr => tr.id === id ? { ...tr, availability_status: status } : tr))
+  }
+
   async function saveEdit() {
     if (!editingTrip) return
     setSaving(true)
@@ -167,6 +172,40 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 </span>
               ))}
             </div>
+            {/* Availability toggle */}
+            {trip.approved && !trip.suspended && (() => {
+              const av = trip.availability_status || 'open'
+              const opts = [
+                { key: 'open',        label: isFr ? 'Disponible' : 'Open',        dot: '#22c55e', bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
+                { key: 'full',        label: isFr ? 'Complet' : 'Full',           dot: '#f59e0b', bg: '#FFF8EB', border: '#F0C878', color: '#7C4E0A' },
+                { key: 'unavailable', label: isFr ? 'Indisponible' : 'Unavailable', dot: '#DC2626', bg: '#FEF2F2', border: '#FECACA', color: '#991B1B' },
+              ]
+              return (
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+                    {isFr ? 'Statut de disponibilité' : 'Availability status'}
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {opts.map(o => (
+                      <button key={o.key} onClick={() => updateAvailability(trip.id, o.key)}
+                        style={{
+                          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                          padding: '7px 6px', borderRadius: 8, cursor: 'pointer',
+                          fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 700,
+                          background: av === o.key ? o.bg : '#F5F3EF',
+                          border: `1.5px solid ${av === o.key ? o.border : '#E5E1DB'}`,
+                          color: av === o.key ? o.color : '#8A8070',
+                          transition: 'all .15s',
+                        }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: av === o.key ? o.dot : '#C0B8B0', flexShrink: 0 }} />
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setEditingTrip(trip)}

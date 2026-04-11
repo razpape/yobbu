@@ -22,6 +22,10 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
   const initials = gp.initials || gp.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
   const price    = formatPrice(gp.price)
   const accentColor = gp.color || '#C8891C'
+  const avStatus = gp.availability_status || 'open'
+  const isFull = avStatus === 'full'
+  const isUnavailable = avStatus === 'unavailable'
+  const isDimmed = isFull || isUnavailable
 
   const daysLabel = (() => {
     if (!gp.date) return null
@@ -60,15 +64,16 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          background: '#fff',
+          background: isDimmed ? '#FAFAF8' : '#fff',
           borderRadius: 16,
-          border: '1.5px solid ' + (hovered ? '#D4C4A8' : '#EDEAE4'),
+          border: '1.5px solid ' + (hovered && !isDimmed ? '#D4C4A8' : '#EDEAE4'),
           overflow: 'hidden',
-          cursor: 'pointer',
+          cursor: isDimmed ? 'default' : 'pointer',
           fontFamily: "'DM Sans', sans-serif",
           transition: 'box-shadow .2s, transform .2s, border-color .2s',
-          boxShadow: hovered ? '0 8px 32px rgba(0,0,0,.09)' : '0 1px 4px rgba(0,0,0,.04)',
-          transform: hovered ? 'translateY(-1px)' : 'none',
+          boxShadow: hovered && !isDimmed ? '0 8px 32px rgba(0,0,0,.09)' : '0 1px 4px rgba(0,0,0,.04)',
+          transform: hovered && !isDimmed ? 'translateY(-1px)' : 'none',
+          opacity: isDimmed ? 0.6 : 1,
           marginBottom: 10,
         }}
       >
@@ -114,6 +119,17 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                   {gp.phone_verified ? (isFr ? 'Vérifié' : 'Verified') : (isFr ? 'Non vérifié' : 'Unverified')}
                 </span>
               </div>
+              {avStatus !== 'open' && (
+                <div style={{
+                  marginTop: 5, fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.06em',
+                  padding: '2px 7px', borderRadius: 4, textAlign: 'center',
+                  background: isFull ? '#FFF8EB' : '#FEF2F2',
+                  color: isFull ? '#7C4E0A' : '#991B1B',
+                  border: `1px solid ${isFull ? '#F0C878' : '#FECACA'}`,
+                }}>
+                  {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indispo' : 'Unavail.')}
+                </div>
+              )}
             </div>
           </div>
 
@@ -200,7 +216,18 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               )}
             </div>
 
-            {gp.phone_verified ? (
+            {isDimmed ? (
+              <div style={{
+                width: '100%', padding: '8px 10px', borderRadius: 9,
+                background: isFull ? '#FFF8EB' : '#FEF2F2',
+                border: `1px solid ${isFull ? '#F0C878' : '#FECACA'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: isFull ? '#7C4E0A' : '#991B1B', whiteSpace: 'nowrap' }}>
+                  {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
+                </span>
+              </div>
+            ) : gp.phone_verified ? (
               <button
                 onClick={handleContact}
                 style={{

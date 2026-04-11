@@ -16,9 +16,10 @@ function rowToTrip(row, profile = {}) {
     price:            row.price,
     phone:            row.phone,
     note:             row.note,
-    pickup_area:      row.pickup_area,
-    dropoff_area:     row.dropoff_area,
-    flight_number:    row.flight_number,
+    pickup_area:        row.pickup_area,
+    dropoff_area:       row.dropoff_area,
+    flight_number:      row.flight_number,
+    availability_status: row.availability_status || 'open',
     rating:           row.rating,
     trips:            row.trips_count,
     delivered:        row.delivered,
@@ -69,34 +70,42 @@ export function useTrips() {
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
 
-  // Fetch all trips on mount
-  useEffect(() => {
-    async function fetchTrips() {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('trips')
-        .select('*')
-        .order('created_at', { ascending: false })
+  async function fetchTrips() {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('trips')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-      if (error) {
-        setError(error.message)
-      } else {
-        // Fetch whatsapp_verified for all trip owners in one query
-        const userIds = [...new Set(data.map(r => r.user_id).filter(Boolean))]
-        let profileMap = {}
-        if (userIds.length) {
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, whatsapp_verified, phone')
-            .in('id', userIds)
-          profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
-        }
-        setTrips(data.map(row => rowToTrip(row, profileMap[row.user_id] || {})))
+    if (error) {
+      setError(error.message)
+    } else {
+      const userIds = [...new Set(data.map(r => r.user_id).filter(Boolean))]
+      let profileMap = {}
+      if (userIds.length) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, whatsapp_verified, phone')
+          .in('id', userIds)
+        profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
       }
-      setLoading(false)
+      setTrips(data.map(row => rowToTrip(row, profileMap[row.user_id] || {})))
     }
+    setLoading(false)
+  }
 
+  // Fetch on mount + realtime subscription
+  useEffect(() => {
     fetchTrips()
+
+    const channel = supabase
+      .channel('trips-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trips' }, () => {
+        fetchTrips()
+      })
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
   }, [])
 
   // Insert a new trip
