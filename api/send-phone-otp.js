@@ -23,6 +23,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`[send] phone="${phone}"`)
+
     // Send OTP via Twilio Verify
     const response = await fetch(
       `https://verify.twilio.com/v2/Services/${verifyServiceSid}/Verifications`,
@@ -32,7 +34,7 @@ export default async function handler(req, res) {
           'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({ To: phone, Channel: 'sms' }),
+        body: new URLSearchParams({ To: phone, Channel: 'sms', Ttl: '1800' }),
       }
     )
 
@@ -43,7 +45,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: data.message || 'Failed to send code' })
     }
 
-    console.log(`Verify OTP sent to ${phone}, status: ${data.status}`)
+    console.log(`Verify OTP sent to ${phone}, status: ${data.status}, sid: ${data.sid}`)
 
     // Check if user already exists
     const { data: existingUser } = await supabase
@@ -56,6 +58,7 @@ export default async function handler(req, res) {
       success: true,
       message: 'Verification code sent',
       isNewUser: !existingUser,
+      verificationSid: data.sid,
     })
 
   } catch (err) {

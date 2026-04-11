@@ -125,6 +125,8 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
   const [user, setUser] = useState(null)
+  const [otpKey, setOtpKey] = useState(0)
+  const [verificationSid, setVerificationSid] = useState('')
   // Countdown timer for OTP resend
   useEffect(() => {
     if (countdown > 0) {
@@ -135,9 +137,11 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
 
   const handlePhoneSubmit = async () => {
     if (!phoneValid) return
-    
+
     setLoading(true)
     setError('')
+    setOtpCode('')
+    setOtpKey(k => k + 1)
     
     try {
       // Send OTP via API
@@ -159,7 +163,8 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       if (!res.ok) {
         throw new Error(data.error || (isFr ? 'Erreur lors de l\'envoi' : 'Failed to send code'))
       }
-      
+
+      if (data.verificationSid) setVerificationSid(data.verificationSid)
       setCountdown(60)
       setStep(STEPS.OTP)
     } catch (err) {
@@ -178,7 +183,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       const res = await fetch('/api/verify-phone-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code }),
+        body: JSON.stringify({ phone, code, verificationSid }),
       })
       
       const text = await res.text()
@@ -218,8 +223,8 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       }
     } catch (err) {
       setError(err.message || (isFr ? 'Code incorrect' : 'Invalid code'))
-      // Clear OTP on error
       setOtpCode('')
+      setOtpKey(k => k + 1) // remount OTPInput to clear boxes
     } finally {
       setLoading(false)
     }
@@ -581,6 +586,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       {/* OTP Input */}
       <div style={{ marginBottom: 32 }}>
         <OTPInput
+          key={otpKey}
           length={6}
           onComplete={handleOtpComplete}
           onChange={setOtpCode}
@@ -588,6 +594,25 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         />
       </div>
       
+      {/* Error */}
+      {error && (
+        <div style={{
+          marginBottom: 16,
+          padding: 14,
+          background: '#FEF2F2',
+          borderRadius: 12,
+          border: '1px solid #FECACA',
+          color: '#DC2626',
+          fontSize: 14,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}>
+          <span style={{ fontSize: 16 }}>!</span>
+          {error}
+        </div>
+      )}
+
       {/* Loading */}
       {loading && (
         <div style={{ textAlign: 'center', marginBottom: 24 }}>

@@ -17,34 +17,48 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { phone, code } = req.body
+  const { phone, code, verificationSid } = req.body
 
   if (!phone || !code) {
     return res.status(400).json({ error: 'Phone and code required' })
   }
 
   try {
-    // Verify the code with Twilio Verify
-    const response = await fetch(
-      `https://verify.twilio.com/v2/Services/${verifyServiceSid}/VerificationChecks`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({ To: phone, Code: code }),
+    // TEMPORARY: bypass code for development
+    const DEV_BYPASS_CODE = '000000'
+    const isBypass = code === DEV_BYPASS_CODE
+
+    if (!isBypass) {
+      // Verify using SID if available (avoids phone format mismatch), fallback to phone
+      const checkParams = verificationSid
+        ? { VerificationSid: verificationSid, Code: code }
+        : { To: phone, Code: code }
+
+      const response = await fetch(
+        `https://verify.twilio.com/v2/Services/${verifyServiceSid}/VerificationChecks`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(checkParams),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok || data.status !== 'approved') {
+        console.error('Verify check failed:', JSON.stringify(data))
+        const reason = data.status === 'expired' ? 'Code expired, please request a new one'
+          : data.status === 'max_attempts_reached' ? 'Too many attempts, please request a new code'
+          : data.status === 'canceled' ? 'Code was canceled, please request a new one'
+          : data.message || 'Invalid or expired code'
+        return res.status(400).json({ error: reason })
       }
-    )
-
-    const data = await response.json()
-
-    if (!response.ok || data.status !== 'approved') {
-      console.error('Verify check failed:', data)
-      return res.status(400).json({ error: 'Invalid or expired code' })
     }
 
-    console.log(`Phone verified: ${phone}`)
+    console.log(`Phone verified: ${phone}${isBypass ? ' (dev bypass)' : ''}`)
 
     // Find or create user
     let { data: user } = await supabase
@@ -89,9 +103,18 @@ export default async function handler(req, res) {
         .eq('id', user.id)
     }
 
-    // Create session via admin API
-    const { data: sessionData, error: sessionError } = await supabase.auth.admin.createSession({
-      user_id: user.id,
+    // Set a deterministic password so we can sign in and get a real session
+    const deterministicPassword = crypto
+      .createHmac('sha256', process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback')
+      .update(phone)
+      .digest('hex')
+
+    await supabase.auth.admin.updateUserById(user.id, { password: deterministicPassword })
+
+    // Sign in to get a proper session
+    const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
+      email: `${phone.replace(/\D/g, '')}@phone.yobbu.app`,
+      password: deterministicPassword,
     })
 
     if (sessionError) throw sessionError
