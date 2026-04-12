@@ -27,7 +27,16 @@ for (const file of files) {
   }
 }
 
-const PORT = 3001
-app.listen(PORT, () => {
+const PORT = process.env.API_PORT || 3001
+const server = app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`)
+})
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Port ${PORT} is already in use.\nClose all terminals, open a fresh one, and run: npm run dev\n`)
+  } else {
+    console.error('Server error:', err.message)
+  }
+  process.exit(1)
 })
