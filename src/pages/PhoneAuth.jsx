@@ -1,128 +1,262 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
-import { Package, Smartphone, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Package, Smartphone, ArrowLeft, CheckCircle, Send, Plane, Users } from 'lucide-react'
 import PhoneInput from '../components/auth/PhoneInput'
 import OTPInput from '../components/auth/OTPInput'
 
-function ProfileStep({ isFr, onComplete }) {
+const inputStyle = {
+  width: '100%', padding: '13px 14px',
+  border: '2px solid #E0DAD0', borderRadius: 12,
+  fontSize: 15, outline: 'none', boxSizing: 'border-box',
+  fontFamily: "'DM Sans', sans-serif",
+  transition: 'border-color .2s', background: '#fff',
+}
+
+function ProfileStep({ isFr, phone, onComplete }) {
+  const [sub, setSub]           = useState(1) // 1=name/role, 2=whatsapp, 3=terms
   const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [role, setRole] = useState('')
+  const [lastName, setLastName]   = useState('')
+  const [role, setRole]           = useState('')
+  const [whatsapp, setWhatsapp]   = useState(phone || '')
+  const [termsAccepted, setTerms] = useState(false)
 
-  const canContinue = firstName.trim() && role
+  const roles = [
+    {
+      id: 'sender',
+      icon: <Send size={20} color={role === 'sender' ? '#C8891C' : '#8A8070'} />,
+      title: isFr ? 'J\'envoie des colis' : 'I send packages',
+      desc: isFr ? 'Je cherche des voyageurs pour porter mes colis.' : 'I need travelers to carry packages for me.',
+    },
+    {
+      id: 'traveler',
+      icon: <Plane size={20} color={role === 'traveler' ? '#C8891C' : '#8A8070'} />,
+      title: isFr ? 'Je voyage avec de la place' : 'I travel with space to spare',
+      desc: isFr ? 'Je transporte des colis quand je voyage.' : 'I carry packages when I travel.',
+    },
+    {
+      id: 'both',
+      icon: <Users size={20} color={role === 'both' ? '#C8891C' : '#8A8070'} />,
+      title: isFr ? 'Les deux' : 'Both',
+      desc: isFr ? 'J\'envoie et je transporte selon les occasions.' : 'I do both depending on the situation.',
+    },
+  ]
 
-  return (
-    <div style={{ padding: '40px 28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
-        {isFr ? 'Completez votre profil' : 'Complete your profile'}
+  const label = (text) => (
+    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#3D3829', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
+      {text}
+    </label>
+  )
+
+  const continueBtn = (onClick, disabled, text) => (
+    <button onClick={onClick} disabled={disabled} style={{
+      width: '100%', padding: '15px 24px',
+      background: !disabled ? '#C8891C' : '#E0DAD0',
+      color: !disabled ? '#fff' : '#A09080',
+      border: 'none', borderRadius: 14, fontSize: 16, fontWeight: 600,
+      cursor: !disabled ? 'pointer' : 'not-allowed',
+      fontFamily: "'DM Sans', sans-serif", transition: 'all .2s',
+    }}>
+      {text}
+    </button>
+  )
+
+  const subBack = () => setSub(s => s - 1)
+
+  // Sub-step progress dots
+  const dots = (
+    <div style={{ display: 'flex', gap: 6, marginBottom: 28 }}>
+      {[1,2,3].map(n => (
+        <div key={n} style={{
+          height: 4, flex: 1, borderRadius: 2,
+          background: n <= sub ? '#C8891C' : '#E0DAD0',
+          transition: 'background .2s',
+        }} />
+      ))}
+    </div>
+  )
+
+  // ── Sub-step 1: Name + Role ──
+  if (sub === 1) return (
+    <div style={{ padding: '32px 28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {dots}
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 4, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Bienvenue ! Présentez-vous.' : 'Welcome! Tell us about yourself.'}
       </h2>
-      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 28, fontFamily: "'DM Sans', sans-serif" }}>
-        {isFr ? 'Comment devrions-nous vous appeler ?' : 'What should we call you?'}
+      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 24, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Étape 1 sur 3' : 'Step 1 of 3'}
       </p>
 
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#3D3829', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
-          {isFr ? 'Prenom' : 'First Name'}
-        </label>
+      <div style={{ marginBottom: 14 }}>
+        {label(isFr ? 'Prénom *' : 'First name *')}
         <input
-          type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder={isFr ? 'Votre prenom' : 'Your first name'}
-          style={{
-            width: '100%', padding: '13px 14px',
-            border: '2px solid #E0DAD0', borderRadius: 12,
-            fontSize: 15, outline: 'none', boxSizing: 'border-box',
-            fontFamily: "'DM Sans', sans-serif",
-            transition: 'border-color .2s',
-          }}
+          type="text" value={firstName} onChange={e => setFirstName(e.target.value)}
+          placeholder={isFr ? 'Ex: Aminata' : 'e.g. Aminata'}
+          style={inputStyle}
           onFocus={e => e.target.style.borderColor = '#C8891C'}
           onBlur={e => e.target.style.borderColor = '#E0DAD0'}
         />
       </div>
 
       <div style={{ marginBottom: 24 }}>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#3D3829', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
-          {isFr ? 'Nom (optionnel)' : 'Last Name (optional)'}
-        </label>
+        {label(isFr ? 'Nom (optionnel)' : 'Last name (optional)')}
         <input
-          type="text"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder={isFr ? 'Votre nom' : 'Your last name'}
-          style={{
-            width: '100%', padding: '13px 14px',
-            border: '2px solid #E0DAD0', borderRadius: 12,
-            fontSize: 15, outline: 'none', boxSizing: 'border-box',
-            fontFamily: "'DM Sans', sans-serif",
-            transition: 'border-color .2s',
-          }}
+          type="text" value={lastName} onChange={e => setLastName(e.target.value)}
+          placeholder={isFr ? 'Ex: Diallo' : 'e.g. Diallo'}
+          style={inputStyle}
           onFocus={e => e.target.style.borderColor = '#C8891C'}
           onBlur={e => e.target.style.borderColor = '#E0DAD0'}
         />
       </div>
 
-      <p style={{ fontSize: 13, fontWeight: 600, color: '#3D3829', marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
-        {isFr ? 'Je veux :' : 'I want to:'}
+      <p style={{ fontSize: 13, fontWeight: 700, color: '#3D3829', marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Je souhaite :' : 'I am here to:'}
       </p>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
-        {[
-          { id: 'sender',   label: isFr ? 'Envoyer des colis'      : 'Send packages' },
-          { id: 'traveler', label: isFr ? 'Voyager avec des colis'  : 'Travel with packages' },
-          { id: 'both',     label: isFr ? 'Les deux'                : 'Both' },
-        ].map((option) => (
-          <label
-            key={option.id}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '12px 14px',
-              border: `2px solid ${role === option.id ? '#C8891C' : '#E0DAD0'}`,
-              borderRadius: 12,
-              background: role === option.id ? '#FDF6ED' : '#fff',
-              cursor: 'pointer',
-              transition: 'all .15s',
-              fontFamily: "'DM Sans', sans-serif",
-            }}
-          >
-            <input
-              type="radio" name="role" value={option.id}
-              checked={role === option.id}
-              onChange={() => setRole(option.id)}
-              style={{ width: 18, height: 18, accentColor: '#C8891C' }}
-            />
-            <span style={{ fontSize: 14, color: '#1A1710', fontWeight: 500 }}>{option.label}</span>
-          </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+        {roles.map(opt => (
+          <button key={opt.id} onClick={() => setRole(opt.id)} style={{
+            display: 'flex', alignItems: 'flex-start', gap: 14,
+            padding: '14px 16px', textAlign: 'left',
+            border: `2px solid ${role === opt.id ? '#C8891C' : '#E0DAD0'}`,
+            borderRadius: 14,
+            background: role === opt.id ? '#FDF6ED' : '#fff',
+            cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+            transition: 'all .15s',
+          }}>
+            <div style={{ marginTop: 2, flexShrink: 0 }}>{opt.icon}</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710', marginBottom: 2 }}>{opt.title}</div>
+              <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.4 }}>{opt.desc}</div>
+            </div>
+            {role === opt.id && (
+              <div style={{ marginLeft: 'auto', marginTop: 2, flexShrink: 0 }}>
+                <CheckCircle size={18} color="#C8891C" />
+              </div>
+            )}
+          </button>
         ))}
       </div>
 
-      <div style={{ marginTop: 'auto', paddingTop: 16 }}>
-        <button
-          onClick={() => onComplete({ firstName: firstName.trim(), lastName: lastName.trim(), role })}
-          disabled={!canContinue}
-          style={{
-            width: '100%', padding: '15px 24px',
-            background: canContinue ? '#C8891C' : '#E0DAD0',
-            color: canContinue ? '#fff' : '#A09080',
-            border: 'none', borderRadius: 14, fontSize: 16, fontWeight: 600,
-            cursor: canContinue ? 'pointer' : 'not-allowed',
-            fontFamily: "'DM Sans', sans-serif",
-            transition: 'all .2s',
-          }}
-        >
-          {isFr ? 'Continuer' : 'Continue'}
-        </button>
+      <div style={{ marginTop: 'auto' }}>
+        {continueBtn(() => setSub(2), !firstName.trim() || !role, isFr ? 'Continuer →' : 'Continue →')}
+      </div>
+    </div>
+  )
 
-        <button
-          onClick={() => onComplete({ firstName: firstName.trim() || 'User', lastName: '', role: 'both' })}
-          style={{
-            width: '100%', marginTop: 10, padding: '10px',
-            background: 'transparent', color: '#8A8070', border: 'none',
-            fontSize: 13, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-          }}
-        >
-          {isFr ? "Passer pour l'instant" : 'Skip for now'}
+  // ── Sub-step 2: WhatsApp number ──
+  if (sub === 2) return (
+    <div style={{ padding: '32px 28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {dots}
+      <button onClick={subBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6, color: '#8A8070', fontFamily: "'DM Sans', sans-serif", fontSize: 13 }}>
+        <ArrowLeft size={16} /> {isFr ? 'Retour' : 'Back'}
+      </button>
+
+      <div style={{ width: 52, height: 52, background: '#F0FDF4', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 4, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Votre numéro WhatsApp' : 'Your WhatsApp number'}
+      </h2>
+      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Étape 2 sur 3' : 'Step 2 of 3'}
+      </p>
+      <p style={{ fontSize: 13, color: '#8A8070', marginBottom: 24, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr
+          ? 'Les expéditeurs et voyageurs vous contacteront via WhatsApp. Pré-rempli avec votre numéro de connexion — changez-le si nécessaire.'
+          : 'Senders and travelers will contact you via WhatsApp. Pre-filled with your sign-in number — change it if needed.'}
+      </p>
+
+      <div style={{ marginBottom: 24 }}>
+        {label(isFr ? 'Numéro WhatsApp' : 'WhatsApp number')}
+        <input
+          type="tel" value={whatsapp} onChange={e => setWhatsapp(e.target.value)}
+          placeholder="+1 555 000 0000"
+          style={inputStyle}
+          onFocus={e => e.target.style.borderColor = '#25D366'}
+          onBlur={e => e.target.style.borderColor = '#E0DAD0'}
+        />
+        <p style={{ fontSize: 12, color: '#8A8070', marginTop: 6, fontFamily: "'DM Sans', sans-serif" }}>
+          {isFr ? 'Format international : +33 6 12 34 56 78' : 'International format: +1 555 000 0000'}
+        </p>
+      </div>
+
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {continueBtn(() => setSub(3), !whatsapp.trim(), isFr ? 'Continuer →' : 'Continue →')}
+        <button onClick={() => { setWhatsapp(''); setSub(3) }} style={{
+          background: 'none', border: 'none', color: '#8A8070', fontSize: 13,
+          cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", padding: '8px',
+        }}>
+          {isFr ? "Je n'ai pas WhatsApp — passer" : "I don't use WhatsApp — skip"}
         </button>
+      </div>
+    </div>
+  )
+
+  // ── Sub-step 3: Terms ──
+  return (
+    <div style={{ padding: '32px 28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {dots}
+      <button onClick={subBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6, color: '#8A8070', fontFamily: "'DM Sans', sans-serif", fontSize: 13 }}>
+        <ArrowLeft size={16} /> {isFr ? 'Retour' : 'Back'}
+      </button>
+
+      <div style={{ width: 52, height: 52, background: '#FFF8EB', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+      </div>
+
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 4, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Presque prêt !' : 'Almost done!'}
+      </h2>
+      <p style={{ fontSize: 14, color: '#8A8070', marginBottom: 24, fontFamily: "'DM Sans', sans-serif" }}>
+        {isFr ? 'Étape 3 sur 3' : 'Step 3 of 3'}
+      </p>
+
+      {/* Summary card */}
+      <div style={{ background: '#F9F7F3', borderRadius: 14, padding: '16px 18px', marginBottom: 24, border: '1px solid #E8E0D4' }}>
+        <div style={{ fontSize: 13, color: '#8A8070', marginBottom: 8, fontFamily: "'DM Sans', sans-serif" }}>
+          {isFr ? 'Résumé de votre compte' : 'Your account summary'}
+        </div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#1A1710', fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>
+          {firstName} {lastName}
+        </div>
+        <div style={{ fontSize: 13, color: '#8A8070', fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>
+          {roles.find(r => r.id === role)?.title}
+        </div>
+        {whatsapp && (
+          <div style={{ fontSize: 13, color: '#25D366', fontFamily: "'DM Sans', sans-serif" }}>
+            WhatsApp: {whatsapp}
+          </div>
+        )}
+      </div>
+
+      {/* Terms checkbox */}
+      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', marginBottom: 24, padding: '14px 16px', border: `2px solid ${termsAccepted ? '#C8891C' : '#E0DAD0'}`, borderRadius: 14, background: termsAccepted ? '#FDF6ED' : '#fff', transition: 'all .15s' }}>
+        <input
+          type="checkbox" checked={termsAccepted} onChange={e => setTerms(e.target.checked)}
+          style={{ width: 18, height: 18, accentColor: '#C8891C', flexShrink: 0, marginTop: 2 }}
+        />
+        <span style={{ fontSize: 13, color: '#3D3829', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
+          {isFr
+            ? <>J'ai lu et j'accepte les <strong style={{ color: '#C8891C' }}>Conditions d'utilisation</strong> et la <strong style={{ color: '#C8891C' }}>Politique de confidentialité</strong> de Yobbu.</>
+            : <>I have read and agree to Yobbu's <strong style={{ color: '#C8891C' }}>Terms of Service</strong> and <strong style={{ color: '#C8891C' }}>Privacy Policy</strong>.</>}
+        </span>
+      </label>
+
+      <div style={{ background: '#F0FDF4', borderRadius: 12, padding: '12px 14px', marginBottom: 24, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span style={{ fontSize: 12, color: '#16a34a', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}>
+          {isFr
+            ? 'Votre numéro de téléphone est vérifié. Yobbu ne partage jamais vos données sans votre consentement.'
+            : 'Your phone number is verified. Yobbu never shares your data without your consent.'}
+        </span>
+      </div>
+
+      <div style={{ marginTop: 'auto' }}>
+        {continueBtn(
+          () => onComplete({ firstName: firstName.trim(), lastName: lastName.trim(), role, whatsapp: whatsapp.trim(), termsAcceptedAt: new Date().toISOString() }),
+          !termsAccepted,
+          isFr ? 'Créer mon compte' : 'Create my account'
+        )}
       </div>
     </div>
   )
@@ -256,6 +390,8 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           first_name: profileData.firstName,
           last_name: profileData.lastName,
           role: profileData.role,
+          whatsapp_number: profileData.whatsapp || null,
+          terms_accepted_at: profileData.termsAcceptedAt || null,
         })
         .eq('id', user.id)
 
@@ -532,7 +668,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   )
 
   const renderProfile = () => (
-    <ProfileStep isFr={isFr} onComplete={handleProfileComplete} />
+    <ProfileStep isFr={isFr} phone={phone} onComplete={handleProfileComplete} />
   )
 
   const renderComplete = () => (
