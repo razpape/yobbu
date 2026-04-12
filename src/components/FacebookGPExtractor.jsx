@@ -46,6 +46,7 @@ export default function FacebookGPExtractor({ showToast }) {
   const [errorMsg, setErrorMsg]       = useState('')
   const [saving, setSaving]           = useState(false)
   const [selectedPhone, setSelectedPhone] = useState('')
+  const [serviceType, setServiceType]  = useState('colis_gp')
 
   // Post management
   const [importing, setImporting]     = useState(null)
@@ -167,6 +168,7 @@ export default function FacebookGPExtractor({ showToast }) {
     setConfidence(0)
     setErrorMsg('')
     setSelectedPhone('')
+    setServiceType('colis_gp')
   }
 
   // ── Save & import ─────────────────────────────────────────────────────
@@ -197,6 +199,7 @@ export default function FacebookGPExtractor({ showToast }) {
         price:          rest.price || null,
         note:           noteWithExtras,
         screenshot_url: draftImg,
+        service_type:   serviceType,
         status:         'new',
       })
       .select()
@@ -236,6 +239,7 @@ export default function FacebookGPExtractor({ showToast }) {
       color: colors[idx], bg: bgs[idx],
       phone: post.phone, from_city: post.from_city, to_city: post.to_city,
       date: post.date, space: post.space, price: post.price, note: post.note,
+      service_type: post.service_type || 'colis_gp',
       approved: true, source: 'facebook_ai',
     })
     if (!error) {
@@ -263,6 +267,7 @@ export default function FacebookGPExtractor({ showToast }) {
       from_city: editingPost.from_city, to_city: editingPost.to_city,
       date: editingPost.date, space: editingPost.space,
       price: editingPost.price, note: editingPost.note,
+      service_type: editingPost.service_type || 'colis_gp',
     }).eq('id', editingPost.id)
     if (!error) {
       setPosts(prev => prev.map(p => p.id === editingPost.id ? { ...p, ...editingPost } : p))
@@ -296,8 +301,32 @@ export default function FacebookGPExtractor({ showToast }) {
             <input style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #C8810A', marginBottom:14 }}
               value={editingPost.name || ''} onChange={e => setE('name', e.target.value)} placeholder="Traveler name..." />
             <label style={lbl}>Phone / WhatsApp</label>
-            <input style={{ ...inp, marginBottom:20 }}
+            <input style={{ ...inp, marginBottom:14 }}
               value={editingPost.phone || ''} onChange={e => setE('phone', e.target.value)} placeholder="+1 212 555 0100" />
+
+            <label style={lbl}>Service type</label>
+            <div style={{ display:'flex', gap:8, marginBottom:20 }}>
+              {[
+                { value:'colis_gp',   label:'Colis GP',   icon:'📦' },
+                { value:'containers', label:'Containers', icon:'🚢' },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setE('service_type', opt.value)}
+                  style={{
+                    flex:1, padding:'9px 12px', borderRadius:8, cursor:'pointer',
+                    fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                    background: (editingPost.service_type || 'colis_gp') === opt.value ? 'rgba(200,129,10,.15)' : '#111',
+                    border: `2px solid ${(editingPost.service_type || 'colis_gp') === opt.value ? '#C8810A' : '#333'}`,
+                    color: (editingPost.service_type || 'colis_gp') === opt.value ? '#C8810A' : '#666',
+                    transition:'all .15s',
+                  }}
+                >
+                  {opt.icon} {opt.label}
+                </button>
+              ))}
+            </div>
 
             <div style={{ fontSize:10, color:'#444', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Trip details</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
@@ -375,7 +404,7 @@ export default function FacebookGPExtractor({ showToast }) {
             Upload a Facebook screenshot · GPT-4 Vision extracts all trip details automatically
           </div>
           <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:14, flexWrap:'wrap' }}>
-            {['Name','Phone','Route','Date','Price','Space'].map(tag => (
+            {['Name','Phone','Route','Date','Price','Space','Type'].map(tag => (
               <span key={tag} style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20, background:'rgba(124,58,237,.15)', color:'#A78BFA', border:'1px solid rgba(124,58,237,.25)' }}>
                 {tag}
               </span>
@@ -503,6 +532,33 @@ export default function FacebookGPExtractor({ showToast }) {
                 />
               )}
 
+              {/* ── Service type ── */}
+              <div style={{ marginBottom:14 }}>
+                <label style={lbl}>Service type</label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {[
+                    { value:'colis_gp',   label:'Colis GP',   icon:'📦' },
+                    { value:'containers', label:'Containers', icon:'🚢' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setServiceType(opt.value)}
+                      style={{
+                        flex:1, padding:'9px 12px', borderRadius:8, cursor:'pointer',
+                        fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
+                        display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                        background: serviceType === opt.value ? 'rgba(200,129,10,.15)' : '#111',
+                        border: `2px solid ${serviceType === opt.value ? '#C8810A' : '#333'}`,
+                        color: serviceType === opt.value ? '#C8810A' : '#666',
+                        transition:'all .15s',
+                      }}
+                    >
+                      {opt.icon} {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* ── Trip details ── */}
               <button
                 onClick={() => setShowDetails(s => ({ ...s, draft: !s.draft }))}
@@ -620,8 +676,17 @@ export default function FacebookGPExtractor({ showToast }) {
                   )}
                 </div>
 
-                {(post.from_city || post.to_city || post.date) && (
-                  <div style={{ display:'flex', gap:10, marginTop:6, flexWrap:'wrap' }}>
+                {(post.from_city || post.to_city || post.date || post.service_type) && (
+                  <div style={{ display:'flex', gap:10, marginTop:6, flexWrap:'wrap', alignItems:'center' }}>
+                    {post.service_type && (
+                      <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:6,
+                        background: post.service_type === 'containers' ? 'rgba(24,95,165,.2)' : 'rgba(200,129,10,.15)',
+                        color: post.service_type === 'containers' ? '#60a5fa' : '#C8810A',
+                        border: `1px solid ${post.service_type === 'containers' ? 'rgba(24,95,165,.3)' : 'rgba(200,129,10,.25)'}`,
+                      }}>
+                        {post.service_type === 'containers' ? '🚢 Containers' : '📦 Colis GP'}
+                      </span>
+                    )}
                     {post.from_city && post.to_city && <span style={{ fontSize:11, color:'#C8810A' }}>✈ {post.from_city} → {post.to_city}</span>}
                     {post.date  && <span style={{ fontSize:11, color:'#666' }}>📅 {post.date}</span>}
                     {post.price && <span style={{ fontSize:11, color:'#666' }}>💰 {post.price}</span>}
