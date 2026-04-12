@@ -5,8 +5,8 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
   const isFr = lang === 'fr'
 
   const meta = user?.user_metadata || {}
-  const fullName = meta.full_name || meta.first_name || user?.phone || 'Me'
-  const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+  const fullName = user?.first_name || meta.full_name || user?.phone || 'Me'
+  const initials = (fullName.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2)) || 'ME'
 
   return (
     <>
@@ -113,6 +113,12 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
               style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '13px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {isFr ? '+ Poster un voyage' : '+ Post a trip'}
             </button>
+            {user && (
+              <button onClick={() => { setView('profile'); setMenuOpen(false) }}
+                style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.08)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                {isFr ? 'Mon profil' : 'My profile'}
+              </button>
+            )}
             {user && (
               <button onClick={() => { onSignOut(); setMenuOpen(false) }}
                 style={{ background: 'transparent', color: '#8A8070', border: '1px solid rgba(0,0,0,.08)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, cursor: 'pointer' }}>

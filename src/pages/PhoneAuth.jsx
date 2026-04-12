@@ -668,7 +668,14 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
   )
 
   const renderProfile = () => (
-    <ProfileStep isFr={isFr} phone={phone} onComplete={handleProfileComplete} />
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {error && (
+        <div style={{ margin: '12px 28px 0', padding: '11px 14px', background: '#FEF2F2', borderRadius: 10, border: '1px solid #FECACA', color: '#DC2626', fontSize: 13, fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>
+          {error}
+        </div>
+      )}
+      <ProfileStep isFr={isFr} phone={phone} onComplete={handleProfileComplete} />
+    </div>
   )
 
   const renderComplete = () => (

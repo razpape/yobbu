@@ -6,8 +6,6 @@ import {
   CalendarIcon, PackageIcon, DollarIcon, MapPinIcon,
   UserIcon, GlobeIcon, LogOutIcon, PlusIcon, MailIcon, MessageIcon,
 } from '../components/Icons'
-import WhatsAppVerificationReminder from '../components/WhatsAppVerificationReminder'
-import WhatsAppInboundVerification from '../components/WhatsAppInboundVerification'
 import TrustBadges from '../components/TrustBadges'
 import IDVerificationUpload from '../components/IDVerificationUpload'
 import SocialProfileLinks from '../components/SocialProfileLinks'
@@ -52,12 +50,11 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [loading, setLoading]         = useState(true)
   const [editingTrip, setEditingTrip] = useState(null)
   const [saving, setSaving]           = useState(false)
-  const [showWaVerification, setShowWaVerification] = useState(false)
-
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
-  const fullName = meta.full_name || meta.name || `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || 'My Profile'
+  const fullName = (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null)
+    || meta.full_name || meta.name || 'My Profile'
   const contact  = user?.email || user?.phone || '—'
   const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'YB'
   const joinDate = user?.created_at
@@ -558,8 +555,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
         {/* ── MAIN CONTENT ── */}
         <div>
-          <WhatsAppVerificationReminder user={user} lang={lang} onVerifyClick={() => setShowWaVerification(true)} />
-
           {/* Stats row — desktop only (mobile has it in hero) */}
           <div className="pf-desktop-header" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, margin: '12px 0' }}>
             {[
@@ -615,15 +610,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         </button>
       </div>
 
-      {/* WhatsApp Verification Modal */}
-      {showWaVerification && (
-        <WhatsAppInboundVerification
-          user={user}
-          lang={lang}
-          onClose={() => setShowWaVerification(false)}
-          onVerified={() => setShowWaVerification(false)}
-        />
-      )}
     </div>
   )
 }
