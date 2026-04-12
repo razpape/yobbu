@@ -346,7 +346,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(200, 137, 28, 0.3)' }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(200, 137, 28, 0.25)' }}
       >
-        {isFr ? 'Continuer avec le telephone' : 'Continue with Phone'}
+        {isFr ? 'Continuer avec mon numero' : 'Continue with my number'}
       </button>
 
       <button

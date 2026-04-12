@@ -88,34 +88,10 @@ export default async function handler(req, res) {
           error: 'Twilio has temporarily rate-limited this number. Please try a different number or wait 24 hours.'
         })
       }
-      if (data.code === 60203) {
-        // CustomCode not enabled — fall back to Twilio-generated code
-        // User will receive a different code than what's in DB, so we skip DB verification
-        await supabase.from('otp_codes').delete().eq('phone', phone)
-        const fallback = await fetch(
-          `https://verify.twilio.com/v2/Services/${twilioVerifySid}/Verifications`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({ To: phone, Channel: 'sms' }),
-          }
-        )
-        const fallbackData = await fallback.json()
-        if (!fallback.ok) {
-          return res.status(400).json({ error: fallbackData.message || 'Failed to send code' })
-        }
-        // Store SID so verify endpoint can check against Twilio
-        await supabase.from('otp_codes').insert({ phone, code: '__twilio__', expires_at: expiresAt, sid: fallbackData.sid })
-        console.log(`[OTP] Fallback (Twilio-managed) sent | SID: ${fallbackData.sid}`)
-      } else {
-        return res.status(400).json({ error: data.message || 'Failed to send code' })
-      }
-    } else {
-      console.log(`[OTP] Sent to ${phone} | SID: ${data.sid} | custom code`)
+      return res.status(400).json({ error: data.message || 'Failed to send code' })
     }
+
+    console.log(`[OTP] Sent to ${phone} | SID: ${data.sid}`)
 
     const { data: existingUser } = await supabase
       .from('profiles').select('id').eq('phone', phone).maybeSingle()
