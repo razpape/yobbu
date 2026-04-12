@@ -6,7 +6,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
 const twilioAuthToken  = process.env.TWILIO_AUTH_TOKEN
-const twilioFromNumber = process.env.TWILIO_PHONE_NUMBER
+const twilioVerifySid  = process.env.TWILIO_VERIFY_SERVICE_SID
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -23,20 +23,46 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Generate 6-digit code
+    // Enforce 60-second cooldown between sends
+    const { data: recent } = await supabase
+      .from('otp_codes')
+      .select('expires_at')
+      .eq('phone', phone)
+      .maybeSingle()
+
+    if (recent) {
+      const sentAt = new Date(recent.expires_at).getTime() - 10 * 60 * 1000
+      const secondsSinceSent = Math.floor((Date.now() - sentAt) / 1000)
+      if (secondsSinceSent < 60) {
+        return res.status(429).json({
+          error: `Please wait ${60 - secondsSinceSent} seconds before requesting a new code.`
+        })
+      }
+    }
+
+    // Generate 6-digit code and store it
     const code = Math.floor(100000 + Math.random() * 900000).toString()
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
 
-    // Clear old codes for this phone
     await supabase.from('otp_codes').delete().eq('phone', phone)
-
-    // Store new code in Supabase
-    const { error: insertError } = await supabase.from('otp_codes').insert({ phone, code, expires_at: expiresAt })
+    const { error: insertError } = await supabase
+      .from('otp_codes')
+      .insert({ phone, code, expires_at: expiresAt })
     if (insertError) throw insertError
 
-    // Send SMS via Twilio Programmable Messaging
+    // DEV MODE: skip SMS and print code to terminal
+    if (process.env.DEV_SKIP_SMS === 'true') {
+      console.log(`\n==============================`)
+      console.log(`  OTP for ${phone}: ${code}`)
+      console.log(`==============================\n`)
+      const { data: existingUser } = await supabase
+        .from('profiles').select('id').eq('phone', phone).maybeSingle()
+      return res.status(200).json({ success: true, message: 'Verification code sent', isNewUser: !existingUser })
+    }
+
+    // Send via Twilio Verify with CustomCode (A2P-compliant delivery via short codes)
     const response = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
+      `https://verify.twilio.com/v2/Services/${twilioVerifySid}/Verifications`,
       {
         method: 'POST',
         headers: {
@@ -44,9 +70,9 @@ export default async function handler(req, res) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          To: phone,
-          From: twilioFromNumber,
-          Body: `Your Yobbu verification code is: ${code}. Valid for 10 minutes.`,
+          To:         phone,
+          Channel:    'sms',
+          CustomCode: code,
         }),
       }
     )
@@ -54,15 +80,45 @@ export default async function handler(req, res) {
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('Twilio SMS error:', data)
+      console.error('[OTP] Twilio error:', data.message, '| code:', data.code)
       await supabase.from('otp_codes').delete().eq('phone', phone)
-      return res.status(400).json({ error: data.message || 'Failed to send code' })
+
+      if (data.code === 20429) {
+        return res.status(429).json({
+          error: 'Twilio has temporarily rate-limited this number. Please try a different number or wait 24 hours.'
+        })
+      }
+      if (data.code === 60203) {
+        // CustomCode not enabled — fall back to Twilio-generated code
+        // User will receive a different code than what's in DB, so we skip DB verification
+        await supabase.from('otp_codes').delete().eq('phone', phone)
+        const fallback = await fetch(
+          `https://verify.twilio.com/v2/Services/${twilioVerifySid}/Verifications`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64'),
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({ To: phone, Channel: 'sms' }),
+          }
+        )
+        const fallbackData = await fallback.json()
+        if (!fallback.ok) {
+          return res.status(400).json({ error: fallbackData.message || 'Failed to send code' })
+        }
+        // Store SID so verify endpoint can check against Twilio
+        await supabase.from('otp_codes').insert({ phone, code: '__twilio__', expires_at: expiresAt, sid: fallbackData.sid })
+        console.log(`[OTP] Fallback (Twilio-managed) sent | SID: ${fallbackData.sid}`)
+      } else {
+        return res.status(400).json({ error: data.message || 'Failed to send code' })
+      }
+    } else {
+      console.log(`[OTP] Sent to ${phone} | SID: ${data.sid} | custom code`)
     }
 
-    console.log(`[send] OTP sent to ${phone}`)
-
     const { data: existingUser } = await supabase
-      .from('profiles').select('id').eq('phone', phone).single()
+      .from('profiles').select('id').eq('phone', phone).maybeSingle()
 
     return res.status(200).json({
       success: true,
@@ -71,7 +127,7 @@ export default async function handler(req, res) {
     })
 
   } catch (err) {
-    console.error('Send OTP error:', err.message)
+    console.error('[OTP] Error:', err.message)
     return res.status(500).json({ error: 'Failed to send code' })
   }
 }

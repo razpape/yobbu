@@ -2,19 +2,35 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 export function useAuth() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser]       = useState(null)   // profile row + auth id
+  const [loading, setLoading] = useState(true)   // true until first session check completes
+
+  async function loadProfile(authUser) {
+    if (!authUser) {
+      setUser(null)
+      return
+    }
+
+    // Fetch full profile row
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authUser.id)
+      .maybeSingle()
+
+    // Merge auth user fields with profile fields
+    setUser(profile ? { ...authUser, ...profile } : authUser)
+  }
 
   useEffect(() => {
-    // Get current session on mount
+    // Check session and mark loading done quickly — profile loads in background
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      loadProfile(session?.user ?? null)
       setLoading(false)
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      loadProfile(session?.user ?? null)
     })
 
     return () => subscription.unsubscribe()

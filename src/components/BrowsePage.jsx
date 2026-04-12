@@ -59,75 +59,183 @@ const VERIFY_OPTIONS = [
 const labelStyle = { display:'block', fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }
 const selectStyle = { width:'100%', padding:'10px 32px 10px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:8, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', boxSizing:'border-box', background:'#fff', appearance:'none', cursor:'pointer' }
 
-function SidebarContent({ lang, dest, setDest, availOption, setAvailOption, priceFilter, setPriceFilter, verifyFilter, setVerifyFilter, onFilter, onClose }) {
+function Field({ label, children }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+        {label}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function Select({ value, onChange, children }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <select
+        value={value}
+        onChange={onChange}
+        style={{
+          width: '100%',
+          padding: '10px 32px 10px 12px',
+          border: '1.5px solid #E8E4DE',
+          borderRadius: 10,
+          fontSize: 13,
+          fontFamily: 'DM Sans, sans-serif',
+          color: '#1A1710',
+          background: '#fff',
+          outline: 'none',
+          appearance: 'none',
+          cursor: 'pointer',
+          boxSizing: 'border-box',
+          transition: 'border-color .15s',
+        }}
+        onFocus={e => e.target.style.borderColor = '#C8891C'}
+        onBlur={e => e.target.style.borderColor = '#E8E4DE'}
+      >
+        {children}
+      </select>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A09080" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  )
+}
+
+function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter, availOption, setAvailOption, priceFilter, setPriceFilter, verifyFilter, setVerifyFilter, onFilter, onClose }) {
   const isFr = lang === 'fr'
 
+  const allCities = DESTINATION_GROUPS.flatMap(g => g.options)
+
   return (
-    <div style={{ display:'flex', flexDirection:'column' }}>
+    <div>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 16, fontWeight: 800, color: '#1A1710', marginBottom: 2 }}>
+          {isFr ? 'Filtres' : 'Filters'}
+        </div>
+        <div style={{ fontSize: 12, color: '#A09080' }}>
+          {isFr ? 'Affinez votre recherche' : 'Narrow down your search'}
+        </div>
+      </div>
+
+      {/* From + To on same row */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+            {isFr ? 'De' : 'From'}
+          </div>
+          <Select value={fromFilter} onChange={e => setFromFilter(e.target.value)}>
+            <option value="">{isFr ? 'Toutes' : 'Any'}</option>
+            {allCities.map(o => (
+              <option key={o.value} value={o.value}>{o[lang] || o.en}</option>
+            ))}
+          </Select>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+            {isFr ? 'À' : 'To'}
+          </div>
+          <Select value={toFilter} onChange={e => setToFilter(e.target.value)}>
+            <option value="">{isFr ? 'Toutes' : 'Any'}</option>
+            {allCities.map(o => (
+              <option key={o.value} value={o.value}>{o[lang] || o.en}</option>
+            ))}
+          </Select>
+        </div>
+      </div>
 
       {/* Availability */}
-      <div style={{ marginBottom:22 }}>
-        <label style={labelStyle}>{isFr ? 'Disponibilité' : 'Availability'}</label>
-        <div style={{ position:'relative' }}>
-          <select value={availOption} onChange={e=>setAvailOption(e.target.value)} style={selectStyle}>
-            <option value="">{isFr ? 'Toute période' : 'Any time'}</option>
-            {AVAIL_OPTIONS.map(opt => {
-              const { from, to } = getDateRange(opt.value)
-              const hint = from === to ? from : `${from} → ${to}`
-              return <option key={opt.value} value={opt.value}>{opt[lang]||opt.en} ({hint})</option>
-            })}
-          </select>
-          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
-        </div>
-      </div>
+      <Field label={isFr ? 'Disponibilité' : 'Availability'}>
+        <Select value={availOption} onChange={e => setAvailOption(e.target.value)}>
+          <option value="">{isFr ? 'Toute période' : 'Any time'}</option>
+          {AVAIL_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt[lang] || opt.en}</option>
+          ))}
+        </Select>
+      </Field>
 
       {/* Price */}
-      <div style={{ marginBottom:22 }}>
-        <label style={labelStyle}>{isFr ? 'Prix' : 'Price'}</label>
-        <input
-          value={priceFilter} onChange={e=>setPriceFilter(e.target.value)}
-          placeholder={isFr ? 'ex: 10' : 'e.g. $10/kg'}
-          style={{ width:'100%', padding:'10px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:8, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', boxSizing:'border-box', background:'#fff' }}
-        />
-      </div>
-
-      {/* Destination */}
-      <div style={{ marginBottom:22 }}>
-        <label style={labelStyle}>{isFr ? 'Ville / Route' : 'Location Service'}</label>
-        <div style={{ position:'relative' }}>
-          <select value={dest} onChange={e=>setDest(e.target.value)} style={selectStyle}>
-            <option value="all">{isFr ? 'Toutes les routes' : 'All routes'}</option>
-            {DESTINATION_GROUPS.map(group => (
-              <optgroup key={group.label.en} label={group.label[lang] || group.label.en}>
-                {group.options.map(o => (
-                  <option key={o.value} value={o.value}>{o[lang] || o.en}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
+      <Field label={isFr ? 'Prix max / kg' : 'Max price / kg'}>
+        <div style={{ position: 'relative' }}>
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: '#A09080', fontWeight: 600 }}>$</span>
+          <input
+            type="number"
+            min="0"
+            value={priceFilter}
+            onChange={e => setPriceFilter(e.target.value)}
+            placeholder="0"
+            style={{
+              width: '100%',
+              padding: '10px 12px 10px 26px',
+              border: '1.5px solid #E8E4DE',
+              borderRadius: 10,
+              fontSize: 13,
+              fontFamily: 'DM Sans, sans-serif',
+              color: '#1A1710',
+              outline: 'none',
+              boxSizing: 'border-box',
+              transition: 'border-color .15s',
+            }}
+            onFocus={e => e.target.style.borderColor = '#C8891C'}
+            onBlur={e => e.target.style.borderColor = '#E8E4DE'}
+          />
         </div>
-      </div>
+      </Field>
 
       {/* Verification */}
-      <div style={{ marginBottom:24 }}>
-        <label style={labelStyle}>{isFr ? 'Vérification' : 'Verification'}</label>
-        <div style={{ position:'relative' }}>
-          <select value={verifyFilter} onChange={e => setVerifyFilter(e.target.value)} style={selectStyle}>
-            {VERIFY_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt[lang] || opt.en}</option>
-            ))}
-          </select>
-          <span style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:11 }}>▾</span>
+      <Field label={isFr ? 'Voyageurs' : 'Travelers'}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {VERIFY_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setVerifyFilter(opt.value)}
+              style={{
+                flex: 1,
+                padding: '9px 0',
+                borderRadius: 10,
+                border: `1.5px solid ${verifyFilter === opt.value ? '#C8891C' : '#E8E4DE'}`,
+                background: verifyFilter === opt.value ? '#FFF7ED' : '#fff',
+                color: verifyFilter === opt.value ? '#C8891C' : '#6B6860',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'all .15s',
+              }}
+            >
+              {opt[lang] || opt.en}
+            </button>
+          ))}
         </div>
-      </div>
+      </Field>
 
-      {/* Filter button */}
+      {/* Divider */}
+      <div style={{ height: 1, background: '#F0EDE8', margin: '4px 0 20px' }} />
+
+      {/* Apply */}
       <button
-        onClick={() => { onFilter(); onClose && onClose() }}
-        style={{ width:'100%', padding:'13px', background:'#1A1710', color:'#fff', border:'none', borderRadius:8, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+        onClick={() => { onFilter(); onClose?.() }}
+        style={{
+          width: '100%',
+          padding: '13px',
+          background: '#C8891C',
+          color: '#fff',
+          border: 'none',
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: 'pointer',
+          fontFamily: 'DM Sans, sans-serif',
+          letterSpacing: '.01em',
+          transition: 'background .15s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = '#A8710C'}
+        onMouseLeave={e => e.currentTarget.style.background = '#C8891C'}
       >
-        {isFr ? 'Filtrer' : 'Filter'}
+        {isFr ? 'Appliquer' : 'Apply filters'}
       </button>
     </div>
   )
@@ -260,21 +368,21 @@ function RightSidebar({ lang, trips }) {
 }
 
 export default function BrowsePage({ lang, trips, loading, error, user, onLoginRequired, searchFilter, onViewProfile }) {
-  const [dest, setDest]               = useState('all')
+  const [searchText, setSearchText]   = useState('')
+  const [fromFilter, setFromFilter]   = useState('')
+  const [toFilter, setToFilter]       = useState('')
   const [availOption, setAvailOption] = useState('')
   const [priceFilter, setPriceFilter] = useState('')
   const [verifyFilter, setVerifyFilter] = useState('all')
   const [sortBy, setSortBy]           = useState('date')
-  const [applied, setApplied]         = useState({ dest:'all', from:'', dateFrom:'', dateTo:'', price:'', verify:'all' })
+  const [applied, setApplied]         = useState({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all' })
   const [drawerOpen, setDrawerOpen]   = useState(false)
   const isFr = lang === 'fr'
 
   useEffect(() => {
     if (!searchFilter) return
-    const newApplied = { ...applied }
-    if (searchFilter.dest) { setDest(searchFilter.dest); newApplied.dest = searchFilter.dest }
-    if (searchFilter.from) { newApplied.from = searchFilter.from }
-    setApplied(newApplied)
+    if (searchFilter.dest) setToFilter(searchFilter.dest)
+    if (searchFilter.from) setFromFilter(searchFilter.from)
   }, [searchFilter])
 
   // Close drawer on Escape
@@ -286,25 +394,26 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
   const handleFilter = () => {
     const { from, to } = availOption ? getDateRange(availOption) : { from:'', to:'' }
-    setApplied({ dest, from: '', dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
+    setApplied({ from: fromFilter, to: toFilter, dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
   }
 
   const sorted = useMemo(() => {
     const maxPrice = applied.price ? parseFloat(applied.price) : null
 
     const filtered = trips.filter(g => {
-      const toCity = g.to_city || g.to || ''
+      const toCity   = g.to_city   || g.to   || ''
       const fromCity = g.from_city || g.from || ''
-      const matchDest = applied.dest === 'all' || toCity === applied.dest || fromCity === applied.dest
-      const matchFrom = !applied.from || fromCity === applied.from
+      const q = searchText.toLowerCase().trim()
+      const matchSearch = !q || [g.name, fromCity, toCity, g.pickup_area, g.dropoff_area, g.flight_number].filter(Boolean).some(s => s.toLowerCase().includes(q))
+      const matchFrom   = !applied.from || fromCity === applied.from
+      const matchDest   = !applied.to   || toCity   === applied.to
       const d = g.date && g.date.match(/^\d{4}-\d{2}-\d{2}$/) ? g.date : null
-      const matchDate = (!applied.dateFrom && !applied.dateTo) || !d ||
+      const matchDate   = (!applied.dateFrom && !applied.dateTo) || !d ||
         ((!applied.dateFrom || d >= applied.dateFrom) && (!applied.dateTo || d <= applied.dateTo))
-      const matchVerify =
-        applied.verify === 'all' ||
+      const matchVerify = applied.verify === 'all' ||
         (applied.verify === 'verified' && (g.verified?.phone || g.phone_verified || g.verified?.id || g.id_verified || g.whatsapp_verified))
-      const matchPrice = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
-      return matchDest && matchFrom && matchDate && matchVerify && matchPrice
+      const matchPrice  = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
+      return matchSearch && matchFrom && matchDest && matchDate && matchVerify && matchPrice
     })
 
     const avOrder = { open: 0, full: 1, unavailable: 2 }
@@ -315,10 +424,11 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       if (sortBy === 'price')  return (parseFloat(String(a.price))||0) - (parseFloat(String(b.price))||0)
       return 0
     })
-  }, [trips, applied, sortBy])
+  }, [trips, applied, sortBy, searchText])
 
   const activeFilterCount = [
-    applied.dest !== 'all',
+    !!applied.from,
+    !!applied.to,
     !!applied.dateFrom,
     !!applied.price,
     applied.verify !== 'all',
@@ -407,7 +517,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           <button onClick={() => setDrawerOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'#8A8070', fontSize:20, lineHeight:1, padding:4 }}>✕</button>
         </div>
         <SidebarContent
-          lang={lang} dest={dest} setDest={setDest}
+          lang={lang} fromFilter={fromFilter} setFromFilter={setFromFilter} toFilter={toFilter} setToFilter={setToFilter}
           availOption={availOption} setAvailOption={setAvailOption}
           priceFilter={priceFilter} setPriceFilter={setPriceFilter}
           verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
@@ -421,7 +531,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         {/* Desktop sidebar */}
         <div className="browse-sidebar-col">
           <SidebarContent
-            lang={lang} dest={dest} setDest={setDest}
+            lang={lang} fromFilter={fromFilter} setFromFilter={setFromFilter} toFilter={toFilter} setToFilter={setToFilter}
             availOption={availOption} setAvailOption={setAvailOption}
             priceFilter={priceFilter} setPriceFilter={setPriceFilter}
             verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
@@ -431,6 +541,34 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
         {/* Results */}
         <div>
+          {/* Search bar */}
+          <div style={{ marginBottom: 16, position: 'relative' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A09080" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }}>
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              placeholder={isFr ? 'Rechercher un voyageur, une ville...' : 'Search traveler, city, route...'}
+              style={{
+                width: '100%',
+                padding: '12px 14px 12px 42px',
+                border: '1.5px solid #E8E4DE',
+                borderRadius: 12,
+                fontSize: 14,
+                fontFamily: 'DM Sans, sans-serif',
+                color: '#1A1710',
+                background: '#fff',
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color .15s',
+              }}
+              onFocus={e => e.target.style.borderColor = '#C8891C'}
+              onBlur={e => e.target.style.borderColor = '#E8E4DE'}
+            />
+          </div>
+
           {/* Header */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
             <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>

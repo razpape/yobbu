@@ -45,41 +45,21 @@ export default function App() {
   const [view, setView]                 = useState('home')
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
-  const { trips, loading, error, addTrip } = useTrips()
-  const { user, signOut }               = useAuth()
+  const { trips, loading: tripsLoading, error, addTrip } = useTrips()
+  const { user, loading: authLoading, signOut } = useAuth()
 
-  // Check for existing session on mount and handle OAuth callback
+  // Handle OAuth callback errors in URL on mount
   useEffect(() => {
-    // Handle any OAuth errors in URL
     handleOAuthCallback()
-    
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setView('profile')
-      }
-    })
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setView('profile')
-        // Clear any auth errors from URL
-        window.history.replaceState({}, document.title, window.location.pathname)
-      }
-      if (event === 'SIGNED_OUT') {
-        setView('home')
-      }
-    })
-    return () => subscription.unsubscribe()
   }, [])
 
   if (isAdminRoute) return <Admin />
 
+
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
   const handlePhoneAuthComplete = () => {
-    setView('profile')
+    setView('home')
   }
 
   const handleSignOut = async () => {
@@ -160,7 +140,7 @@ export default function App() {
 
       {view === 'browse' && (
         <BrowsePage
-          lang={lang} setView={setView} trips={trips} loading={loading}
+          lang={lang} setView={setView} trips={trips} loading={tripsLoading}
           error={error} searchFilter={searchFilter} user={user}
           onLoginRequired={() => setView('phone-auth')}
           onViewProfile={handleViewGp}

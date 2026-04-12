@@ -121,14 +121,9 @@ export default function FacebookGPPosts({ showToast }) {
       setOcrState('scanning')
       setOcrProgress(0)
       try {
-        const tesseractMod = await import('tesseract.js')
-        const createWorker = tesseractMod.createWorker ?? tesseractMod.default?.createWorker
-        const worker = await createWorker('eng+fra', 1, {
-          logger: m => { if (m.status === 'recognizing text') setOcrProgress(Math.round(m.progress * 100)) },
-        })
-        const { data: { text } } = await worker.recognize(dataUrl)
-        await worker.terminate()
-        setDraft({ ...parseGPPost(text) })
+        // OCR removed — tesseract.js was too large for the bundle
+        // Show review state with empty draft for manual entry
+        setDraft({})
         setOcrState('review')
       } catch (err) {
         showToast('OCR failed: ' + err.message)

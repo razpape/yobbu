@@ -1,18 +1,18 @@
 import { useState, useRef } from 'react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 const COUNTRY_CODES = [
-  { code: '+1', flag: '🇺🇸', name: 'US / Canada', mask: '(___) ___-____' },
-  { code: '+44', flag: '🇬🇧', name: 'UK', mask: '____ _______' },
-  { code: '+33', flag: '🇫🇷', name: 'France', mask: '_ __ __ __ __' },
-  { code: '+221', flag: '🇸🇳', name: 'Senegal', mask: '__ ___ __ __' },
-  { code: '+224', flag: '🇬🇳', name: 'Guinea', mask: '___ ___ ___' },
-  { code: '+225', flag: '🇨🇮', name: "Côte d'Ivoire", mask: '__ ___ ___' },
-  { code: '+223', flag: '🇲🇱', name: 'Mali', mask: '__ __ __ __' },
-  { code: '+229', flag: '🇧🇯', name: 'Benin', mask: '__ ___ ___' },
-  { code: '+228', flag: '🇹🇬', name: 'Togo', mask: '__ ___ ___' },
-  { code: '+233', flag: '🇬🇭', name: 'Ghana', mask: '__ ___ ____' },
-  { code: '+32', flag: '🇧🇪', name: 'Belgium', mask: '___ ___ ___' },
-  { code: '+1514', flag: '🇨🇦', name: 'Canada (QC)', mask: '___-___-____' },
+  { code: '+1',    iso: 'US',  name: 'US / Canada',    mask: '(___) ___-____' },
+  { code: '+221',  iso: 'SN',  name: 'Senegal',        mask: '__ ___ __ __' },
+  { code: '+33',   iso: 'FR',  name: 'France',         mask: '_ __ __ __ __' },
+  { code: '+44',   iso: 'GB',  name: 'UK',             mask: '____ _______' },
+  { code: '+224',  iso: 'GN',  name: 'Guinea',         mask: '___ ___ ___' },
+  { code: '+225',  iso: 'CI',  name: "Côte d'Ivoire",  mask: '__ ___ ___' },
+  { code: '+223',  iso: 'ML',  name: 'Mali',           mask: '__ __ __ __' },
+  { code: '+229',  iso: 'BJ',  name: 'Benin',          mask: '__ ___ ___' },
+  { code: '+228',  iso: 'TG',  name: 'Togo',           mask: '__ ___ ___' },
+  { code: '+233',  iso: 'GH',  name: 'Ghana',          mask: '__ ___ ____' },
+  { code: '+32',   iso: 'BE',  name: 'Belgium',        mask: '___ ___ ___' },
 ]
 
 export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
@@ -25,19 +25,19 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
   const handleCountrySelect = (country) => {
     setSelectedCountry(country)
     setShowDropdown(false)
+    setPhoneNumber('')
+    onChange?.(`${country.code}`)
+    onValid?.(false)
     inputRef.current?.focus()
   }
 
   const handlePhoneChange = (e) => {
     const raw = e.target.value.replace(/\D/g, '')
     setPhoneNumber(raw)
-    
     const fullNumber = `${selectedCountry.code}${raw}`
     onChange?.(fullNumber)
-    
-    // Basic validation - at least 10 digits
-    const isValid = raw.length >= 10
-    onValid?.(isValid)
+    const digitCount = selectedCountry.mask.split('').filter(c => c === '_').length
+    onValid?.(raw.length >= digitCount - 1 && raw.length >= 7)
   }
 
   const formatDisplay = (raw) => {
@@ -45,150 +45,166 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
     const mask = selectedCountry.mask
     let formatted = ''
     let rawIndex = 0
-    
     for (let i = 0; i < mask.length && rawIndex < raw.length; i++) {
       if (mask[i] === '_') {
-        formatted += raw[rawIndex] || '_'
+        formatted += raw[rawIndex] || ''
         rawIndex++
       } else {
         formatted += mask[i]
       }
     }
-    
     return formatted
   }
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Country Selector */}
-      <div style={{ position: 'relative', marginBottom: 12 }}>
+      {/* Country selector + phone in one row */}
+      <div style={{
+        display: 'flex',
+        border: '2px solid #E0DAD0',
+        borderRadius: 14,
+        background: '#fff',
+        overflow: 'hidden',
+        transition: 'border-color .2s',
+      }}>
+        {/* Country button */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
           style={{
-            width: '100%',
-            padding: '14px 16px',
-            border: '2px solid #E8DDD0',
-            borderRadius: 12,
-            background: '#fff',
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
+            gap: 6,
+            padding: '14px 12px 14px 16px',
+            background: '#FAFAF8',
+            border: 'none',
+            borderRight: '1px solid #E8E2D8',
             cursor: 'pointer',
-            fontSize: 16,
+            fontSize: 14,
+            fontWeight: 600,
+            color: '#3D3829',
+            fontFamily: "'DM Sans', sans-serif",
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: 24 }}>{selectedCountry.flag}</span>
-          <span style={{ flex: 1, textAlign: 'left', color: '#1A1710' }}>
-            {selectedCountry.name}
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 20,
+            borderRadius: 4,
+            background: '#E8E2D8',
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#5A5248',
+            letterSpacing: '.04em',
+          }}>
+            {selectedCountry.iso}
           </span>
           <span style={{ color: '#8A8070', fontSize: 14 }}>{selectedCountry.code}</span>
-          <span style={{ fontSize: 12 }}>{showDropdown ? '▲' : '▼'}</span>
+          {showDropdown
+            ? <ChevronUp size={14} color="#8A8070" />
+            : <ChevronDown size={14} color="#8A8070" />
+          }
         </button>
 
-        {showDropdown && (
-          <>
-            <div
-              style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 1,
-              }}
-              onClick={() => setShowDropdown(false)}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 4px)',
-                left: 0,
-                right: 0,
-                maxHeight: 280,
-                overflow: 'auto',
-                background: '#fff',
-                border: '2px solid #E8DDD0',
-                borderRadius: 12,
-                zIndex: 2,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-              }}
-            >
-              {COUNTRY_CODES.map((country) => (
-                <button
-                  key={country.code}
-                  onClick={() => handleCountrySelect(country)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    border: 'none',
-                    borderBottom: '1px solid #F0EBE3',
-                    background: selectedCountry.code === country.code ? '#FDF0E8' : '#fff',
-                    cursor: 'pointer',
-                    fontSize: 15,
-                  }}
-                >
-                  <span style={{ fontSize: 20 }}>{country.flag}</span>
-                  <span style={{ flex: 1, textAlign: 'left', color: '#1A1710' }}>
-                    {country.name}
-                  </span>
-                  <span style={{ color: '#8A8070', fontSize: 13 }}>{country.code}</span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Phone Input */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          border: '2px solid #C8891C',
-          borderRadius: 12,
-          background: '#fff',
-          padding: '4px 4px 4px 16px',
-        }}
-      >
-        <span style={{ 
-          color: '#8A8070', 
-          fontSize: 16, 
-          fontWeight: 500,
-          marginRight: 8,
-        }}>
-          {selectedCountry.code}
-        </span>
+        {/* Phone number input */}
         <input
           ref={inputRef}
           type="tel"
           value={formatDisplay(phoneNumber)}
           onChange={handlePhoneChange}
-          placeholder={selectedCountry.mask.replace(/_/g, '•')}
+          placeholder={selectedCountry.mask.replace(/_/g, '0')}
           style={{
             flex: 1,
             border: 'none',
             background: 'transparent',
-            padding: '12px 8px',
-            fontSize: 18,
-            fontFamily: 'monospace',
-            letterSpacing: '0.5px',
+            padding: '14px 16px',
+            fontSize: 17,
+            fontFamily: "'DM Sans', sans-serif",
+            letterSpacing: '0.3px',
             outline: 'none',
             color: '#1A1710',
+            minWidth: 0,
           }}
           autoFocus
         />
       </div>
 
-      <p style={{ 
-        fontSize: 12, 
-        color: '#8A8070', 
-        marginTop: 8,
-        marginBottom: 0,
-      }}>
-        {isFr 
-          ? "Nous vous enverrons un code de vérification."
-          : "We'll send you a verification code."}
-      </p>
+      {/* Dropdown */}
+      {showDropdown && (
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 10 }}
+            onClick={() => setShowDropdown(false)}
+          />
+          <div style={{
+            position: 'relative',
+            zIndex: 11,
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 4,
+              left: 0,
+              right: 0,
+              maxHeight: 260,
+              overflow: 'auto',
+              background: '#fff',
+              border: '1px solid #E0DAD0',
+              borderRadius: 12,
+              boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+            }}>
+              {COUNTRY_CODES.map((country) => (
+                <button
+                  key={country.code + country.iso}
+                  onClick={() => handleCountrySelect(country)}
+                  style={{
+                    width: '100%',
+                    padding: '11px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    border: 'none',
+                    borderBottom: '1px solid #F5F1EC',
+                    background: selectedCountry.code === country.code ? '#FDF6ED' : '#fff',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontFamily: "'DM Sans', sans-serif",
+                    transition: 'background .15s',
+                  }}
+                  onMouseEnter={e => {
+                    if (selectedCountry.code !== country.code) e.currentTarget.style.background = '#FAFAF8'
+                  }}
+                  onMouseLeave={e => {
+                    if (selectedCountry.code !== country.code) e.currentTarget.style.background = '#fff'
+                  }}
+                >
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 28,
+                    height: 20,
+                    borderRadius: 4,
+                    background: selectedCountry.code === country.code ? '#C8891C20' : '#E8E2D8',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: selectedCountry.code === country.code ? '#C8891C' : '#5A5248',
+                    letterSpacing: '.04em',
+                  }}>
+                    {country.iso}
+                  </span>
+                  <span style={{ flex: 1, textAlign: 'left', color: '#1A1710', fontWeight: 500 }}>
+                    {country.name}
+                  </span>
+                  <span style={{ color: '#A09080', fontSize: 13 }}>{country.code}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

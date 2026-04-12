@@ -20,70 +20,77 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Look up code in Supabase — no Twilio involved in verification
+    // Check code against our database — no Twilio VerificationChecks needed
     const { data: otpRecord, error: otpError } = await supabase
       .from('otp_codes')
       .select('*')
       .eq('phone', phone)
       .eq('code', String(code).trim())
       .gt('expires_at', new Date().toISOString())
-      .single()
+      .maybeSingle()
 
-    if (otpError || !otpRecord) {
-      console.log(`[verify] failed for ${phone} — code not found or expired`)
+    if (otpError) throw otpError
+
+    if (!otpRecord) {
+      console.log(`[OTP] Failed for ${phone} — wrong code or expired`)
       return res.status(400).json({ error: 'Invalid or expired code' })
     }
 
-    // Code is valid — delete it so it can't be reused
+    // Valid — delete it so it can't be reused
     await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
-
-    console.log(`[verify] success for ${phone}`)
+    console.log(`[OTP] Verified for ${phone}`)
 
     // Find or create user
-    let { data: user } = await supabase
+    const { data: existingProfile } = await supabase
       .from('profiles')
       .select('*')
       .eq('phone', phone)
-      .single()
+      .maybeSingle()
 
+    let user = existingProfile
     let isNewUser = false
 
     if (!user) {
+      isNewUser = true
       const email = `${phone.replace(/\D/g, '')}@phone.yobbu.app`
 
-      // Find existing auth user or create new one
-      let authUserId
-      const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-      const existingAuthUser = listData?.users?.find(u => u.email === email)
+      const { data: authData, error: createError } = await supabase.auth.admin.createUser({
+        email,
+        password: crypto.randomUUID(),
+        email_confirm: true,
+      })
 
-      if (existingAuthUser) {
-        authUserId = existingAuthUser.id
-        isNewUser = false
+      let authUserId
+
+      if (createError) {
+        if (createError.message?.toLowerCase().includes('already')) {
+          // Auth user exists but profile is missing — scan to find them
+          const { data: { users: allUsers } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
+          const existing = allUsers?.find(u => u.email === email)
+          if (!existing) throw new Error('Could not locate existing auth user')
+          authUserId = existing.id
+          isNewUser = false
+        } else {
+          throw createError
+        }
       } else {
-        isNewUser = true
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email,
-          password: crypto.randomUUID(),
-          email_confirm: true,
-        })
-        if (authError) throw authError
         authUserId = authData.user.id
       }
 
-      const { data: newUser, error: profileError } = await supabase
+      const { data: newProfile, error: profileError } = await supabase
         .from('profiles')
         .upsert({
           id: authUserId,
           phone,
           phone_verified_at: new Date().toISOString(),
           verification_tier: 1,
-          created_at: new Date().toISOString(),
         }, { onConflict: 'id' })
         .select()
         .single()
 
       if (profileError) throw profileError
-      user = newUser
+      user = newProfile
+
     } else {
       await supabase
         .from('profiles')
@@ -91,7 +98,7 @@ export default async function handler(req, res) {
         .eq('id', user.id)
     }
 
-    // Generate deterministic password and sign in to get a session
+    // Create session
     const deterministicPassword = crypto
       .createHmac('sha256', process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback')
       .update(phone)
@@ -99,12 +106,15 @@ export default async function handler(req, res) {
 
     await supabase.auth.admin.updateUserById(user.id, { password: deterministicPassword })
 
+    const email = `${phone.replace(/\D/g, '')}@phone.yobbu.app`
     const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
-      email: `${phone.replace(/\D/g, '')}@phone.yobbu.app`,
+      email,
       password: deterministicPassword,
     })
 
     if (sessionError) throw sessionError
+
+    console.log(`[OTP] Session created for user ${user.id}`)
 
     return res.status(200).json({
       success: true,
@@ -124,7 +134,7 @@ export default async function handler(req, res) {
     })
 
   } catch (err) {
-    console.error('Verify OTP error:', err.message)
+    console.error('[OTP] Verify error:', err.message)
     return res.status(500).json({ error: 'Verification failed: ' + err.message })
   }
 }
