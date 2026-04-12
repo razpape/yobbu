@@ -91,7 +91,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
           .mobile-search-block { display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 32px 20px 24px; box-sizing: border-box; }
           .swap-btn { width: 34px; height: 34px; background: #fff; border: 1px solid #E0D8CE; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,.08); flex-shrink: 0; transition: background .15s; }
           .swap-btn:hover { background: #F7F4F0; }
-          .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #C8891C; color: #fff; border: none; border-radius: 14px; padding: 20px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(200,137,28,.3); transition: background .2s; }
+          .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #C8891C; color: #fff; border: none; border-radius: 16px; padding: 22px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(200,137,28,.35); transition: background .2s; }
           .mobile-btn-find:hover { background: #E5A630; }
         }
       `}</style>
@@ -114,27 +114,27 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             </p>
 
             {/* Origin / Destination card */}
-            <div style={{ background:'#fff', borderRadius:16, overflow:'hidden', boxShadow:'0 2px 8px rgba(0,0,0,.09)', marginBottom:12 }}>
+            <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,.10)', marginBottom:14 }}>
               {/* Origin row */}
-              <div style={{ display:'flex', alignItems:'center', padding:'18px 20px', borderBottom:'1px solid #F0EBE3' }}>
+              <div style={{ display:'flex', alignItems:'center', padding:'22px 20px', borderBottom:'1px solid #F0EBE3' }}>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
                   <select value={from} onChange={e => setFrom(e.target.value)}
-                    style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:17, fontWeight:500, color: from ? '#1A1710' : '#AAAAAA', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                    style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: from ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
                     {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Ma ville...' : 'My city...') : (c[lang] || c.en)}</option>)}
                   </select>
                 </div>
-                <button className="swap-btn" onClick={handleSwap} aria-label="Swap origin and destination">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <button className="swap-btn" onClick={handleSwap} aria-label="Swap">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B6860" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
               </div>
               {/* Destination row */}
-              <div style={{ padding:'18px 20px' }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
+              <div style={{ padding:'22px 20px' }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
                 <select value={dest} onChange={e => setDest(e.target.value)}
-                  style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:17, fontWeight:500, color: dest ? '#1A1710' : '#AAAAAA', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                  style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
                   {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
                 </select>
               </div>
