@@ -16,7 +16,7 @@ export default function Footer({ lang, setView }) {
       { label: isFr ? 'Centre d\'aide' : 'Help center', action: null },
       { label: isFr ? 'Nous contacter' : 'Contact us', action: null },
       { label: isFr ? 'Confidentialité' : 'Privacy policy', action: () => setView('privacy') },
-      { label: isFr ? 'Conditions' : 'Terms of service', action: () => setView('privacy') },
+      { label: isFr ? 'Conditions' : 'Terms of service', action: () => setView('terms') },
     ],
   }
 

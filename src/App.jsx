@@ -11,6 +11,7 @@ import PhoneAuth from './pages/PhoneAuth'
 import GPProfile from './components/GPProfile'
 import ProfilePage from './pages/ProfilePage'
 import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import SendPackagePage from './pages/SendPackagePage'
 import Admin from './pages/Admin'
 import { useTrips } from './hooks/useTrips'
@@ -98,6 +99,10 @@ export default function App() {
 
   if (view === 'privacy') {
     return <PrivacyPage lang={lang} setView={setView} />
+  }
+
+  if (view === 'terms') {
+    return <TermsPage lang={lang} setView={setView} />
   }
 
   if (view === 'send') {
