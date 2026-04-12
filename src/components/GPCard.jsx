@@ -99,10 +99,14 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         @media (max-width: 640px) {
           .gp-inner { grid-template-columns: 1fr; }
-          .gp-col-left  { border-right: none; border-bottom: 1px solid #F0EDE8; padding: 16px; height: auto; flex-direction: row; align-items: center; gap: 10px; }
-          .gp-col-mid   { padding: 16px; }
-          .gp-col-right { border-left: none; border-top: 1px solid #F0EDE8; padding: 10px 16px; flex-direction: row; justify-content: space-between; align-items: center; height: auto; gap: 12px; }
-          .gp-col-right button { width: auto !important; padding: 8px 18px !important; font-size: 12px !important; }
+          .gp-col-left  { border-right: none; border-bottom: 1px solid #F0EDE8; padding: 14px 16px; height: auto; flex-direction: row; align-items: center; gap: 12px; }
+          .gp-col-mid   { padding: 12px 16px; }
+          .gp-col-mid .gp-route-from { font-size: 17px !important; }
+          .gp-col-mid .gp-route-to   { font-size: 17px !important; }
+          .gp-col-right { border-left: none; border-top: 1px solid #F0EDE8; padding: 12px 16px; flex-direction: column; align-items: stretch; height: auto; gap: 10px; }
+          .gp-col-right .gp-price-block { display: flex; align-items: center; gap: 6px; }
+          .gp-col-right .gp-price-block .gp-price-num { font-size: 20px !important; }
+          .gp-col-right button { width: 100% !important; padding: 15px !important; font-size: 15px !important; border-radius: 12px !important; }
         }
       `}</style>
 
@@ -150,7 +154,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
               {/* FROM */}
               <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#1A1710', lineHeight: 1 }}>
+                <div className="gp-route-from" style={{ fontSize: 20, fontWeight: 800, color: '#1A1710', lineHeight: 1 }}>
                   {fromCity}
                 </div>
                 <div style={{ fontSize: 10, color: '#A09080', fontWeight: 500, marginTop: 3, textTransform: 'uppercase', letterSpacing: '.06em' }}>
@@ -193,7 +197,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
               {/* TO */}
               <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#C8891C', lineHeight: 1 }}>
+                <div className="gp-route-to" style={{ fontSize: 20, fontWeight: 800, color: '#C8891C', lineHeight: 1 }}>
                   {toCity}
                 </div>
                 <div style={{ fontSize: 10, color: '#A09080', fontWeight: 500, marginTop: 3, textTransform: 'uppercase', letterSpacing: '.06em' }}>
@@ -206,10 +210,10 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
           {/* RIGHT — Price + CTA */}
           <div className="gp-col-right">
-            <div style={{ textAlign: 'center' }}>
+            <div className="gp-price-block" style={{ textAlign: 'center' }}>
               {price ? (
                 <>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: '#1A1710', fontFamily: "'DM Serif Display', serif", lineHeight: 1, letterSpacing: '-.3px' }}>
+                  <div className="gp-price-num" style={{ fontSize: 22, fontWeight: 900, color: '#1A1710', fontFamily: "'DM Serif Display', serif", lineHeight: 1, letterSpacing: '-.3px' }}>
                     {price}
                   </div>
                   <div style={{ fontSize: 10, color: '#B0A090', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em', marginTop: 3 }}>

@@ -464,9 +464,11 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       <style>{`
         @media (max-width: 768px) {
           .browse-sidebar-col  { display: none !important; }
-          .browse-main-grid    { grid-template-columns: 1fr !important; padding: 16px !important; }
+          .browse-main-grid    { grid-template-columns: 1fr !important; padding: 12px 12px 80px !important; }
           .mobile-filter-btn   { display: flex !important; }
           .browse-cards-grid   { grid-template-columns: 1fr !important; }
+          .browse-trust-bar    { padding: 10px 16px !important; }
+          .browse-search-bar   { position: sticky; top: 0; z-index: 10; background: #FDFBF7; padding-bottom: 8px; }
         }
         @media (min-width: 769px) and (max-width: 1100px) {
           .browse-cards-grid { grid-template-columns: 1fr !important; }
@@ -483,7 +485,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       `}</style>
 
       {/* Trust bar */}
-      <div style={{ background:'#F0FAF4', borderBottom:'1px solid #C8E6D4', padding:'10px 48px', display:'flex', alignItems:'center', gap:8 }}>
+      <div className="browse-trust-bar" style={{ background:'#F0FAF4', borderBottom:'1px solid #C8E6D4', padding:'10px 48px', display:'flex', alignItems:'center', gap:8 }}>
         <ShieldCheckIcon size={15} color="#1A5C38" />
         <span style={{ fontSize:12, fontWeight:500, color:'#1A5C38' }}>
           {isFr ? "Chaque voyageur est vérifié par téléphone avant d'apparaître sur Yobbu." : 'Every traveler is phone-verified before appearing on Yobbu.'}
@@ -569,7 +571,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         {/* Results */}
         <div>
           {/* Search bar */}
-          <div style={{ marginBottom: 16, position: 'relative' }}>
+          <div className="browse-search-bar" style={{ marginBottom: 16, position: 'relative' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A09080" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
               style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }}>
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>

@@ -76,7 +76,13 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
           </div>
 
           {/* Mobile */}
-          <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 12 }}>
+          <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 10 }}>
+            {user && (
+              <div onClick={() => setView('profile')}
+                style={{ width: 34, height: 34, borderRadius: '50%', background: '#FFF8EB', border: '1.5px solid #F0C878', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#C8891C', cursor: 'pointer', flexShrink: 0 }}>
+                {initials}
+              </div>
+            )}
             <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 20, overflow: 'hidden' }}>
               {['en', 'fr'].map(l => (
                 <button key={l} onClick={() => setLang(l)}

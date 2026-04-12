@@ -149,8 +149,19 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
             </button>
 
+            {/* Sender CTA */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginBottom:12 }}>
+              <span style={{ fontSize:13, color:'#8A8070' }}>{isFr ? 'Vous avez un colis ?' : 'Have a package?'}</span>
+              <button
+                onClick={() => setView('send')}
+                style={{ fontSize:13, fontWeight:700, color:'#C8891C', background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Sans', sans-serif", textDecoration:'underline', textUnderlineOffset:3, padding:0 }}
+              >
+                {isFr ? 'Poster une demande →' : 'Post a request →'}
+              </button>
+            </div>
+
             {/* Trust line */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:13, color:'#8A8070', marginTop:4 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:13, color:'#8A8070' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               {isFr ? 'Tous les voyageurs sont vérifiés par téléphone' : 'All travelers are phone verified'}
             </div>
