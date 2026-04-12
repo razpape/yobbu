@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
-import { LockIcon, CheckCircleIcon, PlaneIcon, PackageIcon } from './Icons'
+import { LockIcon, CheckCircleIcon, PlaneIcon } from './Icons'
 
 const AREAS = {
   'New York':      ['Bronx', 'Brooklyn', 'Queens', 'Manhattan', 'Harlem', 'Staten Island', 'Yonkers', 'Jamaica', 'Flushing', 'Flatbush', 'Crown Heights', 'Canarsie', 'East New York', 'Bedford-Stuyvesant'],
@@ -26,7 +26,6 @@ const AREAS = {
 }
 
 function AreaInput({ value, onChange, placeholder, city, style: extraStyle }) {
-  const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const inputRef = useRef()
   const suggestions = city && AREAS[city]
@@ -86,9 +85,11 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   const isFr = lang === 'fr'
 
   const meta     = user?.user_metadata || {}
-  const fullName = meta.full_name || meta.name || `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || ''
+  const fullName = user?.first_name
+    ? `${user.first_name} ${user?.last_name || ''}`.trim()
+    : meta.full_name || meta.name || ''
 
-  const defaultPhone = meta.whatsapp_phone || user?.phone || ''
+  const defaultPhone = user?.whatsapp_number || meta.whatsapp_phone || user?.phone || ''
   const [form, setForm]       = useState({
     service_type: 'baggage',
     from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: '', flight_number: '',
@@ -214,7 +215,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         </div>
         <div>
           <div style={{ fontSize:15, fontWeight:600, color:'#1A1710' }}>{fullName}</div>
-          <div style={{ fontSize:12, color:'#8A8070' }}>{user.email || user.phone}</div>
+          <div style={{ fontSize:12, color:'#8A8070' }}>{user.email?.endsWith('@phone.yobbu.app') ? user.phone : (user.email || user.phone)}</div>
         </div>
         <div style={{ marginLeft:'auto', fontSize:11, color:'#C8891C', fontWeight:600, background:'#fff', border:'1px solid #F0C878', borderRadius:20, padding:'3px 10px' }}>
           {isFr ? 'Vous' : 'You'}
@@ -224,25 +225,6 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       {/* Form */}
       <div style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:20, padding:'28px 24px', boxShadow:'0 2px 12px rgba(0,0,0,.04)' }}>
 
-        {/* Service type */}
-        <label style={lbl}>{isFr ? 'Type de service *' : 'Service type *'}</label>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
-          {[
-            { value: 'baggage',  en: 'Carry-on / Luggage',  fr: 'Bagage cabine / valise', Icon: PlaneIcon,   sub: isFr ? 'Je voyage en avion' : 'Travelling by plane' },
-            { value: 'groupage', en: 'Container Groupage', fr: 'Groupage conteneur',     Icon: PackageIcon, sub: isFr ? 'Expédition maritime' : 'Sea freight' },
-          ].map(opt => (
-            <button key={opt.value} type="button" onClick={() => set('service_type', opt.value)}
-              style={{
-                padding: '14px 12px', borderRadius: 12, border: `2px solid ${form.service_type === opt.value ? '#C8891C' : 'rgba(0,0,0,.1)'}`,
-                background: form.service_type === opt.value ? '#FFF8EB' : '#fff',
-                cursor: 'pointer', textAlign: 'left', fontFamily: 'DM Sans, sans-serif',
-              }}>
-              <div style={{ marginBottom: 6 }}><opt.Icon size={20} color={form.service_type === opt.value ? '#C8891C' : '#8A8070'} /></div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1710' }}>{isFr ? opt.fr : opt.en}</div>
-              <div style={{ fontSize: 11, color: '#8A8070', marginTop: 2 }}>{opt.sub}</div>
-            </button>
-          ))}
-        </div>
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:0 }}>
           <div>
@@ -261,20 +243,12 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
           </div>
         </div>
 
-        <label style={lbl}>
-          {form.service_type === 'groupage'
-            ? (isFr ? 'Date de chargement *' : 'Loading date *')
-            : (isFr ? 'Date de départ *' : 'Departure date *')}
-        </label>
+        <label style={lbl}>{isFr ? 'Date de départ *' : 'Departure date *'}</label>
         <input style={inp} type="date" value={form.date} onChange={e => set('date', e.target.value)} min={new Date().toISOString().split('T')[0]} />
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
           <div>
-            <label style={lbl}>
-              {form.service_type === 'groupage'
-                ? (isFr ? 'Capacité disponible (kg) *' : 'Available capacity (kg) *')
-                : (isFr ? 'Espace disponible (kg) *' : 'Available space (kg) *')}
-            </label>
+            <label style={lbl}>{isFr ? 'Espace disponible (kg) *' : 'Available space (kg) *'}</label>
             <input style={inp} type="number" placeholder="10" value={form.space} onChange={e => set('space', e.target.value)} />
           </div>
           <div>
@@ -286,37 +260,19 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         <label style={lbl}>{isFr ? 'Numéro de téléphone (WhatsApp)' : 'Phone number (WhatsApp)'}</label>
         <input style={inp} type="tel" placeholder="+1 (212) 555-0100" value={form.phone} onChange={e => set('phone', e.target.value)} />
 
-        {/* Drop-off address */}
-        <label style={lbl}>
-          {form.service_type === 'groupage'
-            ? (isFr ? 'Adresse dépôt des colis (ville de départ)' : 'Package drop-off address (origin)')
-            : (isFr ? 'Zone de ramassage' : 'Pickup area')}
-        </label>
-        {form.service_type === 'groupage'
-          ? <input style={inp} placeholder={isFr ? 'Ex: 105 Avenue Paul Marcellin, Vaulx-en-Velin' : 'Ex: 105 Main St, Queens, NY'} value={form.pickup_area} onChange={e => set('pickup_area', e.target.value)} />
-          : <>
-              <AreaInput value={form.pickup_area} onChange={v => set('pickup_area', v)} placeholder={isFr ? 'Ex: Bronx, Médina...' : 'Ex: Bronx, Queens...'} city={form.from_city} style={inp} />
-              <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
-                {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
-              </div>
-            </>
-        }
+        {/* Pickup area */}
+        <label style={lbl}>{isFr ? 'Zone de ramassage' : 'Pickup area'}</label>
+        <AreaInput value={form.pickup_area} onChange={v => set('pickup_area', v)} placeholder={isFr ? 'Ex: Bronx, Médina...' : 'Ex: Bronx, Queens...'} city={form.from_city} style={inp} />
+        <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+          {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
+        </div>
 
-        {/* Pickup address at destination */}
-        <label style={lbl}>
-          {form.service_type === 'groupage'
-            ? (isFr ? 'Adresse retrait des colis (ville d\'arrivée)' : 'Package pickup address (destination)')
-            : (isFr ? 'Zone de livraison' : 'Dropoff area')}
-        </label>
-        {form.service_type === 'groupage'
-          ? <input style={inp} placeholder={isFr ? 'Ex: Keur Massar Unité 11, Dakar' : 'Ex: Keur Massar Unit 11, Dakar'} value={form.dropoff_area} onChange={e => set('dropoff_area', e.target.value)} />
-          : <>
-              <AreaInput value={form.dropoff_area} onChange={v => set('dropoff_area', v)} placeholder={isFr ? 'Ex: Médina, Plateau...' : 'Ex: Médina, Plateau...'} city={form.to_city} style={inp} />
-              <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
-                {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
-              </div>
-            </>
-        }
+        {/* Dropoff area */}
+        <label style={lbl}>{isFr ? 'Zone de livraison' : 'Dropoff area'}</label>
+        <AreaInput value={form.dropoff_area} onChange={v => set('dropoff_area', v)} placeholder={isFr ? 'Ex: Médina, Plateau...' : 'Ex: Médina, Plateau...'} city={form.to_city} style={inp} />
+        <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+          {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
+        </div>
 
         <label style={lbl}>{isFr ? 'Note (optionnel)' : 'Note (optional)'}</label>
         <textarea style={{ ...inp, minHeight:80, resize:'vertical' }} placeholder={isFr ? "Ex: J'accepte électronique, médicaments, vêtements..." : 'Ex: I accept electronics, medicine, clothing...'} value={form.note} onChange={e => set('note', e.target.value)} />

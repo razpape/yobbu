@@ -306,26 +306,16 @@ export default function FacebookGPExtractor({ showToast }) {
 
             <label style={lbl}>Service type</label>
             <div style={{ display:'flex', gap:8, marginBottom:20 }}>
-              {[
-                { value:'colis_gp',   label:'Colis GP',   icon:'📦' },
-                { value:'containers', label:'Containers', icon:'🚢' },
-              ].map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setE('service_type', opt.value)}
-                  style={{
-                    flex:1, padding:'9px 12px', borderRadius:8, cursor:'pointer',
-                    fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
-                    display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                    background: (editingPost.service_type || 'colis_gp') === opt.value ? 'rgba(200,129,10,.15)' : '#111',
-                    border: `2px solid ${(editingPost.service_type || 'colis_gp') === opt.value ? '#C8810A' : '#333'}`,
-                    color: (editingPost.service_type || 'colis_gp') === opt.value ? '#C8810A' : '#666',
-                    transition:'all .15s',
-                  }}
-                >
-                  {opt.icon} {opt.label}
-                </button>
-              ))}
+              <button
+                style={{
+                  flex:1, padding:'9px 12px', borderRadius:8,
+                  fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                  background:'rgba(200,129,10,.15)', border:'2px solid #C8810A', color:'#C8810A',
+                }}
+              >
+                📦 Colis GP
+              </button>
             </div>
 
             <div style={{ fontSize:10, color:'#444', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:12 }}>Trip details</div>
@@ -536,26 +526,16 @@ export default function FacebookGPExtractor({ showToast }) {
               <div style={{ marginBottom:14 }}>
                 <label style={lbl}>Service type</label>
                 <div style={{ display:'flex', gap:8 }}>
-                  {[
-                    { value:'colis_gp',   label:'Colis GP',   icon:'📦' },
-                    { value:'containers', label:'Containers', icon:'🚢' },
-                  ].map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setServiceType(opt.value)}
-                      style={{
-                        flex:1, padding:'9px 12px', borderRadius:8, cursor:'pointer',
-                        fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
-                        display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                        background: serviceType === opt.value ? 'rgba(200,129,10,.15)' : '#111',
-                        border: `2px solid ${serviceType === opt.value ? '#C8810A' : '#333'}`,
-                        color: serviceType === opt.value ? '#C8810A' : '#666',
-                        transition:'all .15s',
-                      }}
-                    >
-                      {opt.icon} {opt.label}
-                    </button>
-                  ))}
+                  <button
+                    style={{
+                      flex:1, padding:'9px 12px', borderRadius:8,
+                      fontFamily:"'Inter',sans-serif", fontSize:12, fontWeight:700,
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                      background:'rgba(200,129,10,.15)', border:'2px solid #C8810A', color:'#C8810A',
+                    }}
+                  >
+                    📦 Colis GP
+                  </button>
                 </div>
               </div>
 
@@ -680,11 +660,9 @@ export default function FacebookGPExtractor({ showToast }) {
                   <div style={{ display:'flex', gap:10, marginTop:6, flexWrap:'wrap', alignItems:'center' }}>
                     {post.service_type && (
                       <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:6,
-                        background: post.service_type === 'containers' ? 'rgba(24,95,165,.2)' : 'rgba(200,129,10,.15)',
-                        color: post.service_type === 'containers' ? '#60a5fa' : '#C8810A',
-                        border: `1px solid ${post.service_type === 'containers' ? 'rgba(24,95,165,.3)' : 'rgba(200,129,10,.25)'}`,
+                        background:'rgba(200,129,10,.15)', color:'#C8810A', border:'1px solid rgba(200,129,10,.25)',
                       }}>
-                        {post.service_type === 'containers' ? '🚢 Containers' : '📦 Colis GP'}
+                        📦 Colis GP
                       </span>
                     )}
                     {post.from_city && post.to_city && <span style={{ fontSize:11, color:'#C8810A' }}>✈ {post.from_city} → {post.to_city}</span>}

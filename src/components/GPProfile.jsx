@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import ContactModal from './ContactModal'
-import { ShieldCheckIcon, LockIcon, PlaneIcon, ShipIcon, MapPinIcon, PhoneIcon, PackageIcon, CalendarIcon, DollarIcon } from './Icons'
+import { ShieldCheckIcon, LockIcon, PlaneIcon, MapPinIcon, PhoneIcon, PackageIcon, CalendarIcon, DollarIcon } from './Icons'
 
 function formatPrice(raw) {
   if (!raw) return null
@@ -47,8 +47,6 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const price      = formatPrice(gp.price)
   const initials   = gp.initials || gp.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
   const accent     = gp.color || '#C8891C'
-  const isGroupage = gp.service_type === 'groupage'
-
   const sendWhatsApp = (message) => {
     const phone = gp.phone?.replace(/\D/g, '')
     if (phone) window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
@@ -143,17 +141,10 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
           <div style={{ padding: '20px 28px', borderBottom: '1px solid #F0EDE8' }}>
             {/* Service type */}
             <div style={{ marginBottom: 16 }}>
-              {isGroupage ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>
-                  <ShipIcon size={13} color="#1d4ed8" />
-                  {isFr ? 'Groupage conteneur — expédition maritime' : 'Container groupage — sea freight'}
-                </span>
-              ) : (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#FFF8EB', color: '#C8891C', border: '1px solid #F0C878' }}>
-                  <PlaneIcon size={13} color="#C8891C" />
-                  {isFr ? 'Transport en avion — bagage cabine' : 'Air transport — carry-on luggage'}
-                </span>
-              )}
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#FFF8EB', color: '#C8891C', border: '1px solid #F0C878' }}>
+                <PlaneIcon size={13} color="#C8891C" />
+                {isFr ? 'Transport en avion — bagage cabine' : 'Air transport — carry-on luggage'}
+              </span>
             </div>
 
             {/* Route display */}

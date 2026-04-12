@@ -56,9 +56,6 @@ const VERIFY_OPTIONS = [
   { value: 'verified', en: 'Verified',      fr: 'Vérifiés' },
 ]
 
-const labelStyle = { display:'block', fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:8 }
-const selectStyle = { width:'100%', padding:'10px 32px 10px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:8, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', boxSizing:'border-box', background:'#fff', appearance:'none', cursor:'pointer' }
-
 function Field({ label, children }) {
   return (
     <div style={{ marginBottom: 20 }}>
@@ -216,9 +213,8 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
       <Field label={isFr ? 'Type de transport' : 'Transport type'}>
         <div style={{ display: 'flex', gap: 8 }}>
           {[
-            { value: 'all',      en: 'All',      fr: 'Tous' },
-            { value: 'baggage',  en: 'Plane',     fr: 'Avion' },
-            { value: 'groupage', en: 'Boat',      fr: 'Bateau' },
+            { value: 'all',     en: 'All',   fr: 'Tous' },
+            { value: 'baggage', en: 'Plane', fr: 'Avion' },
           ].map(opt => (
             <button key={opt.value} onClick={() => setServiceFilter(opt.value)}
               style={{
@@ -511,7 +507,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         <div style={{ position:'relative' }}>
           <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
             style={{ padding:'11px 28px 11px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:10, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', appearance:'none', background:'#fff', cursor:'pointer' }}>
-            <option value="date">{isFr?'Date':'Date'}</option>
+            <option value="date">{'Date'}</option>
             <option value="rating">{isFr?'Note':'Rating'}</option>
             <option value="price">{isFr?'Prix':'Price'}</option>
           </select>
@@ -612,7 +608,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
               <div style={{ position:'relative' }}>
                 <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
                   style={{ padding:'6px 28px 6px 10px', border:'1px solid rgba(0,0,0,.15)', borderRadius:6, fontSize:12, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', cursor:'pointer', appearance:'none', background:'#fff', fontWeight:600 }}>
-                  <option value="date">{isFr?'Date':'Date'}</option>
+                  <option value="date">{'Date'}</option>
                   <option value="rating">{isFr?'Note':'Rating'}</option>
                   <option value="price">{isFr?'Prix':'Price'}</option>
                 </select>

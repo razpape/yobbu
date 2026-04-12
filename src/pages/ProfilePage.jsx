@@ -12,9 +12,9 @@ import SocialProfileLinks from '../components/SocialProfileLinks'
 
 const T = {
   en: {
-    langLabel: 'Language', menuTrips: 'My Trips', menuSettings: 'Settings',
+    langLabel: 'Language', menuTrips: 'My Trips', menuRequests: 'My Requests', menuSettings: 'Settings',
     menuNotif: 'Notifications', menuHelp: 'Help',
-    tripsTitle: 'My Trips', settingsTitle: 'Settings', notifTitle: 'Notifications', helpTitle: 'Help',
+    tripsTitle: 'My Trips', requestsTitle: 'My Requests', settingsTitle: 'Settings', notifTitle: 'Notifications', helpTitle: 'Help',
     st1: 'Total', st2: 'Live', st3: 'Paused',
     active: 'Live', pending: 'Under review', suspended: 'Paused',
     edit: 'Edit', delete: 'Delete', postNew: 'Post a New Trip',
@@ -22,14 +22,17 @@ const T = {
     signout: 'Sign out',
     notifEmpty: "No notifications yet. We'll notify you when your listing is approved.",
     noTrips: "You haven't posted any trips yet.",
+    noRequests: "You haven't posted any package requests yet.",
     liveDesc: 'People can see and contact you',
     pendingDesc: 'We\'re reviewing your listing',
     suspendedDesc: 'Contact us if you think this is a mistake',
+    reqOpen: 'Open', reqMatched: 'Matched', reqClosed: 'Closed',
+    postRequest: 'Post a Request',
   },
   fr: {
-    langLabel: 'Langue', menuTrips: 'Mes voyages', menuSettings: 'Paramètres',
+    langLabel: 'Langue', menuTrips: 'Mes voyages', menuRequests: 'Mes demandes', menuSettings: 'Paramètres',
     menuNotif: 'Notifications', menuHelp: 'Aide',
-    tripsTitle: 'Mes voyages', settingsTitle: 'Paramètres', notifTitle: 'Notifications', helpTitle: 'Aide',
+    tripsTitle: 'Mes voyages', requestsTitle: 'Mes demandes', settingsTitle: 'Paramètres', notifTitle: 'Notifications', helpTitle: 'Aide',
     st1: 'Total', st2: 'En ligne', st3: 'Pausé',
     active: 'En ligne', pending: 'En révision', suspended: 'Pausé',
     edit: 'Modifier', delete: 'Supprimer', postNew: 'Poster un voyage',
@@ -37,9 +40,12 @@ const T = {
     signout: 'Se déconnecter',
     notifEmpty: "Aucune notification. Vous serez notifié lorsque votre annonce sera approuvée.",
     noTrips: "Vous n'avez pas encore posté de voyage.",
+    noRequests: "Vous n'avez pas encore posté de demande d'envoi.",
     liveDesc: 'Les gens peuvent vous voir et vous contacter',
     pendingDesc: 'Nous examinons votre annonce',
     suspendedDesc: "Contactez-nous si vous pensez que c'est une erreur",
+    reqOpen: 'Ouverte', reqMatched: 'Contacté', reqClosed: 'Fermée',
+    postRequest: 'Poster une demande',
   }
 }
 
@@ -48,26 +54,62 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [section, setSection]         = useState('trips')
   const [trips, setTrips]             = useState([])
   const [loading, setLoading]         = useState(true)
-  const [editingTrip, setEditingTrip] = useState(null)
-  const [saving, setSaving]           = useState(false)
+  const [editingTrip, setEditingTrip]   = useState(null)
+  const [saving, setSaving]             = useState(false)
+  const [requests, setRequests]         = useState([])
+  const [loadingReqs, setLoadingReqs]   = useState(true)
+  const [editingReq, setEditingReq]     = useState(null)
+  const [savingReq, setSavingReq]       = useState(false)
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
   const fullName = (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null)
-    || meta.full_name || meta.name || 'My Profile'
-  const contact  = user?.email || user?.phone || '—'
-  const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'YB'
+    || meta.full_name || meta.name || ''
+  const contact  = user?.email?.endsWith('@phone.yobbu.app') ? (user?.phone || '—') : (user?.email || user?.phone || '—')
+  const initials = fullName ? fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : 'GP'
   const joinDate = user?.created_at
     ? new Date(user.created_at).toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { month: 'long', year: 'numeric' })
     : '—'
 
-  useEffect(() => { fetchTrips() }, [user])
+  useEffect(() => { fetchTrips(); fetchRequests() }, [user])
 
   async function fetchTrips() {
     setLoading(true)
     const { data } = await supabase.from('trips').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
     setTrips(data || [])
     setLoading(false)
+  }
+
+  async function fetchRequests() {
+    setLoadingReqs(true)
+    const { data } = await supabase.from('package_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+    setRequests(data || [])
+    setLoadingReqs(false)
+  }
+
+  async function deleteRequest(id) {
+    if (!window.confirm(isFr ? 'Supprimer cette demande?' : 'Delete this request?')) return
+    const { error } = await supabase.from('package_requests').delete().eq('id', id).eq('user_id', user.id)
+    if (!error) setRequests(prev => prev.filter(r => r.id !== id))
+  }
+
+  async function saveEditReq() {
+    if (!editingReq) return
+    setSavingReq(true)
+    const { error } = await supabase.from('package_requests').update({
+      from_city:   editingReq.from_city,
+      to_city:     editingReq.to_city,
+      weight:      editingReq.weight,
+      description: editingReq.description,
+      deadline:    editingReq.deadline || null,
+      phone:       editingReq.phone,
+      budget:      editingReq.budget || null,
+    }).eq('id', editingReq.id).eq('user_id', user.id)
+    if (!error) {
+      setRequests(prev => prev.map(r => r.id === editingReq.id ? { ...r, ...editingReq } : r))
+      setEditingReq(null)
+    }
+    setSavingReq(false)
   }
 
   async function deleteTrip(id) {
@@ -105,6 +147,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const menuItems = [
     { key: 'trips',         Icon: PlaneIcon,       label: t.menuTrips },
+    { key: 'requests',      Icon: PackageIcon,     label: t.menuRequests },
     { key: 'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Verification' },
     { key: 'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifications.length },
     { key: 'settings',      Icon: SettingsIcon,    label: t.menuSettings },
@@ -222,6 +265,89 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <button onClick={() => setView('post')}
           style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
           <PlusIcon size={13} color="#8A8070" /> {t.postNew}
+        </button>
+      )}
+    </div>
+  )
+
+  const reqStatus = (req) => {
+    const s = req.status || 'open'
+    if (s === 'matched') return { label: t.reqMatched, bg: '#F0FAF4', color: '#2D8B4E', dot: '#22c55e' }
+    if (s === 'closed')  return { label: t.reqClosed,  bg: '#F5F3EF', color: '#8A8070', dot: '#C0B8B0' }
+    return                     { label: t.reqOpen,     bg: '#FFF8EB', color: '#C8891C', dot: '#f59e0b' }
+  }
+
+  const requestsContent = (
+    <div>
+      {loadingReqs && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
+
+      {!loadingReqs && requests.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <PackageIcon size={40} color="#E8DDD0" />
+          </div>
+          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{t.noRequests}</div>
+          <button onClick={() => setView('send')}
+            style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            {t.postRequest}
+          </button>
+        </div>
+      )}
+
+      {!loadingReqs && requests.map(req => {
+        const st = reqStatus(req)
+        return (
+          <div key={req.id} style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 14, padding: '16px', marginBottom: 10 }}>
+            {/* Route + status */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1710' }}>
+                {req.from_city} → {req.to_city}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: st.bg, borderRadius: 20, padding: '4px 10px' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: st.dot, display: 'inline-block' }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: st.color }}>{st.label}</span>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+              {[
+                { Icon: PackageIcon,  val: req.weight ? `${req.weight} kg` : null },
+                { Icon: DollarIcon,   val: req.budget ? `Max ${req.budget}$/kg` : null },
+                { Icon: CalendarIcon, val: req.deadline ? `${isFr ? 'Avant' : 'By'} ${req.deadline}` : null },
+              ].filter(x => x.val).map(({ Icon: Ic, val }) => (
+                <span key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 20, padding: '5px 10px', color: '#3D3829' }}>
+                  <Ic size={11} color="#8A8070" /> {val}
+                </span>
+              ))}
+            </div>
+
+            {/* Description */}
+            {req.description && (
+              <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.5, marginBottom: 12, padding: '8px 10px', background: '#fff', borderRadius: 8, border: '1px solid rgba(0,0,0,.06)' }}>
+                {req.description}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setEditingReq(req)}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1A1710', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                <EditIcon size={12} color="#1A1710" /> {t.edit}
+              </button>
+              <button onClick={() => deleteRequest(req.id)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 14px', borderRadius: 9, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                <TrashIcon size={12} color="#DC2626" />
+              </button>
+            </div>
+          </div>
+        )
+      })}
+
+      {!loadingReqs && requests.length > 0 && (
+        <button onClick={() => setView('send')}
+          style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+          <PlusIcon size={13} color="#8A8070" /> {t.postRequest}
         </button>
       )}
     </div>
@@ -376,6 +502,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const sectionContent = {
     trips: tripsContent,
+    requests: requestsContent,
     verification: verificationContent,
     notifications: notificationsContent,
     settings: settingsContent,
@@ -383,7 +510,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   }
 
   const sectionTitle = {
-    trips: t.tripsTitle, verification: isFr ? 'Vérification' : 'Trust & Verification',
+    trips: t.tripsTitle, requests: t.requestsTitle,
+    verification: isFr ? 'Vérification' : 'Trust & Verification',
     notifications: t.notifTitle, settings: t.settingsTitle, help: t.helpTitle,
   }
 
@@ -443,6 +571,45 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 {saving ? '...' : isFr ? 'Sauvegarder' : 'Save changes'}
               </button>
               <button onClick={() => setEditingTrip(null)}
+                style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                {isFr ? 'Annuler' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit request modal */}
+      {editingReq && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 999, padding: 0 }}>
+          <div style={{ background: '#FDFBF7', borderRadius: '20px 20px 0 0', padding: '28px 24px 40px', width: '100%', maxWidth: 520, boxShadow: '0 -8px 40px rgba(0,0,0,.15)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ width: 40, height: 4, background: '#E0D8CE', borderRadius: 2, margin: '0 auto 24px' }} />
+            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 20 }}>
+              {isFr ? 'Modifier la demande' : 'Edit request'}
+            </div>
+            {[
+              { label: isFr ? 'Depuis'        : 'From',             key: 'from_city' },
+              { label: isFr ? 'Vers'          : 'To',               key: 'to_city' },
+              { label: isFr ? 'Poids (kg)'   : 'Weight (kg)',       key: 'weight',      type: 'number' },
+              { label: isFr ? 'Budget max ($/kg)' : 'Max budget ($/kg)', key: 'budget', type: 'number' },
+              { label: isFr ? 'Avant le'     : 'Needed by',         key: 'deadline',    type: 'date' },
+              { label: 'WhatsApp',                                   key: 'phone',       type: 'tel' },
+            ].map(({ label, key, type }) => (
+              <div key={key}>
+                <label style={lbl}>{label}</label>
+                <input style={inp} type={type || 'text'} value={editingReq[key] || ''} onChange={e => setEditingReq(p => ({ ...p, [key]: e.target.value }))} />
+              </div>
+            ))}
+            <div>
+              <label style={lbl}>{isFr ? 'Description' : 'Description'}</label>
+              <textarea style={{ ...inp, resize: 'vertical', lineHeight: 1.5 }} rows={3} value={editingReq.description || ''} onChange={e => setEditingReq(p => ({ ...p, description: e.target.value }))} />
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+              <button onClick={saveEditReq} disabled={savingReq}
+                style={{ flex: 1, padding: '13px', borderRadius: 10, border: 'none', background: '#C8891C', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: savingReq ? .6 : 1 }}>
+                {savingReq ? '...' : isFr ? 'Sauvegarder' : 'Save changes'}
+              </button>
+              <button onClick={() => setEditingReq(null)}
                 style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                 {isFr ? 'Annuler' : 'Cancel'}
               </button>
@@ -607,6 +774,13 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             <PlusIcon size={14} color="#fff" />
           </div>
           {isFr ? 'Poster' : 'Post'}
+        </button>
+        <button onClick={() => setView('send')}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: '#C8891C' }}>
+          <div style={{ width: 24, height: 24, borderRadius: 7, background: '#FFF8EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <PackageIcon size={14} color="#C8891C" />
+          </div>
+          {isFr ? 'Envoyer' : 'Send'}
         </button>
       </div>
 

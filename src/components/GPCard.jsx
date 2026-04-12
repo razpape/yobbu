@@ -11,10 +11,6 @@ function WhatsAppIcon() {
   )
 }
 
-function cityCode(city) {
-  return CITY_CODES[city] || city?.slice(0, 3).toUpperCase() || '—'
-}
-
 function formatPrice(raw) {
   if (!raw) return null
   const num = parseFloat(String(raw))
@@ -260,7 +256,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 onMouseLeave={e => e.currentTarget.style.background = '#25D366'}
               >
                 <WhatsAppIcon />
-                {isFr ? 'WhatsApp' : 'WhatsApp'}
+                {isFr ? 'Contacter' : 'Contact'}
               </button>
             )}
           </div>

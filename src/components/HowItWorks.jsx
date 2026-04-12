@@ -5,8 +5,8 @@ const SENDER_STEPS = {
     {
       num: '1', color: '#C8891C', bg: '#FFF8EB',
       title: 'Search your route',
-      desc: 'Enter where you are and where your family is. Yobbu shows you all verified GPs traveling that route — by plane or container — with their dates, capacity, and price per kg.',
-      bullets: ['Filter by date & space', 'Plane or boat groupage', 'See full GP profile'],
+      desc: 'Enter where you are and where your family is. Yobbu shows you all verified GPs traveling that route — with their dates, capacity, and price per kg.',
+      bullets: ['Filter by date & space', 'See full GP profile', 'Phone-verified only'],
     },
     {
       num: '2', color: '#2D8B4E', bg: '#F0FAF4',
@@ -25,8 +25,8 @@ const SENDER_STEPS = {
     {
       num: '1', color: '#C8891C', bg: '#FFF8EB',
       title: 'Cherchez votre route',
-      desc: 'Entrez votre ville de départ et la destination. Yobbu vous montre tous les GPs vérifiés sur cette route — en avion ou en groupage conteneur — avec leurs dates, capacité et prix au kilo.',
-      bullets: ['Filtrer par date & espace', 'Avion ou groupage bateau', 'Voir le profil complet'],
+      desc: 'Entrez votre ville de départ et la destination. Yobbu vous montre tous les GPs vérifiés sur cette route — avec leurs dates, capacité et prix au kilo.',
+      bullets: ['Filtrer par date & espace', 'Voir le profil complet', 'GPs vérifiés uniquement'],
     },
     {
       num: '2', color: '#2D8B4E', bg: '#F0FAF4',
@@ -48,8 +48,8 @@ const GP_STEPS = {
     {
       num: '1', color: '#C8891C', bg: '#FFF8EB',
       title: 'Post your trip',
-      desc: 'You\'re already traveling. Tell Yobbu your route, date, how many kg you can carry, and your price. Takes 2 minutes. Whether you\'re flying or running a container groupage — both work.',
-      bullets: ['Plane or container', 'Set your own price', 'Full address for groupage'],
+      desc: 'You\'re already traveling. Tell Yobbu your route, date, how many kg you can carry, and your price. Takes 2 minutes.',
+      bullets: ['Flying with extra space', 'Set your own price', 'Takes 2 minutes'],
     },
     {
       num: '2', color: '#2D8B4E', bg: '#F0FAF4',
@@ -68,8 +68,8 @@ const GP_STEPS = {
     {
       num: '1', color: '#C8891C', bg: '#FFF8EB',
       title: 'Publiez votre voyage',
-      desc: 'Vous voyagez déjà. Indiquez votre route, la date, combien de kg vous pouvez transporter et votre prix. Ça prend 2 minutes. En avion ou en groupage conteneur — les deux fonctionnent.',
-      bullets: ['Avion ou conteneur', 'Fixez votre propre prix', 'Adresse complète pour groupage'],
+      desc: 'Vous voyagez déjà. Indiquez votre route, la date, combien de kg vous pouvez transporter et votre prix. Ça prend 2 minutes.',
+      bullets: ['Vous voyagez en avion', 'Fixez votre propre prix', 'Prend 2 minutes'],
     },
     {
       num: '2', color: '#2D8B4E', bg: '#F0FAF4',
@@ -89,11 +89,11 @@ const GP_STEPS = {
 const WHY = {
   en: [
     { label: 'Facebook groups', items: ['Posts get buried instantly', 'No search by route or date', 'Zero verification — anyone can post', 'Negotiate in public comments', 'No profile, no history, no trust'] },
-    { label: 'Yobbu', items: ['Search by route, date, capacity', 'Plane and boat listings side by side', 'Phone-verified GPs only', 'Private WhatsApp contact', 'Full GP profile + reviews'], highlight: true },
+    { label: 'Yobbu', items: ['Search by route, date, capacity', 'Phone-verified GPs only', 'Private WhatsApp contact', 'Full GP profile + reviews', 'Fast & direct'], highlight: true },
   ],
   fr: [
     { label: 'Groupes Facebook', items: ['Les posts disparaissent vite', 'Pas de recherche par route ou date', 'Aucune vérification — n\'importe qui peut poster', 'Négociation en commentaires publics', 'Pas de profil, pas d\'historique, pas de confiance'] },
-    { label: 'Yobbu', items: ['Recherche par route, date, capacité', 'Avion et bateau côte à côte', 'GPs vérifiés par téléphone uniquement', 'Contact WhatsApp privé', 'Profil complet + avis'], highlight: true },
+    { label: 'Yobbu', items: ['Recherche par route, date, capacité', 'GPs vérifiés par téléphone uniquement', 'Contact WhatsApp privé', 'Profil complet + avis', 'Rapide & direct'], highlight: true },
   ],
 }
 

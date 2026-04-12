@@ -23,9 +23,10 @@ export function useAuth() {
   }
 
   useEffect(() => {
-    // Check session and mark loading done quickly — profile loads in background
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      loadProfile(session?.user ?? null)
+    // Await profile load before marking loading done — prevents signed-in users
+    // from briefly seeing the signed-out UI while the profile row is fetched.
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      await loadProfile(session?.user ?? null)
       setLoading(false)
     })
 

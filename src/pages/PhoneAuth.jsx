@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
-import { Package, Smartphone, ArrowLeft, CheckCircle, Send, Plane, Users } from 'lucide-react'
+import { Package, Smartphone, ArrowLeft, CheckCircle, Plane, Users } from 'lucide-react'
 import PhoneInput from '../components/auth/PhoneInput'
 import OTPInput from '../components/auth/OTPInput'
 
@@ -21,12 +21,6 @@ function ProfileStep({ isFr, phone, onComplete }) {
   const [termsAccepted, setTerms] = useState(false)
 
   const roles = [
-    {
-      id: 'sender',
-      icon: <Send size={20} color={role === 'sender' ? '#C8891C' : '#8A8070'} />,
-      title: isFr ? 'J\'envoie des colis' : 'I send packages',
-      desc: isFr ? 'Je cherche des voyageurs pour porter mes colis.' : 'I need travelers to carry packages for me.',
-    },
     {
       id: 'traveler',
       icon: <Plane size={20} color={role === 'traveler' ? '#C8891C' : '#8A8070'} />,
@@ -396,6 +390,9 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         .eq('id', user.id)
 
       if (error) throw error
+
+      // Refresh session so useAuth re-fetches the updated profile
+      await supabase.auth.refreshSession()
 
       setStep(STEPS.COMPLETE)
       setTimeout(() => onComplete?.(user), 1200)

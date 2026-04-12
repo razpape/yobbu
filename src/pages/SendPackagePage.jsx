@@ -249,7 +249,7 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
           <button
             type="submit"
             disabled={loading}
-            style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#C8891C', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif', transition: 'background .15s" }}
+            style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#C8891C', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background .15s' }}
           >
             {loading ? (isFr ? 'Envoi...' : 'Posting...') : (isFr ? 'Publier ma demande' : 'Post my request')}
           </button>
