@@ -364,18 +364,25 @@ export default function AdminPanel({ onSignOut }) {
       </div>
 
       <div className="admin-body" style={s.body}>
-        {/* Stats */}
-        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:12 }}>
+        {/* Stats row 1 */}
+        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:10 }}>
           <StatCard n={quickStats.totalUsers} label="Total users" />
           <StatCard n={quickStats.newUsersWeek} label="New users this week" color="#818cf8" />
           <StatCard n={quickStats.newTripsWeek} label="New trips this week" color="#38bdf8" />
           <StatCard n={pending.length} label="Pending approval" color="#fbbf24" />
-        </div>
-        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:24 }}>
-          <StatCard n={trips.length} label="Total listings" />
           <StatCard n={active.length} label="Active listings" color="#4ade80" />
-          <StatCard n={users.filter(u=>u.whatsapp_verified).length} label="WA Verified" color="#22c55e" />
-          <StatCard n={users.filter(u=>!u.whatsapp_verified).length} label="Unverified" color="#f87171" />
+        </div>
+        {/* Stats row 2 */}
+        <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:24 }}>
+          <StatCard n={trips.filter(t=>t.service_type==='baggage').length} label="Plane listings" color="#C8810A" />
+          <StatCard n={trips.filter(t=>t.service_type==='groupage').length} label="Boat / groupage" color="#38bdf8" />
+          <StatCard n={trips.filter(t=>!t.service_type).length} label="Type not set" color="#555" />
+          <StatCard n={users.filter(u=>u.whatsapp_verified).length} label="Verified users" color="#22c55e" />
+          <StatCard
+            n={trips.reduce((s,t)=>s+(parseFloat(t.space)||0),0).toLocaleString()+' kg'}
+            label="Total capacity listed"
+            color="#818cf8"
+          />
         </div>
 
         {/* Pending alert */}
@@ -507,6 +514,73 @@ export default function AdminPanel({ onSignOut }) {
                 </div>
               </div>
 
+              {/* Service type + recent signups */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+
+                {/* Service type breakdown */}
+                <div style={card}>
+                  {sectionTitle('Service Type Breakdown')}
+                  {[
+                    { label: 'Plane / carry-on', n: trips.filter(t=>t.service_type==='baggage').length, color:'#C8810A' },
+                    { label: 'Boat / groupage',  n: trips.filter(t=>t.service_type==='groupage').length, color:'#38bdf8' },
+                    { label: 'Not specified',     n: trips.filter(t=>!t.service_type).length, color:'#555' },
+                  ].map(({ label, n, color }) => (
+                    <div key={label} style={{ marginBottom: 10 }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                        <span style={{ fontSize:12, color:'#888' }}>{label}</span>
+                        <span style={{ fontSize:12, fontWeight:700, color }}>{n}</span>
+                      </div>
+                      <div style={{ height:5, background:'#2a2a2a', borderRadius:3 }}>
+                        <div style={{ height:'100%', borderRadius:3, background:color, width: trips.length ? `${Math.round(n/trips.length*100)}%` : '0%', transition:'width .4s' }} />
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ marginTop:10, paddingTop:10, borderTop:'1px solid #2a2a2a' }}>
+                    <div style={{ fontSize:11, color:'#666' }}>Avg price / kg</div>
+                    <div style={{ fontSize:20, fontWeight:800, color:'#C8810A', marginTop:2 }}>
+                      {(() => {
+                        const priced = trips.filter(t => !isNaN(parseFloat(t.price)))
+                        if (!priced.length) return '—'
+                        const avg = priced.reduce((s,t)=>s+parseFloat(t.price),0)/priced.length
+                        return `$${avg.toFixed(2)}`
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent signups */}
+                <div style={card}>
+                  {sectionTitle('Recent Signups')}
+                  {users.length === 0 ? (
+                    <div style={{ fontSize:13, color:'#555' }}>Load Users tab to see signups.</div>
+                  ) : (
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                      {[...users].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,8).map(u => {
+                        const ago = u.created_at ? Math.floor((Date.now()-new Date(u.created_at))/60000) : null
+                        const agoLabel = ago === null ? '' : ago < 60 ? `${ago}m ago` : ago < 1440 ? `${Math.floor(ago/60)}h ago` : `${Math.floor(ago/1440)}d ago`
+                        return (
+                          <div key={u.id} style={{ display:'flex', alignItems:'center', gap:8, padding:'5px 0', borderBottom:'1px solid #222' }}>
+                            <div style={{ width:26, height:26, borderRadius:'50%', background:'#2a2a2a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#888', flexShrink:0 }}>
+                              {u.email?.[0]?.toUpperCase() || '?'}
+                            </div>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontSize:12, fontWeight:600, color:'#ddd', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                                {u.full_name || u.email || '—'}
+                              </div>
+                              <div style={{ fontSize:10, color:'#555' }}>{u.phone || u.email}</div>
+                            </div>
+                            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:2 }}>
+                              <span style={{ fontSize:10, color:'#555' }}>{agoLabel}</span>
+                              {u.whatsapp_verified && <span style={{ fontSize:9, color:'#22c55e', fontWeight:700 }}>VERIFIED</span>}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Bottom row: top routes + recent activity */}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
 
@@ -578,10 +652,13 @@ export default function AdminPanel({ onSignOut }) {
             <div className="admin-table-scroll">
             <table style={s.table}>
               <thead>
-                <tr>{['Traveler','Route','Date','Verification','Status','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
+                <tr>{['Traveler','Route','Type','Date','Space','Price','Addresses','Submitted','Verification','Status','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
               </thead>
               <tbody>
-                {filtered.filter(t => t.approved).map(trip => (
+                {filtered.filter(t => t.approved).map(trip => {
+                  const submittedAgo = trip.created_at ? Math.floor((Date.now()-new Date(trip.created_at))/60000) : null
+                  const submittedLabel = submittedAgo === null ? '—' : submittedAgo < 60 ? `${submittedAgo}m ago` : submittedAgo < 1440 ? `${Math.floor(submittedAgo/60)}h ago` : `${Math.floor(submittedAgo/1440)}d ago`
+                  return (
                   <tr key={trip.id}>
                     <td style={s.td}>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -596,7 +673,26 @@ export default function AdminPanel({ onSignOut }) {
                       </div>
                     </td>
                     <td style={{ ...s.td, color:'#aaa' }}>{trip.from_city} → {trip.to_city}</td>
-                    <td style={{ ...s.td, color:'#aaa' }}>{trip.date}</td>
+                    <td style={s.td}>
+                      {trip.service_type === 'groupage'
+                        ? <span style={{ fontSize:10, fontWeight:700, padding:'2px 7px', borderRadius:5, background:'#1e3a5f', color:'#38bdf8' }}>Boat</span>
+                        : trip.service_type === 'baggage'
+                        ? <span style={{ fontSize:10, fontWeight:700, padding:'2px 7px', borderRadius:5, background:'#3a2a0f', color:'#C8810A' }}>Plane</span>
+                        : <span style={{ fontSize:10, color:'#444' }}>—</span>
+                      }
+                    </td>
+                    <td style={{ ...s.td, color:'#aaa' }}>{trip.date || '—'}</td>
+                    <td style={{ ...s.td, color:'#aaa' }}>{trip.space ? `${trip.space} kg` : '—'}</td>
+                    <td style={{ ...s.td, color:'#C8810A', fontWeight:600 }}>{trip.price || '—'}</td>
+                    <td style={s.td}>
+                      {trip.pickup_area || trip.dropoff_area ? (
+                        <div style={{ fontSize:11, color:'#888', lineHeight:1.5 }}>
+                          {trip.pickup_area && <div><span style={{ color:'#555' }}>Drop-off: </span>{trip.pickup_area}</div>}
+                          {trip.dropoff_area && <div><span style={{ color:'#555' }}>Pickup: </span>{trip.dropoff_area}</div>}
+                        </div>
+                      ) : <span style={{ color:'#444', fontSize:11 }}>—</span>}
+                    </td>
+                    <td style={{ ...s.td, fontSize:11, color:'#666' }}>{submittedLabel}</td>
                     <td style={s.td}>
                       <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                         {['phone_verified','id_verified','community_verified'].map((field, i) => {
@@ -629,7 +725,8 @@ export default function AdminPanel({ onSignOut }) {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
             </div>
@@ -663,7 +760,7 @@ export default function AdminPanel({ onSignOut }) {
             <div className="admin-table-scroll">
             <table style={s.table}>
               <thead>
-                <tr>{['Traveler','Route','Travel Date','Space','Price','Submitted','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
+                <tr>{['Traveler','Route','Type','Travel Date','Space','Price','Addresses / Note','Submitted','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}</tr>
               </thead>
               <tbody>
                 {pending.length === 0 ? (
@@ -688,9 +785,24 @@ export default function AdminPanel({ onSignOut }) {
                         </div>
                       </td>
                       <td style={{ ...s.td, color:'#aaa' }}>{trip.from_city} → {trip.to_city}</td>
+                      <td style={s.td}>
+                        {trip.service_type === 'groupage'
+                          ? <span style={{ fontSize:10, fontWeight:700, padding:'2px 7px', borderRadius:5, background:'#1e3a5f', color:'#38bdf8' }}>Boat</span>
+                          : trip.service_type === 'baggage'
+                          ? <span style={{ fontSize:10, fontWeight:700, padding:'2px 7px', borderRadius:5, background:'#3a2a0f', color:'#C8810A' }}>Plane</span>
+                          : <span style={{ fontSize:10, color:'#444' }}>—</span>}
+                      </td>
                       <td style={{ ...s.td, color:'#aaa' }}>{trip.date || '—'}</td>
-                      <td style={{ ...s.td, color:'#aaa' }}>{trip.space ? `~${trip.space} kg` : '—'}</td>
+                      <td style={{ ...s.td, color:'#aaa' }}>{trip.space ? `${trip.space} kg` : '—'}</td>
                       <td style={{ ...s.td, color:'#C8810A', fontWeight:600 }}>{trip.price || '—'}</td>
+                      <td style={s.td}>
+                        <div style={{ fontSize:11, color:'#888', lineHeight:1.6, maxWidth:180 }}>
+                          {trip.pickup_area && <div><span style={{ color:'#555' }}>Drop-off: </span>{trip.pickup_area}</div>}
+                          {trip.dropoff_area && <div><span style={{ color:'#555' }}>Pickup: </span>{trip.dropoff_area}</div>}
+                          {trip.note && <div style={{ color:'#666', fontStyle:'italic', marginTop:2 }}>"{trip.note.slice(0,60)}{trip.note.length>60?'…':''}"</div>}
+                          {!trip.pickup_area && !trip.dropoff_area && !trip.note && <span style={{ color:'#444' }}>—</span>}
+                        </div>
+                      </td>
                       <td style={{ ...s.td }}>
                         <span style={{ fontSize:12, fontWeight:600, color: isOld ? '#f87171' : '#aaa' }}>
                           {ageLabel}
@@ -766,7 +878,7 @@ export default function AdminPanel({ onSignOut }) {
                           checked={selectedUsers.size > 0}
                         />
                       </th>
-                      {['User','WhatsApp Status','Phone','Joined','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}
+                      {['User','WhatsApp Status','Phone','Trips Posted','Joined','Actions'].map(h => <th key={h} style={s.th}>{h}</th>)}
                     </tr>
                   </thead>
                   <tbody>
@@ -835,7 +947,15 @@ export default function AdminPanel({ onSignOut }) {
 
                         {/* Masked phone */}
                         <td style={{ ...s.td, color:'#777', fontFamily:'monospace', fontSize:12 }}>
-                          {u.whatsapp_number || '—'}
+                          {u.whatsapp_number || u.phone || '—'}
+                        </td>
+
+                        {/* Trips posted */}
+                        <td style={{ ...s.td, textAlign:'center' }}>
+                          {(() => {
+                            const count = trips.filter(t => t.user_id === u.id).length
+                            return <span style={{ fontSize:14, fontWeight:800, color: count > 0 ? '#C8810A' : '#444' }}>{count}</span>
+                          })()}
                         </td>
 
                         {/* Joined */}

@@ -104,7 +104,7 @@ function Select({ value, onChange, children }) {
   )
 }
 
-function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter, availOption, setAvailOption, priceFilter, setPriceFilter, verifyFilter, setVerifyFilter, onFilter, onClose }) {
+function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter, availOption, setAvailOption, priceFilter, setPriceFilter, verifyFilter, setVerifyFilter, serviceFilter, setServiceFilter, onFilter, onClose }) {
   const isFr = lang === 'fr'
 
   const allCities = DESTINATION_GROUPS.flatMap(g => g.options)
@@ -206,6 +206,29 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
                 transition: 'all .15s',
               }}
             >
+              {opt[lang] || opt.en}
+            </button>
+          ))}
+        </div>
+      </Field>
+
+      {/* Service type */}
+      <Field label={isFr ? 'Type de transport' : 'Transport type'}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { value: 'all',      en: 'All',      fr: 'Tous' },
+            { value: 'baggage',  en: 'Plane',     fr: 'Avion' },
+            { value: 'groupage', en: 'Boat',      fr: 'Bateau' },
+          ].map(opt => (
+            <button key={opt.value} onClick={() => setServiceFilter(opt.value)}
+              style={{
+                flex: 1, padding: '9px 0', borderRadius: 10,
+                border: `1.5px solid ${serviceFilter === opt.value ? '#C8891C' : '#E8E4DE'}`,
+                background: serviceFilter === opt.value ? '#FFF7ED' : '#fff',
+                color: serviceFilter === opt.value ? '#C8891C' : '#6B6860',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                fontFamily: 'DM Sans, sans-serif', transition: 'all .15s',
+              }}>
               {opt[lang] || opt.en}
             </button>
           ))}
@@ -373,9 +396,10 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
   const [toFilter, setToFilter]       = useState('')
   const [availOption, setAvailOption] = useState('')
   const [priceFilter, setPriceFilter] = useState('')
-  const [verifyFilter, setVerifyFilter] = useState('all')
-  const [sortBy, setSortBy]           = useState('date')
-  const [applied, setApplied]         = useState({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all' })
+  const [verifyFilter, setVerifyFilter]   = useState('all')
+  const [serviceFilter, setServiceFilter] = useState('all')
+  const [sortBy, setSortBy]               = useState('date')
+  const [applied, setApplied]             = useState({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' })
   const [drawerOpen, setDrawerOpen]   = useState(false)
   const isFr = lang === 'fr'
 
@@ -394,7 +418,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
   const handleFilter = () => {
     const { from, to } = availOption ? getDateRange(availOption) : { from:'', to:'' }
-    setApplied({ from: fromFilter, to: toFilter, dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter })
+    setApplied({ from: fromFilter, to: toFilter, dateFrom: from, dateTo: to, price: priceFilter, verify: verifyFilter, service: serviceFilter })
   }
 
   const sorted = useMemo(() => {
@@ -412,8 +436,9 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         ((!applied.dateFrom || d >= applied.dateFrom) && (!applied.dateTo || d <= applied.dateTo))
       const matchVerify = applied.verify === 'all' ||
         (applied.verify === 'verified' && (g.verified?.phone || g.phone_verified || g.verified?.id || g.id_verified || g.whatsapp_verified))
-      const matchPrice  = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
-      return matchSearch && matchFrom && matchDest && matchDate && matchVerify && matchPrice
+      const matchPrice   = !maxPrice || (parseFloat(String(g.price)) || Infinity) <= maxPrice
+      const matchService = applied.service === 'all' || g.service_type === applied.service
+      return matchSearch && matchFrom && matchDest && matchDate && matchVerify && matchPrice && matchService
     })
 
     const avOrder = { open: 0, full: 1, unavailable: 2 }
@@ -521,6 +546,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           availOption={availOption} setAvailOption={setAvailOption}
           priceFilter={priceFilter} setPriceFilter={setPriceFilter}
           verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
+          serviceFilter={serviceFilter} setServiceFilter={setServiceFilter}
           onFilter={handleFilter} onClose={() => setDrawerOpen(false)}
         />
       </div>
@@ -535,6 +561,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
             availOption={availOption} setAvailOption={setAvailOption}
             priceFilter={priceFilter} setPriceFilter={setPriceFilter}
             verifyFilter={verifyFilter} setVerifyFilter={setVerifyFilter}
+            serviceFilter={serviceFilter} setServiceFilter={setServiceFilter}
             onFilter={handleFilter}
           />
         </div>
