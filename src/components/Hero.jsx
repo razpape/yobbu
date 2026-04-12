@@ -108,7 +108,9 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 : <>Find a trusted traveler <em style={{ fontStyle:'italic', color:'#C8891C' }}>near you</em></>}
             </h1>
             <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5, padding:'0 8px' }}>
-              {isFr ? 'Comparez et contactez des voyageurs vers Dakar, Conakry et plus' : 'Easily find and contact verified travelers heading home'}
+              {isFr
+                ? 'Des voyageurs de votre communauté transportent vos colis vers Dakar, Conakry et plus — directement à votre famille.'
+                : 'People from your community carry your packages to Dakar, Conakry and more — straight to your family.'}
             </p>
 
             {/* Origin / Destination card */}
@@ -116,10 +118,10 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               {/* Origin row */}
               <div style={{ display:'flex', alignItems:'center', padding:'18px 20px', borderBottom:'1px solid #F0EBE3' }}>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Depuis' : 'Origin'}</div>
+                  <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
                   <select value={from} onChange={e => setFrom(e.target.value)}
                     style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:17, fontWeight:500, color: from ? '#1A1710' : '#AAAAAA', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
-                    {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Départ...' : 'Leaving from...') : (c[lang] || c.en)}</option>)}
+                    {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Ma ville...' : 'My city...') : (c[lang] || c.en)}</option>)}
                   </select>
                 </div>
                 <button className="swap-btn" onClick={handleSwap} aria-label="Swap origin and destination">
@@ -130,57 +132,27 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               </div>
               {/* Destination row */}
               <div style={{ padding:'18px 20px' }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Destination' : 'Destination'}</div>
+                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
                 <select value={dest} onChange={e => setDest(e.target.value)}
                   style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:17, fontWeight:500, color: dest ? '#1A1710' : '#AAAAAA', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
-                  {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Aller à...' : 'Going to...') : (d[lang] || d.en)}</option>)}
+                  {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
                 </select>
               </div>
             </div>
 
-            {/* Date row */}
-            <div style={{ display:'flex', gap:10, marginBottom:12 }}>
-              <div style={{ flex:1, background:'#fff', borderRadius:16, padding:'18px 20px', boxShadow:'0 2px 8px rgba(0,0,0,.09)' }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Date' : 'Date'}</div>
-                <div style={{ fontSize:16, fontWeight:500, color:'#1A1710' }}>
-                  {new Date().toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { weekday:'short', month:'short', day:'numeric' })}
-                </div>
-              </div>
-              <div style={{ flex:1, background:'#fff', borderRadius:16, padding:'18px 20px', boxShadow:'0 2px 8px rgba(0,0,0,.09)' }}>
-                <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Retour' : 'Return'}</div>
-                <div style={{ fontSize:16, color:'#AAAAAA' }}>{isFr ? 'Optionnel' : 'Optional'}</div>
-              </div>
-            </div>
-
-            {/* Packages */}
-            <div style={{ background:'#fff', borderRadius:16, padding:'18px 20px', marginBottom:14, boxShadow:'0 2px 8px rgba(0,0,0,.09)' }}>
-              <div style={{ fontSize:12, fontWeight:600, color:'#8A8070', marginBottom:5, textTransform:'uppercase', letterSpacing:'.05em' }}>{isFr ? 'Colis' : 'Packages'}</div>
-              <div style={{ fontSize:16, fontWeight:500, color:'#1A1710' }}>{isFr ? '1 colis' : '1 package'}</div>
-            </div>
-
             {/* Search button */}
-            <button className="mobile-btn-find" onClick={handleSearch} style={{ marginBottom: 10 }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button className="mobile-btn-find" onClick={handleSearch} style={{ marginBottom: 12 }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
                 <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
               </svg>
-              {isFr ? 'Rechercher' : 'Search'}
+              {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
             </button>
 
-            {/* Sender CTA */}
-            <button
-              onClick={() => onSend?.() || setView('send')}
-              style={{ width:'100%', padding:'14px', background:'transparent', border:'1.5px solid #E5E1DB', borderRadius:14, fontFamily:"'DM Sans', sans-serif", fontSize:15, fontWeight:600, color:'#1A1710', cursor:'pointer', marginBottom:14 }}
-            >
-              {isFr ? 'Poster une demande de colis →' : 'Post a package request →'}
-            </button>
-
-            {/* Accommodations toggle */}
-            <div style={{ display:'flex', alignItems:'center', gap:10, paddingBottom:0, fontSize:15, color:'#3D3829', marginTop:'auto', paddingTop:4 }}>
-              <div style={{ width:22, height:22, background:'#C8891C', borderRadius:5, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </div>
-              {isFr ? 'Chercher un hébergement' : 'Search accommodations'}
+            {/* Trust line */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:13, color:'#8A8070', marginTop:4 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              {isFr ? 'Tous les voyageurs sont vérifiés par téléphone' : 'All travelers are phone verified'}
             </div>
           </div>
 
@@ -202,15 +174,15 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
 
               <p className="anim-3 hero-sub" style={{ fontSize:17, lineHeight:1.65, color:'#8A8070', maxWidth:440, marginBottom:40 }}>
                 {isFr
-                  ? "Trouvez des voyageurs vérifiés allant à Dakar, Conakry et ailleurs. Votre colis voyage avec une vraie personne de votre communauté."
-                  : "Find verified travelers heading to Dakar, Conakry, and beyond. Your package travels with a real person — not a faceless courier."}
+                  ? "Des personnes de votre communauté voyagent déjà vers l'Afrique avec de la place dans leurs bagages. Trouvez-les, contactez-les sur WhatsApp, et votre famille reçoit le colis en quelques jours."
+                  : "People from your community are already traveling to Africa with space in their bags. Find them, contact them on WhatsApp, and your family receives the package in days."}
               </p>
 
               {/* Desktop Search bar */}
               <div className="search-bar desktop-search-field anim-4 hero-search" style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:16, boxShadow:'0 2px 8px rgba(0,0,0,.04), 0 12px 40px rgba(0,0,0,.06)', overflow:'hidden', marginBottom:20, border:'1px solid rgba(0,0,0,.04)' }}>
                 <div className="search-field" style={{ flex:1, padding:'20px 24px', position:'relative', borderRight:'1px solid rgba(0,0,0,.06)' }}>
                   <label style={{ display:'block', fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'1.2px', color:'#8A8070', marginBottom:6 }}>
-                    {isFr ? 'Où?' : 'Where to?'}
+                    {isFr ? 'Ma famille est à' : 'My family is in'}
                   </label>
                   <select value={dest} onChange={e => setDest(e.target.value)}
                     style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:500, color:'#1A1710', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
@@ -220,7 +192,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 </div>
                 <div style={{ flex:1, padding:'20px 24px', position:'relative' }}>
                   <label style={{ display:'block', fontSize:10, fontWeight:600, textTransform:'uppercase', letterSpacing:'1.2px', color:'#8A8070', marginBottom:6 }}>
-                    {isFr ? 'Depuis' : 'Departing from'}
+                    {isFr ? 'Je suis à' : 'I am in'}
                   </label>
                   <select value={from} onChange={e => setFrom(e.target.value)}
                     style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:500, color:'#1A1710', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
@@ -247,10 +219,10 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               </div>
 
               <div className="anim-5 hero-trust" style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#8A8070' }}>
-                <span style={{ color:'#2D8B4E' }}>🛡</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 {isFr
-                  ? <span>Chaque voyageur est <strong style={{ color:'#2D8B4E', fontWeight:600 }}>vérifié par téléphone</strong> — les GPs vérifiés portent un badge bouclier.</span>
-                  : <span>Every traveler is <strong style={{ color:'#2D8B4E', fontWeight:600 }}>phone verified</strong> — ID-verified GPs carry a shield badge.</span>}
+                  ? <span>Chaque voyageur est <strong style={{ color:'#2D8B4E', fontWeight:600 }}>vérifié par téléphone</strong> avant d'apparaître sur Yobbu.</span>
+                  : <span>Every traveler is <strong style={{ color:'#2D8B4E', fontWeight:600 }}>phone verified</strong> before appearing on Yobbu.</span>}
               </div>
             </div>
 
@@ -285,7 +257,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   </div>
                   <div style={{ flex:1 }}>
                     <div style={{ fontWeight:600, fontSize:15, color:'#1A1710', display:'flex', alignItems:'center', gap:6 }}>
-                      {t.name} {t.verified && <span style={{ color:'#2D8B4E' }}>🛡</span>}
+                      {t.name} {t.verified && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}
                     </div>
                     <div style={{ fontSize:13, color:'#8A8070', marginTop:2 }}>
                       {t.deliveries} {isFr ? 'livraisons' : 'deliveries'} · {t.rating} ★
@@ -317,10 +289,10 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         {/* Stats */}
         <div className="stats-bar" style={{ display:'flex', justifyContent:'center', gap:0, padding:'32px 48px', maxWidth:800, margin:'0 auto', borderTop:'1px solid rgba(0,0,0,.06)' }}>
           {[
-            { n:'500+', l: isFr ? 'familles servies'  : 'families served' },
-            { n:'98%',  l: isFr ? 'taux de réussite'  : 'success rate' },
-            { n:'247',  l: isFr ? 'colis livrés'      : 'packages delivered' },
-            { n:'4',    l: isFr ? 'routes actives'    : 'active routes' },
+            { n: '100%',                      l: isFr ? 'GPs vérifiés par téléphone' : 'GPs phone-verified' },
+            { n: isFr ? 'Gratuit' : 'Free',   l: isFr ? 'Recherche et contact'       : 'to search & contact' },
+            { n: '4',                          l: isFr ? 'routes actives'             : 'active routes' },
+            { n: isFr ? 'Direct' : 'Direct',  l: isFr ? 'Contact WhatsApp'           : 'WhatsApp contact' },
           ].map(({ n, l }, i) => (
             <div className="stat-item" key={l} style={{ flex:1, textAlign:'center', padding:'0 32px', borderRight: i < 3 ? '1px solid rgba(0,0,0,.06)' : 'none' }}>
               <div style={{ fontFamily:'DM Serif Display, serif', fontSize:32, color:'#C8891C', letterSpacing:'-.5px' }}>{n}</div>
