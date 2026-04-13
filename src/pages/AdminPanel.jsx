@@ -201,7 +201,7 @@ export default function AdminPanel({ onSignOut }) {
         if (trip?.user_email) {
           fetch('/api/send-rejection-email', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_API_SECRET || '' },
             body: JSON.stringify({
               to:    trip.user_email,
               name:  trip.name,
@@ -226,7 +226,7 @@ export default function AdminPanel({ onSignOut }) {
         if (trip?.user_email) {
           fetch('/api/send-approval-email', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_API_SECRET || '' },
             body: JSON.stringify({
               to:    trip.user_email,
               name:  trip.name,
