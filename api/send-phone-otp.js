@@ -103,7 +103,7 @@ export default async function handler(req, res) {
     })
 
   } catch (err) {
-    console.error('[OTP] Error:', err.message)
-    return res.status(500).json({ error: 'Failed to send code' })
+    console.error('[OTP] Error:', err.message, err.cause || '', err.stack || '')
+    return res.status(500).json({ error: 'Failed to send code', detail: err.message })
   }
 }

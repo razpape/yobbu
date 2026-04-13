@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import SendPackagePage from './pages/SendPackagePage'
+import OnboardingPage from './pages/OnboardingPage'
 import Admin from './pages/Admin'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
@@ -52,6 +53,22 @@ export default function App() {
   // Handle OAuth callback errors in URL on mount
   useEffect(() => {
     handleOAuthCallback()
+
+    // Check for existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', session.user.id).single()
+        setView(data?.onboarding_complete ? 'profile' : 'onboarding')
+      }
+    })
+
+    // Listen for auth changes — only handle sign-out here.
+    // Post-login routing is handled by handlePhoneAuthComplete (called by PhoneAuth)
+    // so we never interrupt PhoneAuth mid-flow.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') setView('home')
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
   if (isAdminRoute) return <Admin />
@@ -59,8 +76,11 @@ export default function App() {
 
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
-  const handlePhoneAuthComplete = () => {
-    setView('home')
+  const handlePhoneAuthComplete = async (completedUser) => {
+    const uid = completedUser?.id || user?.id
+    if (!uid) { setView('profile'); return }
+    const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', uid).single()
+    setView(data?.onboarding_complete ? 'profile' : 'onboarding')
   }
 
   const handleSignOut = async () => {
@@ -93,6 +113,16 @@ export default function App() {
         user={user}
         onLoginRequired={() => setView('phone-auth')}
         onBack={() => setView('browse')}
+      />
+    )
+  }
+
+  if (view === 'onboarding') {
+    return (
+      <OnboardingPage
+        user={user}
+        lang={lang}
+        onComplete={() => setView('profile')}
       />
     )
   }
