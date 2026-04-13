@@ -114,13 +114,15 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 42, height: 42, borderRadius: '50%',
-                background: gp.bg || `${accent}18`,
+                background: gp.avatar_url ? 'transparent' : (gp.bg || `${accent}18`),
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: "'DM Serif Display', serif",
                 fontSize: 15, fontWeight: 700, color: accent,
-                flexShrink: 0,
+                flexShrink: 0, overflow: 'hidden',
               }}>
-                {initials}
+                {gp.avatar_url
+                  ? <img src={gp.avatar_url} alt={gp.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : initials}
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

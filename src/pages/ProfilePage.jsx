@@ -9,6 +9,7 @@ import {
 import TrustBadges from '../components/TrustBadges'
 import IDVerificationUpload from '../components/IDVerificationUpload'
 import SocialProfileLinks from '../components/SocialProfileLinks'
+import AvatarUpload from '../components/AvatarUpload'
 
 const T = {
   en: {
@@ -52,6 +53,7 @@ const T = {
 export default function ProfilePage({ user, lang: initialLang, onSignOut, setView }) {
   const [lang, setLang]               = useState(initialLang || 'en')
   const [section, setSection]         = useState('trips')
+  const [avatarUrl, setAvatarUrl]     = useState(null)
   const [trips, setTrips]             = useState([])
   const [loading, setLoading]         = useState(true)
   const [editingTrip, setEditingTrip]   = useState(null)
@@ -71,7 +73,14 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     ? new Date(user.created_at).toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { month: 'long', year: 'numeric' })
     : '—'
 
-  useEffect(() => { fetchTrips(); fetchRequests() }, [user])
+  useEffect(() => {
+    fetchTrips()
+    fetchRequests()
+    if (user?.id) {
+      supabase.from('profiles').select('avatar_url').eq('id', user.id).single()
+        .then(({ data }) => { if (data?.avatar_url) setAvatarUrl(data.avatar_url) })
+    }
+  }, [user])
 
   async function fetchTrips() {
     setLoading(true)
@@ -641,8 +650,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
       {/* Mobile hero / profile header */}
       <div className="pf-hero" style={{ background: '#fff', borderBottom: '1px solid rgba(0,0,0,.06)', padding: '28px 24px 20px', textAlign: 'center', display: 'none' }}>
-        <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'linear-gradient(135deg,#C8891C,#E6A832)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#fff', margin: '0 auto 12px', boxShadow: '0 4px 16px rgba(200,137,28,.25)' }}>
-          {initials}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={68} onUpload={setAvatarUrl} />
         </div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 2, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         <div style={{ fontSize: 13, color: '#8A8070', marginBottom: 16 }}>{contact}</div>
@@ -683,8 +692,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div className="pf-sidebar">
           {/* User card */}
           <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 16, padding: 20, textAlign: 'center', marginBottom: 12 }}>
-            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg,#C8891C,#E6A832)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#fff', margin: '0 auto 12px', boxShadow: '0 3px 12px rgba(200,137,28,.2)' }}>
-              {initials}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+              <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={60} onUpload={setAvatarUrl} />
             </div>
             <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1A1710', marginBottom: 2 }}>{fullName}</div>
             <div style={{ fontSize: 11, color: '#8A8070' }}>{contact}</div>
