@@ -8,10 +8,16 @@ const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
 const twilioAuthToken  = process.env.TWILIO_AUTH_TOKEN
 const twilioVerifySid  = process.env.TWILIO_VERIFY_SERVICE_SID
 
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com,http://localhost:5173').split(',')
+
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  const origin = req.headers.origin || ''
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Vary', 'Origin')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -44,7 +50,11 @@ export default async function handler(req, res) {
     const code = Math.floor(100000 + Math.random() * 900000).toString()
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
 
-    await supabase.from('otp_codes').delete().eq('phone', phone)
+    // Delete this phone's old code + any globally expired codes
+    await Promise.all([
+      supabase.from('otp_codes').delete().eq('phone', phone),
+      supabase.from('otp_codes').delete().lt('expires_at', new Date().toISOString()),
+    ])
     const { error: insertError } = await supabase
       .from('otp_codes')
       .insert({ phone, code, expires_at: expiresAt })

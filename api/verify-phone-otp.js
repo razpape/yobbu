@@ -5,10 +5,21 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com,http://localhost:5173').split(',')
+const MAX_ATTEMPTS = 5
+
+function setCors(req, res) {
+  const origin = req.headers.origin || ''
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Vary', 'Origin')
+}
+
+export default async function handler(req, res) {
+  setCors(req, res)
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -20,20 +31,40 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Check code against our database — no Twilio VerificationChecks needed
+    // Fetch OTP record (not yet checking code — need to track attempts first)
     const { data: otpRecord, error: otpError } = await supabase
       .from('otp_codes')
       .select('*')
       .eq('phone', phone)
-      .eq('code', String(code).trim())
       .gt('expires_at', new Date().toISOString())
       .maybeSingle()
 
     if (otpError) throw otpError
 
     if (!otpRecord) {
-      console.log(`[OTP] Failed for ${phone} — wrong code or expired`)
+      console.log(`[OTP] No active code for ${phone}`)
       return res.status(400).json({ error: 'Invalid or expired code' })
+    }
+
+    // Brute force protection — lock after MAX_ATTEMPTS
+    const attempts = (otpRecord.attempts || 0) + 1
+    if (attempts > MAX_ATTEMPTS) {
+      await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
+      console.warn(`[OTP] Too many attempts for ${phone} — code invalidated`)
+      return res.status(429).json({ error: 'Too many attempts. Please request a new code.' })
+    }
+
+    // Check code
+    if (String(otpRecord.code).trim() !== String(code).trim()) {
+      // Increment attempt counter
+      await supabase.from('otp_codes').update({ attempts }).eq('id', otpRecord.id)
+      const remaining = MAX_ATTEMPTS - attempts
+      console.log(`[OTP] Wrong code for ${phone} — attempt ${attempts}/${MAX_ATTEMPTS}`)
+      if (remaining <= 0) {
+        await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
+        return res.status(429).json({ error: 'Too many attempts. Please request a new code.' })
+      }
+      return res.status(400).json({ error: `Invalid code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.` })
     }
 
     // Valid — delete it so it can't be reused
@@ -64,7 +95,6 @@ export default async function handler(req, res) {
 
       if (createError) {
         if (createError.message?.toLowerCase().includes('already')) {
-          // Auth user exists but profile is missing — scan to find them
           const { data: { users: allUsers } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
           const existing = allUsers?.find(u => u.email === email)
           if (!existing) throw new Error('Could not locate existing auth user')
