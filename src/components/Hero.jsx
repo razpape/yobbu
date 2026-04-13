@@ -104,14 +104,31 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
           <div className="mobile-search-block">
             <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', padding:'0 0 8px', marginBottom:0, lineHeight:1.2 }}>
               {isFr
-                ? <>{`Trouvez un voyageur `}<em style={{ fontStyle:'italic', color:'#C8891C' }}>de confiance</em></>
-                : <>Find a trusted traveler <em style={{ fontStyle:'italic', color:'#C8891C' }}>near you</em></>}
+                ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em> chez votre famille.</>
+                : <>Send a package <em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your family back home.</>}
             </h1>
-            <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5, padding:'0 8px' }}>
+            <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:16, lineHeight:1.5, padding:'0 8px' }}>
               {isFr
-                ? 'Des voyageurs de votre communauté transportent vos colis vers Dakar, Conakry et plus — directement à votre famille.'
-                : 'People from your community carry your packages to Dakar, Conakry and more — straight to your family.'}
+                ? 'Trouvez un voyageur de votre communauté qui part vers votre pays. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
+                : 'Find a traveler from your community heading to your country. Contact them on WhatsApp. Your family gets it in days.'}
             </p>
+
+            {/* 3-step explainer */}
+            <div style={{ display:'flex', justifyContent:'center', gap:6, marginBottom:20, flexWrap:'wrap' }}>
+              {[
+                { n:'1', text: isFr ? 'Trouver un voyageur' : 'Find a traveler' },
+                { n:'2', text: isFr ? 'Contacter sur WhatsApp' : 'Chat on WhatsApp' },
+                { n:'3', text: isFr ? 'Famille reçoit le colis' : 'Family gets the package' },
+              ].map(({ n, text }, i) => (
+                <div key={n} style={{ display:'flex', alignItems:'center', gap:4 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fff', border:'1px solid #E8E0D4', borderRadius:20, padding:'5px 12px 5px 8px' }}>
+                    <div style={{ width:20, height:20, borderRadius:'50%', background:'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>{n}</div>
+                    <span style={{ fontSize:12, color:'#3D3829', fontWeight:500, whiteSpace:'nowrap' }}>{text}</span>
+                  </div>
+                  {i < 2 && <span style={{ color:'#C8891C', fontSize:12, fontWeight:600 }}>→</span>}
+                </div>
+              ))}
+            </div>
 
             {/* Origin / Destination card */}
             <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,.10)', marginBottom:14 }}>
@@ -174,20 +191,28 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             <div className="hero-left" style={{ display:'flex', flexDirection:'column' }}>
               <div className="anim-1 hero-badge" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#fff', border:'1px solid rgba(200,137,28,.2)', padding:'8px 18px', borderRadius:100, fontSize:13, fontWeight:500, color:'#3D3829', marginBottom:32 }}>
                 <span className="pulse-dot" style={{ width:8, height:8, background:'#2D8B4E', borderRadius:'50%', display:'inline-block' }} />
-                {isFr ? 'Approuvé par la diaspora ouest-africaine' : 'Trusted by the West African diaspora'}
+                {isFr ? 'La plateforme de la diaspora ouest-africaine' : 'Package delivery for the West African diaspora'}
               </div>
 
-              <h1 className="anim-2 hero-title" style={{ fontSize:'clamp(40px,4.5vw,64px)', lineHeight:1.08, letterSpacing:'-1.5px', color:'#1A1710', marginBottom:24 }}>
+              <h1 className="anim-2 hero-title" style={{ fontSize:'clamp(40px,4.5vw,64px)', lineHeight:1.08, letterSpacing:'-1.5px', color:'#1A1710', marginBottom:20 }}>
                 {isFr
-                  ? <>{`Envoyez vos colis `}<em style={{ fontStyle:'italic', color:'#C8891C' }}>chez vous,</em><br />{`avec des personnes`}<br />{`de confiance.`}</>
-                  : <>Send packages <em style={{ fontStyle:'italic', color:'#C8891C' }}>home,</em><br />through people<br />you trust.</>}
+                  ? <>{`Envoyez un colis`}<br /><em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em>{` chez`}<br />{`votre famille.`}</>
+                  : <>Send a package<br /><em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your<br />family back home.</>}
               </h1>
 
-              <p className="anim-3 hero-sub" style={{ fontSize:17, lineHeight:1.65, color:'#8A8070', maxWidth:440, marginBottom:40 }}>
-                {isFr
-                  ? "Des personnes de votre communauté voyagent déjà vers l'Afrique avec de la place dans leurs bagages. Trouvez-les, contactez-les sur WhatsApp, et votre famille reçoit le colis en quelques jours."
-                  : "People from your community are already traveling to Africa with space in their bags. Find them, contact them on WhatsApp, and your family receives the package in days."}
-              </p>
+              {/* 3-step explainer — answers "what is this?" instantly */}
+              <div className="anim-3" style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:32 }}>
+                {[
+                  { n:'1', text: isFr ? 'Trouvez un voyageur qui part vers votre pays' : 'Find a traveler heading to your country' },
+                  { n:'2', text: isFr ? 'Contactez-les sur WhatsApp — négociez le prix' : 'Contact them on WhatsApp — agree on a price' },
+                  { n:'3', text: isFr ? 'Votre famille reçoit le colis en quelques jours' : 'Your family receives it in days, not weeks' },
+                ].map(({ n, text }) => (
+                  <div key={n} style={{ display:'flex', alignItems:'center', gap:12 }}>
+                    <div style={{ width:26, height:26, borderRadius:'50%', background:'#FDF6ED', border:'1.5px solid rgba(200,137,28,.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#C8891C', flexShrink:0 }}>{n}</div>
+                    <span style={{ fontSize:15, color:'#5A5348', lineHeight:1.4 }}>{text}</span>
+                  </div>
+                ))}
+              </div>
 
               {/* Desktop Search bar */}
               <div className="search-bar desktop-search-field anim-4 hero-search" style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:16, boxShadow:'0 2px 8px rgba(0,0,0,.04), 0 12px 40px rgba(0,0,0,.06)', overflow:'hidden', marginBottom:20, border:'1px solid rgba(0,0,0,.04)' }}>

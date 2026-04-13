@@ -94,14 +94,20 @@ export function useTrips() {
     setLoading(false)
   }
 
-  // Fetch on mount + realtime subscription
+  // Fetch on mount + realtime subscription (granular updates — no full refetch)
   useEffect(() => {
     fetchTrips()
 
     const channel = supabase
       .channel('trips-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'trips' }, () => {
-        fetchTrips()
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trips' }, ({ new: row }) => {
+        setTrips(prev => [rowToTrip(row), ...prev])
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trips' }, ({ new: row }) => {
+        setTrips(prev => prev.map(t => t.id === row.id ? rowToTrip(row) : t))
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'trips' }, ({ old: row }) => {
+        setTrips(prev => prev.filter(t => t.id !== row.id))
       })
       .subscribe()
 

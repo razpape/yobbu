@@ -617,20 +617,37 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
             </div>
           </div>
 
-          {/* Loading */}
+          {/* Loading — shimmer skeletons */}
           {loading && (
-            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-              {[1,2,3,4].map(i => (
-                <div key={i} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:'20px 24px', display:'flex', gap:20, alignItems:'center' }}>
-                  <div style={{ width:64, height:64, borderRadius:'50%', background:'#F0EDE8', flexShrink:0 }}/>
-                  <div style={{ flex:1 }}>
-                    <div style={{ height:18, background:'#F0EDE8', borderRadius:6, width:'40%', marginBottom:10 }}/>
-                    <div style={{ height:12, background:'#F0EDE8', borderRadius:6, width:'60%', marginBottom:8 }}/>
-                    <div style={{ height:12, background:'#F0EDE8', borderRadius:6, width:'50%' }}/>
+            <>
+              <style>{`
+                @keyframes shimmer {
+                  0% { background-position: -400px 0; }
+                  100% { background-position: 400px 0; }
+                }
+                .skeleton-pulse {
+                  background: linear-gradient(90deg, #F0EDE8 25%, #E8E4DE 50%, #F0EDE8 75%);
+                  background-size: 800px 100%;
+                  animation: shimmer 1.4s infinite linear;
+                }
+              `}</style>
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                {[1,2,3,4].map(i => (
+                  <div key={i} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:'20px 24px', display:'flex', gap:20, alignItems:'center' }}>
+                    <div className="skeleton-pulse" style={{ width:64, height:64, borderRadius:'50%', flexShrink:0 }}/>
+                    <div style={{ flex:1 }}>
+                      <div className="skeleton-pulse" style={{ height:18, borderRadius:6, width:'40%', marginBottom:10 }}/>
+                      <div className="skeleton-pulse" style={{ height:12, borderRadius:6, width:'60%', marginBottom:8 }}/>
+                      <div className="skeleton-pulse" style={{ height:12, borderRadius:6, width:'50%' }}/>
+                    </div>
+                    <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:8 }}>
+                      <div className="skeleton-pulse" style={{ height:24, width:56, borderRadius:6 }}/>
+                      <div className="skeleton-pulse" style={{ height:32, width:88, borderRadius:8 }}/>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
           {/* Error */}

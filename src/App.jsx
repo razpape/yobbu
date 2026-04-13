@@ -15,64 +15,78 @@ import TermsPage from './pages/TermsPage'
 import SendPackagePage from './pages/SendPackagePage'
 import OnboardingPage from './pages/OnboardingPage'
 import Admin from './pages/Admin'
+import ErrorBoundary from './components/ErrorBoundary'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './lib/supabase'
 
-const isAdminRoute = new URLSearchParams(window.location.search).get('admin') === 'true'
+// Map URL paths → view names and back
+const PATH_TO_VIEW = { '/': 'home', '/browse': 'browse', '/send': 'send', '/post': 'post', '/privacy': 'privacy', '/terms': 'terms', '/login': 'phone-auth', '/profile': 'profile' }
+const VIEW_TO_PATH = Object.fromEntries(Object.entries(PATH_TO_VIEW).map(([k, v]) => [v, k]))
 
-// Handle OAuth callback from Facebook (removes hash fragment issues)
+function getInitialView() {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('admin') === 'true') return 'admin'
+  return PATH_TO_VIEW[window.location.pathname] || 'home'
+}
+
+function navigateTo(view, replace = false) {
+  const path = VIEW_TO_PATH[view] || '/'
+  if (replace) window.history.replaceState({ view }, '', path)
+  else window.history.pushState({ view }, '', path)
+}
+
 const handleOAuthCallback = () => {
-  const hash = window.location.hash
-  const search = window.location.search
-  
-  // Check for access_token in URL (OAuth success)
-  if (hash.includes('access_token') || search.includes('code=')) {
-    // Let Supabase handle the session
-    return true
-  }
-  
-  // Check for error in URL
+  const { hash, search } = window.location
+  if (hash.includes('access_token') || search.includes('code=')) return true
   if (search.includes('error=')) {
     console.error('OAuth error:', search)
-    // Clear the error from URL
     window.history.replaceState({}, document.title, window.location.pathname)
   }
-  
   return false
 }
 
 export default function App() {
   const [lang, setLang]                 = useState('en')
-  const [view, setView]                 = useState('home')
+  const [view, setViewState]            = useState(getInitialView)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
   const { trips, loading: tripsLoading, error, addTrip } = useTrips()
   const { user, loading: authLoading, signOut } = useAuth()
 
-  // Handle OAuth callback errors in URL on mount
+  // Wrap setView so it always keeps the URL in sync
+  const setView = (v, replace = false) => {
+    setViewState(v)
+    navigateTo(v, replace)
+  }
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const onPop = (e) => {
+      const v = e.state?.view || PATH_TO_VIEW[window.location.pathname] || 'home'
+      setViewState(v)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
   useEffect(() => {
     handleOAuthCallback()
 
-    // Check for existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', session.user.id).single()
-        setView(data?.onboarding_complete ? 'profile' : 'onboarding')
+        setView(data?.onboarding_complete ? 'profile' : 'onboarding', true)
       }
     })
 
-    // Listen for auth changes — only handle sign-out here.
-    // Post-login routing is handled by handlePhoneAuthComplete (called by PhoneAuth)
-    // so we never interrupt PhoneAuth mid-flow.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') setView('home')
+      if (event === 'SIGNED_OUT') setView('home', true)
     })
     return () => subscription.unsubscribe()
   }, [])
 
-  if (isAdminRoute) return <Admin />
-
+  if (view === 'admin') return <Admin />
 
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
@@ -90,105 +104,46 @@ export default function App() {
 
   const handleViewGp = (gp) => {
     setSelectedGp(gp)
-    setView('gp')
+    setViewState('gp') // don't push /gp to URL — back button should go to browse
+    window.history.pushState({ view: 'gp' }, '', '/browse')
   }
 
-  // Full-page views
-  if (view === 'profile') {
-    return (
-      <ProfilePage
-        user={user}
-        lang={lang}
-        onSignOut={handleSignOut}
-        setView={setView}
-      />
-    )
-  }
-
-  if (view === 'gp' && selectedGp) {
-    return (
-      <GPProfile
-        gp={selectedGp}
-        lang={lang}
-        user={user}
-        onLoginRequired={() => setView('phone-auth')}
-        onBack={() => setView('browse')}
-      />
-    )
-  }
-
-  if (view === 'onboarding') {
-    return (
-      <OnboardingPage
-        user={user}
-        lang={lang}
-        onComplete={() => setView('profile')}
-      />
-    )
-  }
-
-  if (view === 'privacy') {
-    return <PrivacyPage lang={lang} setView={setView} />
-  }
-
-  if (view === 'terms') {
-    return <TermsPage lang={lang} setView={setView} />
-  }
-
-  if (view === 'send') {
-    return (
-      <SendPackagePage
-        lang={lang}
-        user={user}
-        onBack={() => setView('browse')}
-        onLoginRequired={() => setView('phone-auth')}
-      />
-    )
-  }
-
-  // Phone Auth flow (new)
-  if (view === 'phone-auth') {
-    return (
-      <PhoneAuth 
-        lang={lang} 
-        onComplete={handlePhoneAuthComplete}
-      />
-    )
-  }
+  if (view === 'profile')    return <ErrorBoundary><ProfilePage user={user} lang={lang} onSignOut={handleSignOut} setView={setView} /></ErrorBoundary>
+  if (view === 'gp' && selectedGp) return <ErrorBoundary><GPProfile gp={selectedGp} lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onBack={() => setView('browse')} /></ErrorBoundary>
+  if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} /></ErrorBoundary>
+  if (view === 'privacy')    return <PrivacyPage lang={lang} setView={setView} />
+  if (view === 'terms')      return <TermsPage lang={lang} setView={setView} />
+  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} user={user} onBack={() => setView('browse')} onLoginRequired={() => setView('phone-auth')} /></ErrorBoundary>
+  if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
-      <Navbar
-        lang={lang} setLang={setLang} setView={setView}
-        user={user} onSignOut={handleSignOut}
-        onLoginClick={() => setView('phone-auth')}
-      />
-      {view === 'home' && (
-        <>
-          <Hero lang={lang} setView={setView} onSearch={handleSearch} onSend={() => setView('send')} />
-          <WhyYobbu lang={lang} />
-          <HowItWorks lang={lang} />
-          <FAQ lang={lang} />
-          <Footer lang={lang} setView={setView} />
-        </>
-      )}
+    <ErrorBoundary>
+      <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
+        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
 
-      {view === 'browse' && (
-        <BrowsePage
-          lang={lang} setView={setView} trips={trips} loading={tripsLoading}
-          error={error} searchFilter={searchFilter} user={user}
-          onLoginRequired={() => setView('phone-auth')}
-          onViewProfile={handleViewGp}
-        />
-      )}
+        {view === 'home' && (
+          <>
+            <Hero lang={lang} setView={setView} onSearch={handleSearch} onSend={() => setView('send')} />
+            <WhyYobbu lang={lang} />
+            <HowItWorks lang={lang} />
+            <FAQ lang={lang} />
+            <Footer lang={lang} setView={setView} />
+          </>
+        )}
 
-      {view === 'post' && (
-        <PostTripForm
-          lang={lang} setView={setView} onAdd={addTrip} user={user}
-          onLoginRequired={() => setView('phone-auth')}
-        />
-      )}
+        {view === 'browse' && (
+          <BrowsePage
+            lang={lang} setView={setView} trips={trips} loading={tripsLoading}
+            error={error} searchFilter={searchFilter} user={user}
+            onLoginRequired={() => setView('phone-auth')}
+            onViewProfile={handleViewGp}
+          />
+        )}
 
-    </div>
+        {view === 'post' && (
+          <PostTripForm lang={lang} setView={setView} onAdd={addTrip} user={user} onLoginRequired={() => setView('phone-auth')} />
+        )}
+      </div>
+    </ErrorBoundary>
   )
 }
