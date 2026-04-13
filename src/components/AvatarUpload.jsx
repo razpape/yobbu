@@ -27,8 +27,8 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
 
     setUploading(true)
     try {
-      const ext  = file.name.split('.').pop()
-      const path = `avatars/${user.id}.${ext}`
+      const ext  = file.name.split('.').pop().toLowerCase()
+      const path = `${user.id}.${ext}`   // path inside the bucket — no bucket name prefix
 
       const { error: uploadErr } = await supabase.storage
         .from('avatars')
@@ -49,7 +49,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
 
       onUpload?.(publicUrl)
     } catch (err) {
-      setError('Upload failed. Please try again.')
+      setError(err.message || 'Upload failed. Please try again.')
       console.error('[Avatar] Upload error:', err.message)
     } finally {
       setUploading(false)
