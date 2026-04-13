@@ -13,7 +13,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
 
   async function handleFile(e) {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file || !user?.id) return
     setError(null)
 
     if (!ACCEPTED.includes(file.type)) {
@@ -64,7 +64,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
         style={{ position: 'relative', cursor: 'pointer' }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        onClick={() => !uploading && inputRef.current?.click()}
+        onClick={() => !uploading && user?.id && inputRef.current?.click()}
       >
         {/* Avatar circle */}
         <div style={{
