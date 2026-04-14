@@ -42,11 +42,12 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const [showModal, setShowModal] = useState(false)
   const isFr = lang === 'fr'
 
-  const fromCity   = gp.from_city || gp.from || ''
-  const toCity     = gp.to_city   || gp.to   || ''
-  const price      = formatPrice(gp.price)
-  const initials   = gp.initials || gp.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
-  const accent     = gp.color || '#C8891C'
+  const fromCity    = gp.from_city || gp.from || ''
+  const toCity      = gp.to_city   || gp.to   || ''
+  const price       = formatPrice(gp.price)
+  const initials    = gp.initials || gp.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
+  const accent      = gp.color || '#C8891C'
+  const isGroupage  = gp.service_type === 'groupage'
   const sendWhatsApp = (message) => {
     const phone = gp.phone?.replace(/\D/g, '')
     if (phone) window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
@@ -100,8 +101,10 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
               {/* Avatar */}
               <div style={{ position: 'relative', flexShrink: 0 }}>
-                <div style={{ width: 72, height: 72, borderRadius: '50%', background: gp.bg || '#FFF8EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Serif Display, serif', fontSize: 26, fontWeight: 700, color: accent, border: `2px solid ${accent}33` }}>
-                  {initials}
+                <div style={{ width: 72, height: 72, borderRadius: '50%', background: gp.bg || '#FFF8EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'DM Serif Display, serif', fontSize: 26, fontWeight: 700, color: accent, border: `2px solid ${accent}33`, overflow: 'hidden' }}>
+                  {gp.avatar_url
+                    ? <img src={gp.avatar_url} alt={gp.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : initials}
                 </div>
                 {gp.phone_verified && (
                   <div style={{ position: 'absolute', bottom: 1, right: 1, width: 20, height: 20, borderRadius: '50%', background: '#fff', border: '2px solid #F0C878', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
