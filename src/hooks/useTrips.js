@@ -5,7 +5,8 @@ import { supabase } from '../lib/supabase'
 function rowToTrip(row, profile = {}) {
   return {
     id:               row.id,
-    name:             row.name,
+    user_id:          row.user_id,
+    name:             profile.full_name || row.name || 'Traveler',
     initials:         row.initials,
     color:            row.color,
     bg:               row.bg,
@@ -14,7 +15,7 @@ function rowToTrip(row, profile = {}) {
     date:             row.date,
     space:            row.space,
     price:            row.price,
-    phone:            row.phone,
+    phone:            row.phone || profile.phone || '',
     note:             row.note,
     pickup_area:        row.pickup_area,
     dropoff_area:       row.dropoff_area,
@@ -87,7 +88,7 @@ export function useTrips() {
       if (userIds.length) {
         const { data: profiles } = await supabase
           .from('profiles')
-          .select('id, whatsapp_verified, phone, avatar_url, photo_verified')
+          .select('id, full_name, whatsapp_verified, phone, avatar_url, photo_verified')
           .in('id', userIds)
         profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
       }
