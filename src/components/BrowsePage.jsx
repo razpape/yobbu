@@ -535,6 +535,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           .browse-cards-grid   { grid-template-columns: 1fr !important; }
           .browse-trust-bar    { padding: 10px 16px !important; }
           .browse-search-bar   { position: sticky; top: 0; z-index: 10; background: #FDFBF7; padding-bottom: 8px; }
+          .browse-desktop-sort { display: none !important; }
         }
         @media (min-width: 769px) and (max-width: 1100px) {
           .browse-cards-grid { grid-template-columns: 1fr !important; }
@@ -760,8 +761,8 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
             )}
           </div>
 
-          {/* Header */}
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+          {/* Header + desktop sort */}
+          <div className="browse-desktop-sort" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
             <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>
               {loading ? '...' : isFr
                 ? `Affichage 1–${sorted.length} sur ${sorted.length} résultats`
