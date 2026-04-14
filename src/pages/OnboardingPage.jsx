@@ -232,11 +232,13 @@ export default function OnboardingPage({ user, lang, onComplete }) {
         <div style={{ marginBottom: 18 }}>
           <label style={lbl}>{isFr ? 'Nom complet *' : 'Full name *'}</label>
           <input
-            className="ob-input" style={inp}
+            className="ob-input"
+            style={{ ...inp, borderColor: error && !fullName.trim() ? '#DC2626' : inp.borderColor }}
             placeholder={isFr ? 'ex: Aminata Diallo' : 'e.g. Aminata Diallo'}
             value={fullName}
-            onChange={e => setFullName(e.target.value)}
+            onChange={e => { setFullName(e.target.value); if (error) setError(null) }}
             autoComplete="name"
+            required
           />
         </div>
 
