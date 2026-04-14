@@ -359,12 +359,8 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       }
 
       setUser(data.user)
-      if (data.isNewUser) {
-        setStep(STEPS.PROFILE)
-      } else {
-        setStep(STEPS.COMPLETE)
-        setTimeout(() => onComplete?.(data.user), 800)
-      }
+      setStep(STEPS.COMPLETE)
+      setTimeout(() => onComplete?.(data.user), 800)
     } catch (err) {
       setError(err.message || (isFr ? 'Code incorrect' : 'Invalid code'))
       setOtpCode('')
