@@ -6,8 +6,8 @@ function rowToTrip(row, profile = {}) {
   return {
     id:               row.id,
     user_id:          row.user_id,
-    name:             profile.full_name || row.name || 'Traveler',
-    initials:         row.initials,
+    name:             profile.full_name || row.name || '',
+    initials:         row.initials || (profile.full_name || row.name || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP',
     color:            row.color,
     bg:               row.bg,
     from:             row.from_city,
