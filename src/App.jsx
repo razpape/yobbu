@@ -110,7 +110,7 @@ export default function App() {
 
   if (view === 'profile')    return <ErrorBoundary><ProfilePage user={user} lang={lang} onSignOut={handleSignOut} setView={setView} /></ErrorBoundary>
   if (view === 'gp' && selectedGp) return <ErrorBoundary><GPProfile gp={selectedGp} lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onBack={() => setView('browse')} /></ErrorBoundary>
-  if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} /></ErrorBoundary>
+  if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} /></ErrorBoundary>
   if (view === 'privacy')    return <PrivacyPage lang={lang} setView={setView} />
   if (view === 'terms')      return <TermsPage lang={lang} setView={setView} />
   if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} user={user} onBack={() => setView('browse')} onLoginRequired={() => setView('phone-auth')} /></ErrorBoundary>

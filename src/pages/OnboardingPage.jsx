@@ -43,9 +43,10 @@ function guessCountryFromPhone(phone) {
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_MB   = 3
 
-export default function OnboardingPage({ user, lang, onComplete }) {
+export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   const isFr = lang === 'fr'
 
+  const [role,            setRole]            = useState(null)
   const [fullName,        setFullName]        = useState('')
   const [email,           setEmail]           = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
@@ -57,7 +58,6 @@ export default function OnboardingPage({ user, lang, onComplete }) {
   const [error,           setError]           = useState(null)
   const fileRef = useRef()
 
-  // Pre-fill name + detect country from phone
   useEffect(() => {
     if (!user?.id) return
     supabase.from('profiles').select('first_name, last_name, full_name, phone').eq('id', user.id).single()
@@ -95,34 +95,28 @@ export default function OnboardingPage({ user, lang, onComplete }) {
     if (!fullName.trim()) { setError(isFr ? 'Le nom est requis.' : 'Full name is required.'); return }
     setError(null)
     setLoading(true)
-
     try {
       const updates = {
         full_name:         fullName.trim(),
         email:             email.trim() || null,
         country_of_origin: countryOfOrigin || null,
+        role:              'traveler',
       }
-
-      // Upload photo if provided — mark as pending admin approval
       if (avatarBlob) {
         setUploading(true)
         const path = `${user.id}.jpg`
         const { error: upErr } = await supabase.storage.from('avatars').upload(path, avatarBlob, { upsert: true, contentType: 'image/jpeg' })
         if (upErr) throw upErr
-
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-        updates.avatar_url      = publicUrl
-        updates.photo_pending   = true   // waiting for admin approval
-        updates.photo_verified  = false
+        updates.avatar_url     = publicUrl
+        updates.photo_pending  = true
+        updates.photo_verified = false
         setUploading(false)
       }
-
       const { error: err } = await supabase.from('profiles').update(updates).eq('id', user.id)
       if (err) throw err
-
       await supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id)
       onComplete()
-
     } catch (err) {
       setError(err.message)
       setUploading(false)
@@ -145,177 +139,248 @@ export default function OnboardingPage({ user, lang, onComplete }) {
   }
 
   const busy = loading || uploading
-  const initials = fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?'
 
   return (
     <div style={{ minHeight: '100vh', background: '#FDFBF7', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
       {cropSrc && (
-        <CircleCropper
-          src={cropSrc}
-          onConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-        />
+        <CircleCropper src={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} />
       )}
       <style>{`
-        .ob-input:focus  { border-color: #C8891C !important; }
-        .ob-btn:hover    { background: #B8780C !important; }
-        .ob-photo:hover  { border-color: #C8891C !important; }
+        .ob-input:focus { border-color: #C8891C !important; }
+        .ob-btn:hover   { background: #B8780C !important; }
+        .ob-photo:hover { border-color: #C8891C !important; }
         @keyframes ob-spin { to { transform: rotate(360deg); } }
         .ob-spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: ob-spin .7s linear infinite; display: inline-block; }
       `}</style>
 
       {/* Header */}
-      <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'center' }}>
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710' }}>
           Yob<span style={{ color: '#C8891C' }}>bu</span>
         </div>
       </div>
 
-      {/* Content */}
       <div style={{ flex: 1, maxWidth: 480, width: '100%', margin: '0 auto', padding: '32px 24px 48px', boxSizing: 'border-box' }}>
 
         <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: '#1A1710', letterSpacing: '-.5px', lineHeight: 1.2, marginBottom: 8 }}>
           {isFr ? 'Bienvenue sur Yobbu !' : 'Welcome to Yobbu!'}
         </h1>
-        <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 32 }}>
-          {isFr ? 'Quelques infos rapides pour démarrer.' : 'Just a few quick details to get started.'}
-        </p>
 
-        {/* Photo upload — centered, prominent */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
-          <button
-            className="ob-photo"
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            style={{
-              width: 88, height: 88, borderRadius: '50%',
-              border: `2.5px dashed ${avatarPreview ? '#C8891C' : '#D0C8C0'}`,
-              background: avatarPreview ? 'transparent' : '#F7F4EF',
-              cursor: 'pointer', overflow: 'hidden',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'border-color .15s', padding: 0, marginBottom: 10,
-              position: 'relative',
-            }}
-          >
-            {avatarPreview
-              ? <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : (
-                <div style={{ textAlign: 'center' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B0A090" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                    <circle cx="12" cy="13" r="4"/>
-                  </svg>
-                </div>
-              )
-            }
-          </button>
-
-          <div style={{ fontSize: 13, color: avatarPreview ? '#C8891C' : '#8A8070', fontWeight: avatarPreview ? 700 : 400, textAlign: 'center' }}>
-            {avatarPreview
-              ? (isFr ? 'Photo ajoutée ✓ — appuyer pour changer' : 'Photo added ✓ — tap to change')
-              : (isFr ? 'Ajouter une photo (optionnel)' : 'Add a profile photo (optional)')}
-          </div>
-
-          {avatarPreview && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6, background: '#FFF8EB', border: '1px solid #F0D898', borderRadius: 20, padding: '4px 12px' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span style={{ fontSize: 11, color: '#7C4E0A', fontWeight: 600 }}>
-                {isFr ? 'En attente d\'approbation admin' : 'Pending admin approval for badge'}
-              </span>
+        {/* ── Step 1: Role picker ── */}
+        {role === null && (
+          <>
+            <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
+              {isFr ? 'Comment allez-vous utiliser Yobbu ?' : 'How will you use Yobbu?'}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                {
+                  id: 'traveler',
+                  emoji: '✈️',
+                  title: isFr ? 'Je suis voyageur' : 'I am a traveler',
+                  desc: isFr ? 'Je voyage et peux transporter des colis pour gagner de l\'argent.' : 'I travel and can carry packages to earn money.',
+                },
+                {
+                  id: 'sender',
+                  emoji: '📦',
+                  title: isFr ? 'Je veux envoyer un colis' : 'I want to send a package',
+                  desc: isFr ? 'Je cherche un voyageur pour envoyer quelque chose à ma famille.' : 'I am looking for a traveler to send something to my family.',
+                },
+              ].map(({ id, emoji, title, desc }) => (
+                <button
+                  key={id}
+                  onClick={() => setRole(id)}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 14,
+                    padding: '16px 18px', borderRadius: 14, border: '2px solid #E5E1DB',
+                    background: '#fff', cursor: 'pointer', textAlign: 'left',
+                    fontFamily: "'DM Sans', sans-serif", transition: 'border-color .15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = '#C8891C'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#E5E1DB'}
+                >
+                  <span style={{ fontSize: 26, flexShrink: 0 }}>{emoji}</span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1710', marginBottom: 3 }}>{title}</div>
+                    <div style={{ fontSize: 13, color: '#8A8070', lineHeight: 1.5 }}>{desc}</div>
+                  </div>
+                </button>
+              ))}
             </div>
-          )}
+          </>
+        )}
 
-          <input ref={fileRef} type="file" accept={ACCEPTED.join(',')} style={{ display: 'none' }} onChange={handlePhotoSelect} />
-        </div>
-
-        {/* Full name */}
-        <div style={{ marginBottom: 18 }}>
-          <label style={lbl}>{isFr ? 'Nom complet *' : 'Full name *'}</label>
-          <input
-            className="ob-input"
-            style={{ ...inp, borderColor: error && !fullName.trim() ? '#DC2626' : inp.borderColor }}
-            placeholder={isFr ? 'ex: Aminata Diallo' : 'e.g. Aminata Diallo'}
-            value={fullName}
-            onChange={e => { setFullName(e.target.value); if (error) setError(null) }}
-            autoComplete="name"
-            required
-          />
-        </div>
-
-        {/* Email */}
-        <div style={{ marginBottom: 18 }}>
-          <label style={lbl}>{isFr ? 'Email (optionnel)' : 'Email (optional)'}</label>
-          <input
-            className="ob-input" style={inp}
-            type="email" placeholder="you@email.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-        </div>
-
-        {/* Country of origin */}
-        <div style={{ marginBottom: 28 }}>
-          <label style={lbl}>{isFr ? 'Pays depuis lequel vous expédiez' : 'Country you usually ship from'}</label>
-          <div style={{ position: 'relative' }}>
-            <select
-              className="ob-input"
-              style={{ ...inp, appearance: 'none', paddingRight: 40 }}
-              value={countryOfOrigin}
-              onChange={e => setCountryOfOrigin(e.target.value)}
+        {/* ── Step 2a: Sender — no account needed ── */}
+        {role === 'sender' && (
+          <div style={{ textAlign: 'center', padding: '8px 0 24px' }}>
+            <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: '#1A1710', marginBottom: 10 }}>
+              {isFr ? 'Bonne nouvelle !' : 'Good news!'}
+            </h2>
+            <p style={{ fontSize: 14, color: '#5A5248', lineHeight: 1.75, marginBottom: 28 }}>
+              {isFr
+                ? "Vous n'avez pas besoin d'un compte pour parcourir les voyageurs et les contacter sur WhatsApp. C'est 100\u00a0% gratuit\u00a0!"
+                : "You don't need an account to browse travelers and contact them on WhatsApp. It's 100% free!"}
+            </p>
+            <button
+              onClick={() => onBrowse?.()}
+              style={{
+                width: '100%', padding: '15px', borderRadius: 14, border: 'none',
+                background: '#C8891C', color: '#fff', fontSize: 15, fontWeight: 700,
+                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 14,
+              }}
             >
-              <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
-              {ORIGIN_COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
-            </select>
-            <span style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070' }}>▾</span>
-          </div>
-          {countryOfOrigin && (
-            <div style={{ fontSize: 12, color: '#2D8B4E', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              {isFr ? 'Détecté depuis votre numéro de téléphone' : 'Detected from your phone number'}
-            </div>
-          )}
-        </div>
-
-        {/* Trust badges preview */}
-        <div style={{ background: '#F7F4EF', borderRadius: 14, padding: '14px 16px', marginBottom: 28 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 12 }}>
-            {isFr ? 'Vos badges' : 'Your badges'}
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {/* Phone verified — always earned */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 20, padding: '5px 12px' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l1.81-1.81a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.01z"/></svg>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#2D8B4E' }}>{isFr ? 'Téléphone vérifié' : 'Phone verified'}</span>
-            </div>
-            {/* Photo badge — locked until admin approves */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: avatarPreview ? '#FFF8EB' : '#F0EDE8', border: `1px solid ${avatarPreview ? '#F0D898' : '#E0DAD0'}`, borderRadius: 20, padding: '5px 12px', opacity: avatarPreview ? 1 : 0.5 }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={avatarPreview ? '#C8891C' : '#B0A090'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
-              </svg>
-              <span style={{ fontSize: 12, fontWeight: 700, color: avatarPreview ? '#C8891C' : '#B0A090' }}>
-                {avatarPreview
-                  ? (isFr ? 'Photo · en attente' : 'Photo · pending')
-                  : (isFr ? 'Photo vérifiée' : 'Photo verified')}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {error && (
-          <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#DC2626', marginBottom: 16 }}>
-            {error}
+              {isFr ? 'Voir les voyageurs \u2192' : 'Browse travelers \u2192'}
+            </button>
+            <button
+              onClick={() => setRole(null)}
+              style={{ background: 'none', border: 'none', fontSize: 13, color: '#8A8070', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {isFr ? '\u2190 Retour' : '\u2190 Go back'}
+            </button>
           </div>
         )}
 
-        <button
-          className="ob-btn"
-          disabled={busy}
-          onClick={handleSubmit}
-          style={{ width: '100%', padding: '16px', borderRadius: 14, border: 'none', background: '#C8891C', color: '#fff', fontSize: 16, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: busy ? 0.7 : 1, transition: 'background .15s' }}
-        >
-          {busy ? <span className="ob-spinner" /> : (isFr ? "C'est parti →" : "Let's go →")}
-        </button>
+        {/* ── Step 2b: Traveler form ── */}
+        {role === 'traveler' && (
+          <>
+            <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
+              {isFr ? 'Quelques infos rapides pour démarrer.' : 'Just a few quick details to get started.'}
+            </p>
+
+            {/* Photo */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
+              <button
+                className="ob-photo"
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  width: 88, height: 88, borderRadius: '50%',
+                  border: `2.5px dashed ${avatarPreview ? '#C8891C' : '#D0C8C0'}`,
+                  background: avatarPreview ? 'transparent' : '#F7F4EF',
+                  cursor: 'pointer', overflow: 'hidden',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'border-color .15s', padding: 0, marginBottom: 10,
+                }}
+              >
+                {avatarPreview
+                  ? <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B0A090" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                  )
+                }
+              </button>
+              <div style={{ fontSize: 13, color: avatarPreview ? '#C8891C' : '#8A8070', fontWeight: avatarPreview ? 700 : 400, textAlign: 'center' }}>
+                {avatarPreview
+                  ? (isFr ? 'Photo ajoutée ✓ — appuyer pour changer' : 'Photo added ✓ — tap to change')
+                  : (isFr ? 'Ajouter une photo (optionnel)' : 'Add a profile photo (optional)')}
+              </div>
+              {avatarPreview && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6, background: '#FFF8EB', border: '1px solid #F0D898', borderRadius: 20, padding: '4px 12px' }}>
+                  <span style={{ fontSize: 11, color: '#7C4E0A', fontWeight: 600 }}>
+                    {isFr ? "En attente d'approbation admin" : 'Pending admin approval for badge'}
+                  </span>
+                </div>
+              )}
+              <input ref={fileRef} type="file" accept={ACCEPTED.join(',')} style={{ display: 'none' }} onChange={handlePhotoSelect} />
+            </div>
+
+            {/* Full name */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>{isFr ? 'Nom complet *' : 'Full name *'}</label>
+              <input
+                className="ob-input"
+                style={{ ...inp, borderColor: error && !fullName.trim() ? '#DC2626' : inp.borderColor }}
+                placeholder={isFr ? 'ex: Aminata Diallo' : 'e.g. Aminata Diallo'}
+                value={fullName}
+                onChange={e => { setFullName(e.target.value); if (error) setError(null) }}
+                autoComplete="name"
+                required
+              />
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>{isFr ? 'Email (optionnel)' : 'Email (optional)'}</label>
+              <input
+                className="ob-input" style={inp}
+                type="email" placeholder="you@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
+
+            {/* Country */}
+            <div style={{ marginBottom: 28 }}>
+              <label style={lbl}>{isFr ? 'Pays depuis lequel vous expédiez' : 'Country you usually ship from'}</label>
+              <div style={{ position: 'relative' }}>
+                <select
+                  className="ob-input"
+                  style={{ ...inp, appearance: 'none', paddingRight: 40 }}
+                  value={countryOfOrigin}
+                  onChange={e => setCountryOfOrigin(e.target.value)}
+                >
+                  <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
+                  {ORIGIN_COUNTRIES.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
+                </select>
+                <span style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070' }}>▾</span>
+              </div>
+              {countryOfOrigin && (
+                <div style={{ fontSize: 12, color: '#2D8B4E', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  {isFr ? 'Détecté depuis votre numéro de téléphone' : 'Detected from your phone number'}
+                </div>
+              )}
+            </div>
+
+            {/* Trust badges */}
+            <div style={{ background: '#F7F4EF', borderRadius: 14, padding: '14px 16px', marginBottom: 28 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 12 }}>
+                {isFr ? 'Vos badges' : 'Your badges'}
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 20, padding: '5px 12px' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l1.81-1.81a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.01z"/></svg>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#2D8B4E' }}>{isFr ? 'Téléphone vérifié' : 'Phone verified'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: avatarPreview ? '#FFF8EB' : '#F0EDE8', border: `1px solid ${avatarPreview ? '#F0D898' : '#E0DAD0'}`, borderRadius: 20, padding: '5px 12px', opacity: avatarPreview ? 1 : 0.5 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={avatarPreview ? '#C8891C' : '#B0A090'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                  </svg>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: avatarPreview ? '#C8891C' : '#B0A090' }}>
+                    {avatarPreview ? (isFr ? 'Photo · en attente' : 'Photo · pending') : (isFr ? 'Photo vérifiée' : 'Photo verified')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#DC2626', marginBottom: 16 }}>
+                {error}
+              </div>
+            )}
+
+            <button
+              className="ob-btn"
+              disabled={busy}
+              onClick={handleSubmit}
+              style={{ width: '100%', padding: '16px', borderRadius: 14, border: 'none', background: '#C8891C', color: '#fff', fontSize: 16, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: busy ? 0.7 : 1, transition: 'background .15s' }}
+            >
+              {busy ? <span className="ob-spinner" /> : (isFr ? "C'est parti \u2192" : "Let's go \u2192")}
+            </button>
+
+            <button
+              onClick={() => setRole(null)}
+              style={{ display: 'block', margin: '14px auto 0', background: 'none', border: 'none', fontSize: 13, color: '#8A8070', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {isFr ? '\u2190 Retour' : '\u2190 Go back'}
+            </button>
+          </>
+        )}
 
       </div>
     </div>
