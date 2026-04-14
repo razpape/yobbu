@@ -19,7 +19,7 @@ const T = {
     st1: 'Total', st2: 'Live', st3: 'Paused',
     active: 'Live', pending: 'Under review', suspended: 'Paused',
     edit: 'Edit', delete: 'Delete', postNew: 'Post a New Trip',
-    accInfo: 'Account info', fullName: 'Full name', contact: 'Contact', since: 'Member since',
+    accInfo: 'Account info', fullName: 'Full name', contact: 'Contact', since: 'Member since', baseCountry: 'Ships from',
     signout: 'Sign out',
     notifEmpty: "No notifications yet. We'll notify you when your listing is approved.",
     noTrips: "You haven't posted any trips yet.",
@@ -37,7 +37,7 @@ const T = {
     st1: 'Total', st2: 'En ligne', st3: 'Pausé',
     active: 'En ligne', pending: 'En révision', suspended: 'Pausé',
     edit: 'Modifier', delete: 'Supprimer', postNew: 'Poster un voyage',
-    accInfo: 'Informations du compte', fullName: 'Nom complet', contact: 'Contact', since: 'Membre depuis',
+    accInfo: 'Informations du compte', fullName: 'Nom complet', contact: 'Contact', since: 'Membre depuis', baseCountry: 'Expédie depuis',
     signout: 'Se déconnecter',
     notifEmpty: "Aucune notification. Vous serez notifié lorsque votre annonce sera approuvée.",
     noTrips: "Vous n'avez pas encore posté de voyage.",
@@ -54,6 +54,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [lang, setLang]               = useState(initialLang || 'en')
   const [section, setSection]         = useState('trips')
   const [avatarUrl, setAvatarUrl]     = useState(null)
+  const [profileName, setProfileName] = useState('')
+  const [baseCountry, setBaseCountry] = useState('')
   const [trips, setTrips]             = useState([])
   const [loading, setLoading]         = useState(true)
   const [editingTrip, setEditingTrip]   = useState(null)
@@ -65,7 +67,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
-  const fullName = (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null)
+  const fullName = profileName
+    || (user?.first_name ? `${user.first_name} ${user?.last_name || ''}`.trim() : null)
     || meta.full_name || meta.name || ''
   const contact  = user?.email?.endsWith('@phone.yobbu.app') ? (user?.phone || '—') : (user?.email || user?.phone || '—')
   const initials = fullName ? fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : 'GP'
@@ -77,8 +80,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     fetchTrips()
     fetchRequests()
     if (user?.id) {
-      supabase.from('profiles').select('avatar_url').eq('id', user.id).single()
-        .then(({ data }) => { if (data?.avatar_url) setAvatarUrl(data.avatar_url) })
+      supabase.from('profiles').select('avatar_url, full_name, country_of_origin').eq('id', user.id).single()
+        .then(({ data }) => {
+          if (data?.avatar_url) setAvatarUrl(data.avatar_url)
+          if (data?.full_name)  setProfileName(data.full_name)
+          if (data?.country_of_origin) setBaseCountry(data.country_of_origin)
+        })
     }
   }, [user])
 
@@ -442,9 +449,10 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     <div>
       <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1710', marginBottom: 10 }}>{t.accInfo}</div>
       {[
-        { Icon: UserIcon,     label: t.fullName, value: fullName },
-        { Icon: MailIcon,     label: t.contact,  value: contact },
-        { Icon: CalendarIcon, label: t.since,    value: joinDate },
+        { Icon: UserIcon,     label: t.fullName,    value: fullName || '—' },
+        { Icon: MailIcon,     label: t.contact,     value: contact },
+        { Icon: CalendarIcon, label: t.since,       value: joinDate },
+        ...(baseCountry ? [{ Icon: GlobeIcon, label: t.baseCountry, value: baseCountry }] : []),
       ].map(({ Icon: Ic, label, value }) => (
         <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#FDFBF7', borderRadius: 10, border: '1px solid rgba(0,0,0,.05)', marginBottom: 8 }}>
           <Ic size={15} color="#8A8070" />

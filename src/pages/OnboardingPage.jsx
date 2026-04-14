@@ -256,7 +256,7 @@ export default function OnboardingPage({ user, lang, onComplete }) {
 
         {/* Country of origin */}
         <div style={{ marginBottom: 28 }}>
-          <label style={lbl}>{isFr ? "Pays d'origine" : 'Country of origin'}</label>
+          <label style={lbl}>{isFr ? 'Pays depuis lequel vous expédiez' : 'Country you usually ship from'}</label>
           <div style={{ position: 'relative' }}>
             <select
               className="ob-input"
@@ -272,7 +272,7 @@ export default function OnboardingPage({ user, lang, onComplete }) {
           {countryOfOrigin && (
             <div style={{ fontSize: 12, color: '#2D8B4E', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              {isFr ? 'Détecté depuis votre numéro' : 'Detected from your phone number'}
+              {isFr ? 'Détecté depuis votre numéro de téléphone' : 'Detected from your phone number'}
             </div>
           )}
         </div>
