@@ -1,16 +1,18 @@
 import { useState } from 'react'
 
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
+const ADMIN_EMAIL    = import.meta.env.VITE_ADMIN_EMAIL
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
 
 export default function AdminLogin({ onLogin }) {
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState(null)
 
   const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       onLogin()
     } else {
-      setError('Incorrect password.')
+      setError('Incorrect email or password.')
     }
   }
 
@@ -26,6 +28,16 @@ export default function AdminLogin({ onLogin }) {
         </div>
 
         <div style={{ textAlign:'left', marginBottom:16 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'#555', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:6 }}>Email</div>
+          <input
+            type="email"
+            placeholder="admin@email.com"
+            value={email}
+            onChange={e => { setEmail(e.target.value); setError(null) }}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}
+            autoFocus
+            style={{ width:'100%', padding:'12px 14px', borderRadius:10, border:`1px solid ${error ? '#ef4444' : '#2a2a2a'}`, background:'#111', color:'#fff', fontSize:14, fontFamily:'Inter, sans-serif', outline:'none', boxSizing:'border-box', marginBottom:12 }}
+          />
           <div style={{ fontSize:11, fontWeight:700, color:'#555', textTransform:'uppercase', letterSpacing:'.08em', marginBottom:6 }}>Password</div>
           <input
             type="password"
@@ -33,7 +45,6 @@ export default function AdminLogin({ onLogin }) {
             value={password}
             onChange={e => { setPassword(e.target.value); setError(null) }}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
-            autoFocus
             style={{ width:'100%', padding:'12px 14px', borderRadius:10, border:`1px solid ${error ? '#ef4444' : '#2a2a2a'}`, background:'#111', color:'#fff', fontSize:14, fontFamily:'Inter, sans-serif', outline:'none', boxSizing:'border-box' }}
           />
         </div>
