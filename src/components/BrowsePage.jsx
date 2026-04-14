@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import GPCard from './GPCard'
 import { ShieldCheckIcon } from './Icons'
 
@@ -397,7 +397,77 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
   const [sortBy, setSortBy]               = useState('date')
   const [applied, setApplied]             = useState({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' })
   const [drawerOpen, setDrawerOpen]   = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [recentSearches, setRecentSearches]  = useState(() => {
+    try { return JSON.parse(localStorage.getItem('yobbu_recent_searches') || '[]') } catch { return [] }
+  })
+  const searchRef = useRef(null)
+  const suggestionsRef = useRef(null)
   const isFr = lang === 'fr'
+
+  // ── Save a recent search ──────────────────────────────────────────
+  const saveRecentSearch = useCallback((term) => {
+    if (!term.trim()) return
+    const updated = [term, ...recentSearches.filter(s => s.toLowerCase() !== term.toLowerCase())].slice(0, 5)
+    setRecentSearches(updated)
+    try { localStorage.setItem('yobbu_recent_searches', JSON.stringify(updated)) } catch {}
+  }, [recentSearches])
+
+  const clearRecentSearches = () => {
+    setRecentSearches([])
+    try { localStorage.removeItem('yobbu_recent_searches') } catch {}
+  }
+
+  // ── Build autocomplete suggestions from trip data ─────────────────
+  const suggestions = useMemo(() => {
+    const q = searchText.toLowerCase().trim()
+    if (!q || q.length < 2) return []
+
+    const citySet = new Set()
+    const nameSet = new Set()
+    const routeSet = new Set()
+
+    trips.forEach(t => {
+      const from = t.from_city || t.from || ''
+      const to   = t.to_city   || t.to   || ''
+      const name = t.name || ''
+      if (from) citySet.add(from)
+      if (to)   citySet.add(to)
+      if (name) nameSet.add(name)
+      if (from && to) routeSet.add(`${from} → ${to}`)
+    })
+
+    const results = []
+
+    // Match cities
+    ;[...citySet].filter(c => c.toLowerCase().includes(q)).slice(0, 3).forEach(c => {
+      results.push({ type: 'city', label: c, icon: 'pin' })
+    })
+
+    // Match routes
+    ;[...routeSet].filter(r => r.toLowerCase().includes(q)).slice(0, 3).forEach(r => {
+      results.push({ type: 'route', label: r, icon: 'route' })
+    })
+
+    // Match traveler names
+    ;[...nameSet].filter(n => n.toLowerCase().includes(q)).slice(0, 3).forEach(n => {
+      results.push({ type: 'traveler', label: n, icon: 'user' })
+    })
+
+    return results.slice(0, 8)
+  }, [searchText, trips])
+
+  // ── Close suggestions on outside click ────────────────────────────
+  useEffect(() => {
+    const handler = (e) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target) &&
+          searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   useEffect(() => {
     if (!searchFilter) return
@@ -567,14 +637,20 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         {/* Results */}
         <div>
           {/* Search bar */}
-          <div className="browse-search-bar" style={{ marginBottom: 16, position: 'relative' }}>
+          <div className="browse-search-bar" ref={searchRef} style={{ marginBottom: 16, position: 'relative' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A09080" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }}>
+              style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
+              onChange={e => { setSearchText(e.target.value); setShowSuggestions(true) }}
+              onFocus={e => { e.target.style.borderColor = '#C8891C'; setShowSuggestions(true) }}
+              onBlur={e => { e.target.style.borderColor = '#E8E4DE' }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') { saveRecentSearch(searchText); setShowSuggestions(false) }
+                if (e.key === 'Escape') setShowSuggestions(false)
+              }}
               placeholder={isFr ? 'Rechercher un voyageur, une ville...' : 'Search traveler, city, route...'}
               style={{
                 width: '100%',
@@ -589,9 +665,99 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                 boxSizing: 'border-box',
                 transition: 'border-color .15s',
               }}
-              onFocus={e => e.target.style.borderColor = '#C8891C'}
-              onBlur={e => e.target.style.borderColor = '#E8E4DE'}
             />
+
+            {/* Autocomplete suggestions dropdown */}
+            {showSuggestions && (suggestions.length > 0 || (recentSearches.length > 0 && !searchText.trim())) && (
+              <div ref={suggestionsRef} style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                background: '#fff', border: '1.5px solid #E8E4DE', borderTop: 'none',
+                borderRadius: '0 0 12px 12px', boxShadow: '0 8px 24px rgba(0,0,0,.08)',
+                maxHeight: 320, overflowY: 'auto',
+              }}>
+                {/* Recent searches (shown when input is empty) */}
+                {!searchText.trim() && recentSearches.length > 0 && (
+                  <div style={{ padding: '10px 14px 6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+                        {isFr ? 'Recherches récentes' : 'Recent searches'}
+                      </span>
+                      <button
+                        onClick={clearRecentSearches}
+                        style={{ background: 'none', border: 'none', fontSize: 10, color: '#C8891C', cursor: 'pointer', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', padding: 0 }}
+                      >
+                        {isFr ? 'Effacer' : 'Clear'}
+                      </button>
+                    </div>
+                    {recentSearches.map((term, i) => (
+                      <button
+                        key={i}
+                        onMouseDown={e => e.preventDefault()}
+                        onClick={() => { setSearchText(term); setShowSuggestions(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '8px 6px', background: 'none', border: 'none', cursor: 'pointer',
+                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1A1710',
+                          borderRadius: 6, transition: 'background .1s', textAlign: 'left',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#F8F6F2'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C8C0B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                        {term}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Live suggestions (shown when typing) */}
+                {searchText.trim() && suggestions.length > 0 && (
+                  <div style={{ padding: '6px 8px' }}>
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onMouseDown={e => e.preventDefault()}
+                        onClick={() => { setSearchText(s.label); saveRecentSearch(s.label); setShowSuggestions(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '9px 8px', background: 'none', border: 'none', cursor: 'pointer',
+                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1A1710',
+                          borderRadius: 8, transition: 'background .1s', textAlign: 'left',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#F8F6F2'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                      >
+                        {s.icon === 'pin' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                          </svg>
+                        )}
+                        {s.icon === 'route' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B8AE0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M8.59 13.51l6.83-3.02"/>
+                          </svg>
+                        )}
+                        {s.icon === 'user' && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                          </svg>
+                        )}
+                        <div>
+                          <div style={{ fontWeight: 600, lineHeight: 1.3 }}>{s.label}</div>
+                          <div style={{ fontSize: 10, color: '#A09080', marginTop: 1 }}>
+                            {s.type === 'city' ? (isFr ? 'Ville' : 'City') :
+                             s.type === 'route' ? (isFr ? 'Itinéraire' : 'Route') :
+                             (isFr ? 'Voyageur' : 'Traveler')}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Header */}
@@ -667,7 +833,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                 {isFr ? 'Essayez une autre destination ou revenez bientôt.' : 'Try a different destination or check back soon.'}
               </p>
               <button
-                onClick={() => { setDest('all'); setVerifyFilter('all'); setApplied({ dest:'all', dateFrom:'', dateTo:'', price:'', verify:'all' }) }}
+                onClick={() => { setFromFilter(''); setToFilter(''); setAvailOption(''); setPriceFilter(''); setVerifyFilter('all'); setServiceFilter('all'); setSearchText(''); setApplied({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' }) }}
                 style={{ background:'#C8891C', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
               >
                 {isFr ? 'Voir tous les voyageurs' : 'View all travelers'}
