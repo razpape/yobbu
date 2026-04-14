@@ -165,11 +165,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const menuItems = [
     { key: 'trips',         Icon: PlaneIcon,       label: t.menuTrips },
-    { key: 'requests',      Icon: PackageIcon,     label: t.menuRequests },
     { key: 'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Verification' },
     { key: 'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifications.length },
     { key: 'settings',      Icon: SettingsIcon,    label: t.menuSettings },
-    { key: 'help',          Icon: HelpIcon,        label: t.menuHelp },
   ]
 
   const tripStatus = (trip) => {
@@ -534,18 +532,20 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         .pf-bottom-bar  { display: none !important; }
         .pf-hero        { display: none !important; }
         .pf-desktop-header { display: block; }
+        .pf-nav-signout { display: none; }
 
         /* ── Mobile layout ── */
         @media (max-width: 640px) {
           .pf-nav { padding: 12px 16px !important; }
-          .pf-layout  { display: block !important; padding: 0 16px 100px; }
+          .pf-layout  { display: block !important; padding: 0 16px 24px; }
           .pf-sidebar { display: none !important; }
           .pf-section { border-radius: 16px; padding: 18px; }
           .pf-mobile-tabs { display: flex !important; }
-          .pf-bottom-bar  { display: flex !important; }
+          .pf-bottom-bar  { display: none !important; }
           .pf-hero        { display: block !important; }
           .pf-desktop-header { display: none !important; }
           .pf-nav-post { display: none !important; }
+          .pf-nav-signout { display: flex !important; }
         }
       `}</style>
 
@@ -642,13 +642,17 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             style={{ fontSize: 12, fontWeight: 500, padding: '7px 14px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
             {isFr ? 'Déconnexion' : 'Sign out'}
           </button>
+          <button className="pf-nav-signout" onClick={onSignOut}
+            style={{ display: 'none', fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            {isFr ? 'Déco' : 'Sign out'}
+          </button>
         </div>
       </nav>
 
       {/* Mobile hero / profile header */}
       <div className="pf-hero" style={{ background: '#fff', borderBottom: '1px solid rgba(0,0,0,.06)', padding: '28px 24px 20px', textAlign: 'center', display: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-          <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={68} onUpload={setAvatarUrl} />
+          <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={setAvatarUrl} />
         </div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 2, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         <div style={{ fontSize: 13, color: '#8A8070', marginBottom: 16 }}>{contact}</div>

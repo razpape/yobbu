@@ -46,7 +46,7 @@ const MAX_MB   = 3
 export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   const isFr = lang === 'fr'
 
-  const [role,            setRole]            = useState(null)
+  const [role,            setRole]            = useState('traveler')
   const [fullName,        setFullName]        = useState('')
   const [email,           setEmail]           = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
