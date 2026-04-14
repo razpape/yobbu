@@ -30,6 +30,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
   const [from, setFrom] = useState('')
   const [current, setCurrent] = useState(0)
   const [animating, setAnimating] = useState(false)
+  const [mobileTab, setMobileTab] = useState('send') // 'send' | 'travel'
   const handleSwap = () => {
     const oldDest = dest
     const oldFrom = from
@@ -102,123 +103,150 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
 
           {/* ── Mobile layout ── */}
           <div className="mobile-search-block">
-            <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', padding:'0 0 8px', marginBottom:0, lineHeight:1.2 }}>
-              {isFr
-                ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em> chez votre famille.</>
-                : <>Send a package <em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your family back home.</>}
-            </h1>
-            <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:16, lineHeight:1.5, padding:'0 8px' }}>
-              {isFr
-                ? 'Trouvez un voyageur de votre communauté qui part vers votre pays. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
-                : 'Find a traveler from your community heading to your country. Contact them on WhatsApp. Your family gets it in days.'}
-            </p>
 
-            {/* 3-step explainer */}
-            <div style={{ display:'flex', justifyContent:'center', gap:6, marginBottom:20, flexWrap:'wrap' }}>
+            {/* Tab switcher */}
+            <div style={{ display:'flex', background:'#F0EDE8', borderRadius:14, padding:4, marginBottom:24 }}>
               {[
-                { n:'1', text: isFr ? 'Trouver un voyageur' : 'Find a traveler' },
-                { n:'2', text: isFr ? 'Contacter sur WhatsApp' : 'Chat on WhatsApp' },
-                { n:'3', text: isFr ? 'Famille reçoit le colis' : 'Family gets the package' },
-              ].map(({ n, text }, i) => (
-                <div key={n} style={{ display:'flex', alignItems:'center', gap:4 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, background:'#fff', border:'1px solid #E8E0D4', borderRadius:20, padding:'5px 12px 5px 8px' }}>
-                    <div style={{ width:20, height:20, borderRadius:'50%', background:'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>{n}</div>
-                    <span style={{ fontSize:12, color:'#3D3829', fontWeight:500, whiteSpace:'nowrap' }}>{text}</span>
-                  </div>
-                  {i < 2 && <span style={{ color:'#C8891C', fontSize:12, fontWeight:600 }}>→</span>}
-                </div>
+                { id:'send',   label: isFr ? 'Envoyer'  : 'Send',   emoji: '📦' },
+                { id:'travel', label: isFr ? 'Voyager'  : 'Travel', emoji: '✈️' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setMobileTab(tab.id)}
+                  style={{
+                    flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
+                    background: mobileTab === tab.id ? '#fff' : 'transparent',
+                    color: mobileTab === tab.id ? '#1A1710' : '#8A8070',
+                    fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                    boxShadow: mobileTab === tab.id ? '0 1px 6px rgba(0,0,0,.10)' : 'none',
+                    transition: 'all .2s',
+                  }}
+                >
+                  {tab.emoji} {tab.label}
+                </button>
               ))}
             </div>
 
-            {/* Origin / Destination card */}
-            <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,.10)', marginBottom:14 }}>
-              {/* Origin row */}
-              <div style={{ display:'flex', alignItems:'center', padding:'22px 20px', borderBottom:'1px solid #F0EBE3' }}>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
-                  <select value={from} onChange={e => setFrom(e.target.value)}
-                    style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: from ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
-                    {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Ma ville...' : 'My city...') : (c[lang] || c.en)}</option>)}
-                  </select>
+            {/* ── SEND tab ── */}
+            {mobileTab === 'send' && (
+              <>
+                <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', marginBottom:8, lineHeight:1.2 }}>
+                  {isFr
+                    ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em> chez votre famille.</>
+                    : <>Send a package <em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your family back home.</>}
+                </h1>
+                <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5 }}>
+                  {isFr
+                    ? 'Trouvez un voyageur de confiance. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
+                    : 'Find a trusted traveler heading your way. Contact them on WhatsApp. Your family gets it in days.'}
+                </p>
+
+                {/* Origin / Destination card */}
+                <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,.10)', marginBottom:14 }}>
+                  <div style={{ display:'flex', alignItems:'center', padding:'20px', borderBottom:'1px solid #F0EBE3' }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
+                      <select value={from} onChange={e => setFrom(e.target.value)}
+                        style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: from ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                        {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Ma ville...' : 'My city...') : (c[lang] || c.en)}</option>)}
+                      </select>
+                    </div>
+                    <button className="swap-btn" onClick={handleSwap} aria-label="Swap">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B6860" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div style={{ padding:'20px' }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
+                    <select value={dest} onChange={e => setDest(e.target.value)}
+                      style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                      {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
+                    </select>
+                  </div>
                 </div>
-                <button className="swap-btn" onClick={handleSwap} aria-label="Swap">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B6860" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+
+                <button className="mobile-btn-find" onClick={handleSearch}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
+                    <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
                   </svg>
+                  {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
                 </button>
-              </div>
-              {/* Destination row */}
-              <div style={{ padding:'22px 20px' }}>
-                <div style={{ fontSize:11, fontWeight:700, color:'#8A8070', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
-                <select value={dest} onChange={e => setDest(e.target.value)}
-                  style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1A1710' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
-                  {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
-                </select>
-              </div>
-            </div>
 
-            {/* Search button */}
-            <button className="mobile-btn-find" onClick={handleSearch} style={{ marginBottom: 12 }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
-                <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-              {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
-            </button>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:10, fontSize:13, color:'#8A8070' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  {isFr ? 'Tous les voyageurs sont vérifiés' : 'All travelers are phone verified'}
+                </div>
+              </>
+            )}
 
-            {/* Traveler CTA banner */}
-            <div style={{
-              background: 'linear-gradient(135deg, #1A1710 0%, #2D2820 100%)',
-              borderRadius: 16, padding: '16px 18px', marginBottom: 12,
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 3 }}>
-                ✈️ {isFr ? 'Vous voyagez bientôt ?' : 'Traveling soon?'}
-              </div>
-              <div style={{ fontSize: 11, color: '#A09070', lineHeight: 1.4, marginBottom: 14 }}>
-                {isFr ? 'Rentabilisez votre bagage en transportant des colis.' : 'Earn money by carrying packages on your trip.'}
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
+            {/* ── TRAVEL tab ── */}
+            {mobileTab === 'travel' && (
+              <>
+                <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', marginBottom:8, lineHeight:1.2 }}>
+                  {isFr
+                    ? <>Voyagez et <em style={{ fontStyle:'italic', color:'#C8891C' }}>gagnez</em> de l&apos;argent.</>
+                    : <>Travel and <em style={{ fontStyle:'italic', color:'#C8891C' }}>earn</em> money on the way.</>}
+                </h1>
+                <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:24, lineHeight:1.5 }}>
+                  {isFr
+                    ? 'Rentabilisez votre bagage en transportant des colis pour la diaspora. Postez votre voyage, recevez des demandes.'
+                    : 'Make money on trips you\'re already taking. Post your route, get package requests from the diaspora.'}
+                </p>
+
+                {/* How it works */}
+                <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:28 }}>
+                  {[
+                    { n:'1', text: isFr ? 'Postez votre voyage et votre route' : 'Post your trip and route' },
+                    { n:'2', text: isFr ? 'Recevez des demandes de colis' : 'Receive package requests' },
+                    { n:'3', text: isFr ? 'Transportez et gagnez de l\'argent' : 'Carry packages and get paid' },
+                  ].map(({ n, text }) => (
+                    <div key={n} style={{ display:'flex', alignItems:'center', gap:14, background:'#fff', borderRadius:12, padding:'12px 16px', border:'1px solid #F0EDE8' }}>
+                      <div style={{ width:28, height:28, borderRadius:'50%', background:'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, color:'#fff', flexShrink:0 }}>{n}</div>
+                      <span style={{ fontSize:14, color:'#3D3829', fontWeight:500 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
+
                 <button
                   onClick={() => setView('phone-auth')}
                   style={{
-                    flex: 2, padding: '10px 0', borderRadius: 10,
-                    background: '#C8891C', border: 'none', color: '#fff',
-                    fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
+                    width:'100%', padding:'18px', borderRadius:16, border:'none',
+                    background:'#1A1710', color:'#fff', fontSize:16, fontWeight:700,
+                    cursor:'pointer', fontFamily:"'DM Sans', sans-serif",
+                    marginBottom:12, boxShadow:'0 4px 14px rgba(0,0,0,.25)',
                   }}
                 >
-                  {isFr ? "S'inscrire →" : 'Sign up →'}
+                  {isFr ? 'Voyager avec Yobbu \u2192' : 'Travel with Yobbu \u2192'}
                 </button>
-                <button
-                  onClick={() => setView('phone-auth')}
-                  style={{
-                    flex: 1, padding: '10px 0', borderRadius: 10,
-                    background: 'transparent', border: '1.5px solid #3A3530',
-                    color: '#A09070', fontSize: 13, fontWeight: 600,
-                    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-                  }}
-                >
-                  {isFr ? 'Se connecter' : 'Log in'}
-                </button>
-              </div>
-            </div>
 
-            {/* Sender CTA */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginBottom:12 }}>
-              <span style={{ fontSize:13, color:'#8A8070' }}>{isFr ? 'Vous avez un colis ?' : 'Have a package?'}</span>
-              <button
-                onClick={() => setView('send')}
-                style={{ fontSize:13, fontWeight:700, color:'#C8891C', background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Sans', sans-serif", textDecoration:'underline', textUnderlineOffset:3, padding:0 }}
-              >
-                {isFr ? 'Poster une demande →' : 'Post a request →'}
-              </button>
-            </div>
+                <div style={{ display:'flex', gap:8 }}>
+                  <button
+                    onClick={() => setView('phone-auth')}
+                    style={{
+                      flex:1, padding:'12px 0', borderRadius:12, border:'1.5px solid #E5E1DB',
+                      background:'transparent', color:'#8A8070', fontSize:13, fontWeight:600,
+                      cursor:'pointer', fontFamily:"'DM Sans', sans-serif",
+                    }}
+                  >
+                    {isFr ? 'Se connecter' : 'Log in'}
+                  </button>
+                  <button
+                    onClick={() => setView('browse')}
+                    style={{
+                      flex:1, padding:'12px 0', borderRadius:12, border:'1.5px solid #E5E1DB',
+                      background:'transparent', color:'#8A8070', fontSize:13, fontWeight:600,
+                      cursor:'pointer', fontFamily:"'DM Sans', sans-serif",
+                    }}
+                  >
+                    {isFr ? 'Voir les annonces' : 'Browse trips'}
+                  </button>
+                </div>
+              </>
+            )}
 
-            {/* Trust line */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:13, color:'#8A8070' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              {isFr ? 'Tous les voyageurs sont vérifiés par téléphone' : 'All travelers are phone verified'}
-            </div>
           </div>
 
           {/* ── Desktop layout (unchanged) ── */}
