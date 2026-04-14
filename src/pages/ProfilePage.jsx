@@ -90,6 +90,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   }, [user])
 
   async function fetchTrips() {
+    if (!user?.id) return
     setLoading(true)
     const { data } = await supabase.from('trips').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
     setTrips(data || [])
@@ -97,6 +98,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   }
 
   async function fetchRequests() {
+    if (!user?.id) return
     setLoadingReqs(true)
     const { data } = await supabase.from('package_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
     setRequests(data || [])

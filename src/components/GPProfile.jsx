@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import ContactModal from './ContactModal'
-import { ShieldCheckIcon, LockIcon, PlaneIcon, MapPinIcon, PhoneIcon, PackageIcon, CalendarIcon, DollarIcon } from './Icons'
+import { ShieldCheckIcon, LockIcon, PlaneIcon, MapPinIcon, PhoneIcon, PackageIcon, CalendarIcon, DollarIcon, ShipIcon } from './Icons'
 
 function formatPrice(raw) {
   if (!raw) return null
@@ -130,9 +130,9 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                       ID verified
                     </Pill>
                   )}
-                  {gp.trips_count > 0 && (
+                  {gp.trips > 0 && (
                     <Pill bg="#F5F3EF" color="#5A5248" border="#E5E1DB">
-                      {gp.trips_count} {isFr ? 'voyages' : 'trips'}
+                      {gp.trips} {isFr ? 'voyages' : 'trips'}
                     </Pill>
                   )}
                 </div>
@@ -144,10 +144,17 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
           <div style={{ padding: '20px 28px', borderBottom: '1px solid #F0EDE8' }}>
             {/* Service type */}
             <div style={{ marginBottom: 16 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#FFF8EB', color: '#C8891C', border: '1px solid #F0C878' }}>
-                <PlaneIcon size={13} color="#C8891C" />
-                {isFr ? 'Transport en avion — bagage cabine' : 'Air transport — carry-on luggage'}
-              </span>
+              {isGroupage ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>
+                  <ShipIcon size={13} color="#1d4ed8" />
+                  {isFr ? 'Bateau — groupage' : 'Boat — groupage'}
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#FFF8EB', color: '#C8891C', border: '1px solid #F0C878' }}>
+                  <PlaneIcon size={13} color="#C8891C" />
+                  {isFr ? 'Transport en avion — bagage cabine' : 'Air transport — carry-on luggage'}
+                </span>
+              )}
             </div>
 
             {/* Route display */}
@@ -272,11 +279,11 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                   <WhatsAppIcon size={20} />
                   {isFr ? 'Contacter sur WhatsApp' : 'Message on WhatsApp'}
                 </button>
-                {gp.response_time && (
+                {gp.responseTime && (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10 }}>
                     <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#25D366' }} />
                     <span style={{ fontSize: 12, color: '#8A8070' }}>
-                      {isFr ? `Répond en ${gp.response_time}` : `Responds within ${gp.response_time}`}
+                      {isFr ? `Répond en ${gp.responseTime}` : `Responds within ${gp.responseTime}`}
                     </span>
                   </div>
                 )}
@@ -290,20 +297,20 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
           <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 14 }}>
             {isFr ? `Avis` : `Reviews`}
           </div>
-          {gp.review_text ? (
+          {gp.review?.text ? (
             <div style={{ background: '#FDFBF7', border: '1px solid #F0EDE8', borderRadius: 12, padding: '14px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FFF8EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#C8891C' }}>
-                  {gp.review_author?.split(' ').map(w => w[0]).join('').slice(0, 2) || 'R'}
+                  {gp.review.author?.split(' ').map(w => w[0]).join('').slice(0, 2) || 'R'}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710' }}>{gp.review_author}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710' }}>{gp.review.author}</div>
                   <div style={{ display: 'flex', gap: 1 }}>
                     {[1,2,3,4,5].map(i => <span key={i} style={{ color: '#C8891C', fontSize: 11 }}>★</span>)}
                   </div>
                 </div>
               </div>
-              <div style={{ fontSize: 14, color: '#3D3829', lineHeight: 1.7 }}>"{gp.review_text}"</div>
+              <div style={{ fontSize: 14, color: '#3D3829', lineHeight: 1.7 }}>"{gp.review.text}"</div>
             </div>
           ) : (
             <div style={{ fontSize: 13, color: '#B0A090', fontStyle: 'italic', textAlign: 'center', padding: '20px 0' }}>

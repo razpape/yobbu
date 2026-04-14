@@ -92,7 +92,7 @@ export default function App() {
 
   const handlePhoneAuthComplete = async (completedUser) => {
     const uid = completedUser?.id || user?.id
-    if (!uid) { setView('profile'); return }
+    if (!uid) { setView('home'); return }
     const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', uid).single()
     setView(data?.onboarding_complete ? 'profile' : 'onboarding')
   }
