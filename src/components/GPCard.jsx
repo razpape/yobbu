@@ -95,7 +95,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         @media (max-width: 640px) {
           .gp-inner { grid-template-columns: 1fr; }
-          .gp-col-left  { border-right: none; border-bottom: 1px solid #F0EDE8; padding: 14px 16px; height: auto; flex-direction: row; align-items: center; gap: 12px; }
+          .gp-col-left  { border-right: none; border-bottom: 1px solid #F0EDE8; padding: 14px 16px; height: auto; align-items: center; }
           .gp-col-mid   { padding: 12px 16px; }
           .gp-col-mid .gp-route-from { font-size: 17px !important; }
           .gp-col-mid .gp-route-to   { font-size: 17px !important; }
@@ -111,7 +111,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
           {/* LEFT — Traveler */}
           <div className="gp-col-left">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: '100%' }}>
               <div style={{
                 width: 42, height: 42, borderRadius: '50%',
                 background: gp.avatar_url ? 'transparent' : (gp.bg || `${accent}18`),
@@ -124,11 +124,11 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                   ? <img src={gp.avatar_url} alt={gp.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : initials}
               </div>
-              <div style={{ minWidth: 0 }}>
+              <div style={{ textAlign: 'center', minWidth: 0, maxWidth: '100%' }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {gp.name || 'Traveler'}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
                   {verified && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                       <ShieldCheck size={11} color="#16a34a" strokeWidth={2.5} />
@@ -148,12 +148,6 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 </div>
               </div>
             </div>
-            {gp.space && (
-              <div style={{ marginTop: 10, fontSize: 11, color: '#A09080' }}>
-                {isFr ? 'Espace disponible' : 'Space available'}
-                <strong style={{ color: '#5A5248', marginLeft: 4 }}>{gp.space}</strong>
-              </div>
-            )}
           </div>
 
           {/* MID — Route */}
