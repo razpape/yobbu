@@ -169,28 +169,38 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             {/* Traveler CTA banner */}
             <div style={{
               background: 'linear-gradient(135deg, #1A1710 0%, #2D2820 100%)',
-              borderRadius: 16, padding: '14px 18px', marginBottom: 12,
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+              borderRadius: 16, padding: '16px 18px', marginBottom: 12,
             }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
-                  ✈️ {isFr ? 'Vous voyagez bientôt ?' : 'Traveling soon?'}
-                </div>
-                <div style={{ fontSize: 11, color: '#A09070', lineHeight: 1.4 }}>
-                  {isFr ? 'Rentabilisez votre bagage en transportant des colis.' : 'Earn money by carrying packages on your trip.'}
-                </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 3 }}>
+                ✈️ {isFr ? 'Vous voyagez bientôt ?' : 'Traveling soon?'}
               </div>
-              <button
-                onClick={() => setView('phone-auth')}
-                style={{
-                  flexShrink: 0, padding: '9px 16px', borderRadius: 10,
-                  background: '#C8891C', border: 'none', color: '#fff',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap',
-                }}
-              >
-                {isFr ? "S'inscrire →" : 'Join →'}
-              </button>
+              <div style={{ fontSize: 11, color: '#A09070', lineHeight: 1.4, marginBottom: 14 }}>
+                {isFr ? 'Rentabilisez votre bagage en transportant des colis.' : 'Earn money by carrying packages on your trip.'}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={() => setView('phone-auth')}
+                  style={{
+                    flex: 2, padding: '10px 0', borderRadius: 10,
+                    background: '#C8891C', border: 'none', color: '#fff',
+                    fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  {isFr ? "S'inscrire →" : 'Sign up →'}
+                </button>
+                <button
+                  onClick={() => setView('phone-auth')}
+                  style={{
+                    flex: 1, padding: '10px 0', borderRadius: 10,
+                    background: 'transparent', border: '1.5px solid #3A3530',
+                    color: '#A09070', fontSize: 13, fontWeight: 600,
+                    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  {isFr ? 'Se connecter' : 'Log in'}
+                </button>
+              </div>
             </div>
 
             {/* Sender CTA */}
