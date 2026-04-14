@@ -450,7 +450,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1710', marginBottom: 10 }}>{t.accInfo}</div>
       {[
         { Icon: UserIcon,     label: t.fullName,    value: fullName || '—' },
-        { Icon: MailIcon,     label: t.contact,     value: contact },
         { Icon: CalendarIcon, label: t.since,       value: joinDate },
         ...(baseCountry ? [{ Icon: GlobeIcon, label: t.baseCountry, value: baseCountry }] : []),
       ].map(({ Icon: Ic, label, value }) => (
