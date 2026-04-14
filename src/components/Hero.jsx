@@ -166,6 +166,33 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
             </button>
 
+            {/* Traveler CTA banner */}
+            <div style={{
+              background: 'linear-gradient(135deg, #1A1710 0%, #2D2820 100%)',
+              borderRadius: 16, padding: '14px 18px', marginBottom: 12,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+            }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
+                  ✈️ {isFr ? 'Vous voyagez bientôt ?' : 'Traveling soon?'}
+                </div>
+                <div style={{ fontSize: 11, color: '#A09070', lineHeight: 1.4 }}>
+                  {isFr ? 'Rentabilisez votre bagage en transportant des colis.' : 'Earn money by carrying packages on your trip.'}
+                </div>
+              </div>
+              <button
+                onClick={() => setView('phone-auth')}
+                style={{
+                  flexShrink: 0, padding: '9px 16px', borderRadius: 10,
+                  background: '#C8891C', border: 'none', color: '#fff',
+                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap',
+                }}
+              >
+                {isFr ? "S'inscrire →" : 'Join →'}
+              </button>
+            </div>
+
             {/* Sender CTA */}
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginBottom:12 }}>
               <span style={{ fontSize:13, color:'#8A8070' }}>{isFr ? 'Vous avez un colis ?' : 'Have a package?'}</span>
