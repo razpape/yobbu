@@ -54,7 +54,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [lang, setLang]               = useState(initialLang || 'en')
   const [section, setSection]         = useState('trips')
   const [avatarUrl, setAvatarUrl]     = useState(null)
-  const [profileName, setProfileName] = useState('')
+  const [profileName,    setProfileName]    = useState('')
+  const [photoVerified,  setPhotoVerified]  = useState(false)
   const [baseCountry, setBaseCountry] = useState('')
   const [trips, setTrips]             = useState([])
   const [loading, setLoading]         = useState(true)
@@ -80,11 +81,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     fetchTrips()
     fetchRequests()
     if (user?.id) {
-      supabase.from('profiles').select('avatar_url, full_name, country_of_origin').eq('id', user.id).single()
+      supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified').eq('id', user.id).single()
         .then(({ data }) => {
           if (data?.avatar_url) setAvatarUrl(data.avatar_url)
           if (data?.full_name)  setProfileName(data.full_name)
           if (data?.country_of_origin) setBaseCountry(data.country_of_origin)
+          if (data?.photo_verified) setPhotoVerified(true)
         })
     }
   }, [user])
@@ -656,17 +658,17 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         </div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 2, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         <div style={{ fontSize: 13, color: '#8A8070', marginBottom: 16 }}>{contact}</div>
-        <div style={{ display: 'flex', gap: 0, background: '#F7F4EF', borderRadius: 14, overflow: 'hidden', maxWidth: 300, margin: '0 auto' }}>
-          {[
-            { n: trips.length,                           l: t.st1 },
-            { n: trips.filter(tr => tr.approved).length, l: t.st2,  color: '#2D8B4E' },
-            { n: trips.filter(tr => tr.suspended).length,l: t.st3,  color: '#DC2626' },
-          ].map(({ n, l, color }, i) => (
-            <div key={l} style={{ flex: 1, padding: '10px 6px', textAlign: 'center', borderRight: i < 2 ? '1px solid rgba(0,0,0,.06)' : 'none' }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: color || '#1A1710', lineHeight: 1 }}>{n}</div>
-              <div style={{ fontSize: 10, color: '#8A8070', marginTop: 3, fontWeight: 600 }}>{l}</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#F7F4EF', borderRadius: 20, padding: '6px 12px' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span style={{ fontSize: 12, color: '#5A5248', fontWeight: 600 }}>{isFr ? `Membre depuis ${joinDate}` : `Member since ${joinDate}`}</span>
+          </div>
+          {photoVerified && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#F0FAF4', borderRadius: 20, padding: '6px 12px' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span style={{ fontSize: 12, color: '#2D8B4E', fontWeight: 700 }}>{isFr ? 'Vérifié' : 'Verified'}</span>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
