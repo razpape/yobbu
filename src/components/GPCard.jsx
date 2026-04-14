@@ -128,14 +128,24 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {gp.name || 'Traveler'}
                 </div>
-                {verified && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <ShieldCheck size={12} color="#16a34a" strokeWidth={2.5} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#16a34a' }}>
-                      {isFr ? 'Vérifié' : 'Verified'}
-                    </span>
-                  </div>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
+                  {verified && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <ShieldCheck size={11} color="#16a34a" strokeWidth={2.5} />
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#16a34a' }}>
+                        {isFr ? 'Vérifié' : 'Verified'}
+                      </span>
+                    </div>
+                  )}
+                  {gp.photo_verified && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 10 }}>📸</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#C8891C' }}>
+                        {isFr ? 'Photo' : 'Photo'}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             {gp.space && (

@@ -862,6 +862,59 @@ export default function AdminPanel({ onSignOut }) {
         )}
 
         {/* FACEBOOK GP POSTS TAB */}
+        {/* PHOTOS TAB */}
+        {tab === 'photos' && (
+          <div>
+            <div style={{ color:'#aaa', fontSize:13, marginBottom:16 }}>
+              Users who uploaded a profile photo — approve to give them the Photo Verified badge, reject to remove the photo.
+            </div>
+
+            {photosLoading && (
+              <div style={{ color:'#555', padding:'40px 0', textAlign:'center' }}>Loading...</div>
+            )}
+
+            {!photosLoading && photoPending.length === 0 && (
+              <div style={{ textAlign:'center', padding:'60px 0', color:'#444', fontSize:14 }}>
+                No pending photo approvals.
+              </div>
+            )}
+
+            {!photosLoading && photoPending.map(u => (
+              <div key={u.id} style={{ background:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:14, padding:'20px 24px', marginBottom:12, display:'flex', alignItems:'center', gap:20 }}>
+
+                {/* Photo */}
+                <div style={{ flexShrink:0 }}>
+                  {u.avatar_url
+                    ? <img src={u.avatar_url} alt={u.full_name} style={{ width:72, height:72, borderRadius:'50%', objectFit:'cover', border:'2px solid #333' }} />
+                    : <div style={{ width:72, height:72, borderRadius:'50%', background:'#2a2a2a', display:'flex', alignItems:'center', justifyContent:'center', color:'#555', fontSize:11 }}>No photo</div>
+                  }
+                </div>
+
+                {/* Info */}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontWeight:700, color:'#fff', fontSize:15, marginBottom:3 }}>
+                    {u.full_name || 'Unnamed user'}
+                  </div>
+                  <div style={{ color:'#666', fontSize:12, marginBottom:4 }}>{u.phone || u.id}</div>
+                  <div style={{ color:'#555', fontSize:11 }}>
+                    Joined {new Date(u.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+                  <Btn type="approve" onClick={() => approvePhoto(u.id)}>✓ Approve</Btn>
+                  <Btn type="reject"  onClick={() => rejectPhoto(u.id)}>✕ Reject</Btn>
+                </div>
+              </div>
+            ))}
+
+            {!photosLoading && photoPending.length > 0 && (
+              <button style={{ ...btn.base, ...btn.edit, marginTop:8 }} onClick={fetchPhotoPending}>↻ Refresh</button>
+            )}
+          </div>
+        )}
+
         {tab === 'facebook' && (
           <FacebookGPPosts showToast={showToast} />
         )}

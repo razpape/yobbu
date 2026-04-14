@@ -25,6 +25,19 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
     })
   }
   
+  // Photo Verified (admin approved profile photo)
+  if (profile?.photo_verified) {
+    badges.push({
+      key: 'photo',
+      icon: '📸',
+      label: isFr ? 'Photo vérifiée' : 'Photo verified',
+      color: '#C8891C',
+      bg: '#FFF8EB',
+      border: '#F0C878',
+      tooltip: isFr ? 'Photo de profil approuvée par Yobbu' : 'Profile photo approved by Yobbu',
+    })
+  }
+
   // ID Verified
   if (profile?.id_verified) {
     badges.push({

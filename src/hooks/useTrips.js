@@ -27,6 +27,7 @@ function rowToTrip(row, profile = {}) {
     memberSince:      row.member_since,
     phone_verified: profile.whatsapp_verified ?? false,
     avatar_url:     profile.avatar_url || null,
+    photo_verified: profile.photo_verified ?? false,
     verified: {
       phone:     row.phone_verified,
       id:        row.id_verified,
@@ -86,7 +87,7 @@ export function useTrips() {
       if (userIds.length) {
         const { data: profiles } = await supabase
           .from('profiles')
-          .select('id, whatsapp_verified, phone, avatar_url')
+          .select('id, whatsapp_verified, phone, avatar_url, photo_verified')
           .in('id', userIds)
         profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
       }
