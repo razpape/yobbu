@@ -58,11 +58,14 @@ export default function AdminPanel({ onSignOut }) {
   const [revokeReason, setRevokeReason] = useState('')
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [selectedUsers, setSelectedUsers] = useState(new Set())
+  const [photoPending, setPhotoPending]   = useState([])
+  const [photosLoading, setPhotosLoading] = useState(false)
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
 
   useEffect(() => { fetchAll() }, [])
   useEffect(() => { if (tab === 'users') fetchUsers() }, [tab])
+  useEffect(() => { if (tab === 'photos') fetchPhotoPending() }, [tab])
 
   async function fetchAll() {
     setLoading(true)
@@ -88,6 +91,40 @@ export default function AdminPanel({ onSignOut }) {
       .order('created_at', { ascending: false })
     if (!error) setUsers(data || [])
     setUsersLoading(false)
+  }
+
+  async function fetchPhotoPending() {
+    setPhotosLoading(true)
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, phone, avatar_url, photo_pending, photo_verified, created_at')
+      .eq('photo_pending', true)
+      .order('created_at', { ascending: false })
+    setPhotoPending(data || [])
+    setPhotosLoading(false)
+  }
+
+  async function approvePhoto(userId) {
+    const { error } = await supabase.from('profiles').update({
+      photo_verified: true,
+      photo_pending:  false,
+    }).eq('id', userId)
+    if (!error) {
+      setPhotoPending(prev => prev.filter(u => u.id !== userId))
+      showToast('Photo badge approved!')
+    }
+  }
+
+  async function rejectPhoto(userId) {
+    const { error } = await supabase.from('profiles').update({
+      photo_verified: false,
+      photo_pending:  false,
+      avatar_url:     null,
+    }).eq('id', userId)
+    if (!error) {
+      setPhotoPending(prev => prev.filter(u => u.id !== userId))
+      showToast('Photo rejected and removed.')
+    }
   }
 
   async function adminVerifyUser() {
@@ -405,6 +442,7 @@ export default function AdminPanel({ onSignOut }) {
             { key:'overview',  label:'Overview' },
             { key:'travelers', label:`Travelers (${trips.length})` },
             { key:'pending',   label:`Pending (${pending.length})` },
+            { key:'photos',    label:`Photos ${photoPending.length > 0 ? `(${photoPending.length})` : ''}` },
             { key:'facebook',  label:'Facebook GP Posts' },
             { key:'ai-extract', label:'AI Extractor' },
             { key:'users',     label:`Users (${users.length})` },
