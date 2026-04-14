@@ -185,35 +185,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     <div>
       {loading && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
 
-      {/* Welcome banner — shown only when user has no trips yet */}
-      {!loading && trips.length === 0 && (
-        <div style={{
-          background: 'linear-gradient(135deg, #1A1710 0%, #2D2820 100%)',
-          borderRadius: 18, padding: '20px 20px 18px', marginBottom: 16,
-        }}>
-          <div style={{ fontSize: 20, marginBottom: 6 }}>🎉</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6, fontFamily: 'DM Serif Display, serif' }}>
-            {isFr ? 'Vous êtes prêt !' : "You're all set!"}
-          </div>
-          <div style={{ fontSize: 13, color: '#A09070', lineHeight: 1.6, marginBottom: 16 }}>
-            {isFr
-              ? 'Postez votre premier voyage pour apparaître aux expéditeurs qui cherchent un voyageur sur votre route.'
-              : 'Post your first trip to start appearing to senders looking for a traveler on your route.'}
-          </div>
-          <button
-            onClick={() => setView('post')}
-            style={{
-              width: '100%', padding: '13px', borderRadius: 12, border: 'none',
-              background: '#C8891C', color: '#fff', fontSize: 14, fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
-            <PlaneIcon size={15} color="#fff" />
-            {isFr ? 'Poster mon premier voyage →' : 'Post my first trip →'}
-          </button>
-        </div>
-      )}
 
       {!loading && trips.map(trip => {
         const st = tripStatus(trip)
