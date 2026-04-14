@@ -124,7 +124,6 @@ export default function OnboardingPage({ user, lang, onComplete }) {
   // ── Step 1: save profile ──────────────────────────────────────────────────
   const handleProfileSave = async () => {
     if (!form.fullName.trim()) { setError(isFr ? 'Le nom est requis.' : 'Full name is required.'); return }
-    if (!form.currentCountry)  { setError(isFr ? 'Pays de résidence requis.' : 'Country of residence is required.'); return }
     setError(null)
     setLoading(true)
     const { error: err } = await supabase.from('profiles').update({
@@ -307,33 +306,6 @@ export default function OnboardingPage({ user, lang, onComplete }) {
               )}
             </div>
 
-            {/* Current residence */}
-            <div style={{ marginBottom: 18 }}>
-              <label style={lbl}>{isFr ? 'Où habitez-vous ? *' : 'Where do you live? *'}</label>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <input
-                  className="ob-input"
-                  style={{ ...inp, flex: 1 }}
-                  placeholder={isFr ? 'Ville' : 'City'}
-                  value={form.currentCity}
-                  onChange={e => set('currentCity', e.target.value)}
-                />
-                <div style={{ position: 'relative', flex: 1 }}>
-                  <select
-                    className="ob-input"
-                    style={{ ...inp, appearance: 'none', paddingRight: 32 }}
-                    value={form.currentCountry}
-                    onChange={e => set('currentCountry', e.target.value)}
-                  >
-                    <option value="">{isFr ? 'Pays' : 'Country'}</option>
-                    {RESIDENCE_COUNTRIES.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                  <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070', fontSize: 12 }}>▾</span>
-                </div>
-              </div>
-            </div>
 
             {/* Destinations */}
             <div style={{ marginBottom: 28 }}>
