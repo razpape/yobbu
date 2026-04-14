@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import CircleCropper from '../components/CircleCropper'
 
 const ORIGIN_COUNTRIES = [
   { code: 'SN', name: 'Senegal',            prefix: '+221' },
@@ -48,8 +49,9 @@ export default function OnboardingPage({ user, lang, onComplete }) {
   const [fullName,        setFullName]        = useState('')
   const [email,           setEmail]           = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
-  const [avatarFile,      setAvatarFile]      = useState(null)
+  const [avatarBlob,      setAvatarBlob]      = useState(null)
   const [avatarPreview,   setAvatarPreview]   = useState(null)
+  const [cropSrc,         setCropSrc]         = useState(null)
   const [loading,         setLoading]         = useState(false)
   const [uploading,       setUploading]       = useState(false)
   const [error,           setError]           = useState(null)
@@ -73,9 +75,20 @@ export default function OnboardingPage({ user, lang, onComplete }) {
     if (!ACCEPTED.includes(file.type)) { setError(isFr ? 'JPG, PNG ou WebP uniquement.' : 'JPG, PNG or WebP only.'); return }
     if (file.size > MAX_MB * 1024 * 1024) { setError(isFr ? `Photo max ${MAX_MB}MB.` : `Photo must be under ${MAX_MB}MB.`); return }
     setError(null)
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    setCropSrc(URL.createObjectURL(file))
     if (fileRef.current) fileRef.current.value = ''
+  }
+
+  function handleCropConfirm(blob) {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+    setAvatarBlob(blob)
+    setAvatarPreview(URL.createObjectURL(blob))
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
   }
 
   async function handleSubmit() {
@@ -91,11 +104,10 @@ export default function OnboardingPage({ user, lang, onComplete }) {
       }
 
       // Upload photo if provided — mark as pending admin approval
-      if (avatarFile) {
+      if (avatarBlob) {
         setUploading(true)
-        const ext  = avatarFile.name.split('.').pop().toLowerCase()
-        const path = `${user.id}.${ext}`
-        const { error: upErr } = await supabase.storage.from('avatars').upload(path, avatarFile, { upsert: true, contentType: avatarFile.type })
+        const path = `${user.id}.jpg`
+        const { error: upErr } = await supabase.storage.from('avatars').upload(path, avatarBlob, { upsert: true, contentType: 'image/jpeg' })
         if (upErr) throw upErr
 
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -137,6 +149,13 @@ export default function OnboardingPage({ user, lang, onComplete }) {
 
   return (
     <div style={{ minHeight: '100vh', background: '#FDFBF7', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
+      {cropSrc && (
+        <CircleCropper
+          src={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+      )}
       <style>{`
         .ob-input:focus  { border-color: #C8891C !important; }
         .ob-btn:hover    { background: #B8780C !important; }
