@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { LockIcon, CheckCircleIcon, PlaneIcon } from './Icons'
 
@@ -84,10 +84,29 @@ const CITIES_TO = [
 export default function PostTripForm({ lang, setView, user, onLoginRequired, inline = false }) {
   const isFr = lang === 'fr'
 
-  const meta     = user?.user_metadata || {}
-  const fullName = user?.first_name
+  const meta             = user?.user_metadata || {}
+  const fallbackName     = user?.first_name
     ? `${user.first_name} ${user?.last_name || ''}`.trim()
     : meta.full_name || meta.name || ''
+
+  const [profileName, setProfileName] = useState(fallbackName)
+  const [avatarUrl,   setAvatarUrl]   = useState(null)
+
+  useEffect(() => {
+    if (!user?.id) return
+    supabase
+      .from('profiles')
+      .select('full_name, avatar_url')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.full_name) setProfileName(data.full_name)
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url)
+      })
+  }, [user?.id])
+
+  const fullName = profileName || fallbackName
+  const initials = fullName ? fullName.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) : 'GP'
 
   const defaultPhone = user?.whatsapp_number || meta.whatsapp_phone || user?.phone || ''
   const [form, setForm]       = useState({
@@ -99,26 +118,51 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   const [success, setSuccess] = useState(false)
   const [error, setError]     = useState(null)
 
+  // Shared nav bar (shown on all states when not inline)
+  const navBar = !inline && (
+    <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 24px', borderBottom:'1px solid rgba(0,0,0,.06)', background:'#FDFBF7', position:'sticky', top:0, zIndex:50, fontFamily:'DM Sans, sans-serif' }}>
+      <div onClick={() => setView('home')} style={{ fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1A1710', cursor:'pointer', letterSpacing:'-.5px' }}>
+        Yob<span style={{ color:'#C8891C' }}>bu</span>
+      </div>
+      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        {user && (
+          <button onClick={() => setView('profile')}
+            style={{ display:'flex', alignItems:'center', gap:8, background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
+            <div style={{ width:26, height:26, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
+              {avatarUrl
+                ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                : initials}
+            </div>
+            <span style={{ fontSize:12, fontWeight:600, color:'#C8891C' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
+          </button>
+        )}
+      </div>
+    </nav>
+  )
+
   // Not logged in — show message
   if (!user) {
     return (
-      <div style={{ minHeight:'100vh', background:'#FDFBF7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', padding:24 }}>
-        <div style={{ textAlign:'center', maxWidth:400 }}>
-          <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><LockIcon size={48} color="#C8DDD0" /></div>
-          <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1A1710', marginBottom:12 }}>
-            {isFr ? 'Connexion requise' : 'Sign in required'}
-          </h2>
-          <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
-            {isFr ? 'Vous devez être connecté pour poster un voyage.' : 'You need to be signed in to post a trip.'}
-          </p>
-          <button onClick={onLoginRequired}
-            style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
-            {isFr ? 'Se connecter' : 'Sign in'}
-          </button>
-          <button onClick={() => setView('home')}
-            style={{ background:'transparent', color:'#8A8070', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
-            {isFr ? 'Retour' : 'Go back'}
-          </button>
+      <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>
+        {navBar}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:24, minHeight:'calc(100vh - 57px)' }}>
+          <div style={{ textAlign:'center', maxWidth:400 }}>
+            <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><LockIcon size={48} color="#C8DDD0" /></div>
+            <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1A1710', marginBottom:12 }}>
+              {isFr ? 'Connexion requise' : 'Sign in required'}
+            </h2>
+            <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
+              {isFr ? 'Vous devez être connecté pour poster un voyage.' : 'You need to be signed in to post a trip.'}
+            </p>
+            <button onClick={onLoginRequired}
+              style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
+              {isFr ? 'Se connecter' : 'Sign in'}
+            </button>
+            <button onClick={() => setView('browse')}
+              style={{ background:'transparent', color:'#8A8070', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
+              {isFr ? 'Parcourir' : 'Browse trips'}
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -144,6 +188,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         initials,
         color:         colors[idx],
         bg:            bgs[idx],
+        avatar_url:    avatarUrl || null,
         phone:         form.phone,
         from_city:     form.from_city,
         to_city:       form.to_city,
@@ -179,27 +224,39 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
           {isFr ? 'Votre annonce sera examinée et publiée sous peu.' : 'Your listing will be reviewed and published shortly.'}
         </p>
-
-        <button onClick={() => setView('profile')}
-          style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
-          {isFr ? 'Voir mon profil' : 'View my profile'}
-        </button>
+        <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
+          <button onClick={() => setView('profile')}
+            style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 28px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
+            {isFr ? 'Voir mes voyages' : 'View my trips'}
+          </button>
+          <button onClick={() => setView('browse')}
+            style={{ background:'transparent', color:'#3D3829', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
+            {isFr ? 'Voir les GPs' : 'Browse GPs'}
+          </button>
+        </div>
       </div>
     )
     if (inline) return successContent
-    return <div style={{ minHeight:'100vh', background:'#FDFBF7', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Sans, sans-serif', padding:24 }}>{successContent}</div>
+    return (
+      <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>
+        {navBar}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:24, minHeight:'calc(100vh - 57px)' }}>
+          {successContent}
+        </div>
+      </div>
+    )
   }
 
   const inner = (
-    <div style={{ maxWidth:600, margin:'0 auto', padding: inline ? '0' : '48px 24px' }}>
+    <div style={{ maxWidth:600, margin:'0 auto', padding: inline ? '0' : '32px 24px 64px' }}>
 
       {!inline && (
-        <div style={{ marginBottom:32 }}>
-          <button onClick={() => setView('home')}
+        <div style={{ marginBottom:28 }}>
+          <button onClick={() => setView('profile')}
             style={{ background:'none', border:'none', color:'#8A8070', cursor:'pointer', fontSize:13, fontFamily:'DM Sans, sans-serif', marginBottom:16, padding:0, display:'flex', alignItems:'center', gap:6 }}>
-            ← {isFr ? 'Retour' : 'Back'}
+            ← {isFr ? 'Mes voyages' : 'My trips'}
           </button>
-          <h1 style={{ fontFamily:'DM Serif Display, serif', fontSize:32, color:'#1A1710', marginBottom:8 }}>
+          <h1 style={{ fontFamily:'DM Serif Display, serif', fontSize:30, color:'#1A1710', marginBottom:6 }}>
             {isFr ? 'Poster un voyage' : 'Post a trip'}
           </h1>
           <p style={{ fontSize:14, color:'#8A8070' }}>
@@ -210,12 +267,14 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
       {/* Traveler info */}
       <div style={{ background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
-        <div style={{ width:44, height:44, borderRadius:'50%', background:'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
-          {fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'}
+        <div style={{ width:44, height:44, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
+          {avatarUrl
+            ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+            : (fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP')
+          }
         </div>
         <div>
-          <div style={{ fontSize:15, fontWeight:600, color:'#1A1710' }}>{fullName}</div>
-          <div style={{ fontSize:12, color:'#8A8070' }}>{user.email?.endsWith('@phone.yobbu.app') ? user.phone : (user.email || user.phone)}</div>
+          <div style={{ fontSize:15, fontWeight:600, color:'#1A1710' }}>{fullName || (isFr ? 'Chargement...' : 'Loading...')}</div>
         </div>
         <div style={{ marginLeft:'auto', fontSize:11, color:'#C8891C', fontWeight:600, background:'#fff', border:'1px solid #F0C878', borderRadius:20, padding:'3px 10px' }}>
           {isFr ? 'Vous' : 'You'}
@@ -310,5 +369,10 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   )
 
   if (inline) return inner
-  return <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>{inner}</div>
+  return (
+    <div style={{ minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' }}>
+      {navBar}
+      {inner}
+    </div>
+  )
 }

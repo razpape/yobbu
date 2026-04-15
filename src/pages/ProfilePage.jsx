@@ -644,7 +644,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px' }}>
           Yob<span style={{ color: '#C8891C' }}>bu</span>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Desktop buttons */}
           <button className="pf-nav-post" onClick={() => setView('browse')}
             style={{ fontSize: 12, fontWeight: 500, padding: '7px 14px', borderRadius: 20, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#3D3829', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
             {isFr ? 'Voir les GPs' : 'Browse GPs'}
@@ -654,13 +655,18 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             + {isFr ? 'Poster' : 'Post a trip'}
           </button>
           <button className="pf-nav-post" onClick={onSignOut}
-            style={{ fontSize: 12, fontWeight: 500, padding: '7px 14px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, padding: '7px 14px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            <LogOutIcon size={12} color="#DC2626" />
             {isFr ? 'Déconnexion' : 'Sign out'}
+          </button>
+          {/* Mobile: post + sign out */}
+          <button className="pf-nav-signout" onClick={() => setView('post')}
+            style={{ display: 'none', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, padding: '7px 13px', borderRadius: 20, border: 'none', background: '#C8891C', color: '#fff', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            + {isFr ? 'Poster' : 'Post'}
           </button>
           <button className="pf-nav-signout" onClick={onSignOut}
             style={{ display: 'none', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 12px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
             <LogOutIcon size={13} color="#DC2626" />
-            {isFr ? 'Déco' : 'Out'}
           </button>
         </div>
       </nav>
