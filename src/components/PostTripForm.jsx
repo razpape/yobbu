@@ -188,7 +188,6 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         initials,
         color:         colors[idx],
         bg:            bgs[idx],
-        avatar_url:    avatarUrl || null,
         phone:         form.phone,
         from_city:     form.from_city,
         to_city:       form.to_city,
