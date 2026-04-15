@@ -91,6 +91,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
   const [profileName, setProfileName] = useState(fallbackName)
   const [avatarUrl,   setAvatarUrl]   = useState(null)
+  const [avatarErr,   setAvatarErr]   = useState(false)
 
   useEffect(() => {
     if (!user?.id) return
@@ -98,9 +99,9 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       .from('profiles')
       .select('full_name, avatar_url')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
-        if (data?.full_name) setProfileName(data.full_name)
+        if (data?.full_name)  setProfileName(data.full_name)
         if (data?.avatar_url) setAvatarUrl(data.avatar_url)
       })
   }, [user?.id])
@@ -129,8 +130,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
           <button onClick={() => setView('profile')}
             style={{ display:'flex', alignItems:'center', gap:8, background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
             <div style={{ width:26, height:26, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              {avatarUrl && !avatarErr
+                ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
                 : initials}
             </div>
             <span style={{ fontSize:12, fontWeight:600, color:'#C8891C' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
@@ -267,8 +268,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       {/* Traveler info */}
       <div style={{ background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
         <div style={{ width:44, height:44, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
-          {avatarUrl
-            ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+          {avatarUrl && !avatarErr
+            ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
             : (fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP')
           }
         </div>

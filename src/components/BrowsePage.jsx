@@ -154,33 +154,6 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
         </Select>
       </Field>
 
-      {/* Price */}
-      <Field label={isFr ? 'Prix max / kg' : 'Max price / kg'}>
-        <div style={{ position: 'relative' }}>
-          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: '#A09080', fontWeight: 600 }}>$</span>
-          <input
-            type="number"
-            min="0"
-            value={priceFilter}
-            onChange={e => setPriceFilter(e.target.value)}
-            placeholder="0"
-            style={{
-              width: '100%',
-              padding: '10px 12px 10px 26px',
-              border: '1.5px solid #E8E4DE',
-              borderRadius: 10,
-              fontSize: 13,
-              fontFamily: 'DM Sans, sans-serif',
-              color: '#1A1710',
-              outline: 'none',
-              boxSizing: 'border-box',
-              transition: 'border-color .15s',
-            }}
-            onFocus={e => e.target.style.borderColor = '#C8891C'}
-            onBlur={e => e.target.style.borderColor = '#E8E4DE'}
-          />
-        </div>
-      </Field>
 
       {/* Verification */}
       <Field label={isFr ? 'Voyageurs' : 'Travelers'}>
@@ -209,27 +182,6 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
         </div>
       </Field>
 
-      {/* Service type */}
-      <Field label={isFr ? 'Type de transport' : 'Transport type'}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {[
-            { value: 'all',     en: 'All',   fr: 'Tous' },
-            { value: 'baggage', en: 'Plane', fr: 'Avion' },
-          ].map(opt => (
-            <button key={opt.value} onClick={() => setServiceFilter(opt.value)}
-              style={{
-                flex: 1, padding: '9px 0', borderRadius: 10,
-                border: `1.5px solid ${serviceFilter === opt.value ? '#C8891C' : '#E8E4DE'}`,
-                background: serviceFilter === opt.value ? '#FFF7ED' : '#fff',
-                color: serviceFilter === opt.value ? '#C8891C' : '#6B6860',
-                fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                fontFamily: 'DM Sans, sans-serif', transition: 'all .15s',
-              }}>
-              {opt[lang] || opt.en}
-            </button>
-          ))}
-        </div>
-      </Field>
 
       {/* Divider */}
       <div style={{ height: 1, background: '#F0EDE8', margin: '4px 0 20px' }} />

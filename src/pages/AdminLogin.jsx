@@ -1,19 +1,29 @@
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 
-const ADMIN_EMAIL    = import.meta.env.VITE_ADMIN_EMAIL
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL
 
 export default function AdminLogin({ onLogin }) {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState(null)
+  const [loading, setLoading]   = useState(false)
 
-  const handleLogin = () => {
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      onLogin()
-    } else {
+  const handleLogin = async () => {
+    setError(null)
+    // Gate: only allow the designated admin email
+    if (email.trim().toLowerCase() !== ADMIN_EMAIL?.toLowerCase()) {
       setError('Incorrect email or password.')
+      return
     }
+    setLoading(true)
+    const { error: authErr } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    setLoading(false)
+    if (authErr) {
+      setError('Incorrect email or password.')
+      return
+    }
+    onLogin()
   }
 
   return (
@@ -49,12 +59,13 @@ export default function AdminLogin({ onLogin }) {
           />
         </div>
 
-        <button onClick={handleLogin} style={{
+        <button onClick={handleLogin} disabled={loading} style={{
           width:'100%', padding:'13px', borderRadius:12, border:'none',
           background:'#C8891C', color:'#fff', fontSize:14, fontWeight:600,
-          cursor:'pointer', fontFamily:'Inter, sans-serif', marginTop:8,
+          cursor: loading ? 'default' : 'pointer', fontFamily:'Inter, sans-serif', marginTop:8,
+          opacity: loading ? 0.7 : 1,
         }}>
-          Sign in
+          {loading ? 'Signing in…' : 'Sign in'}
         </button>
 
         {error && (

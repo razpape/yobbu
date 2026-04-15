@@ -257,27 +257,28 @@ export default function AdminPanel({ onSignOut }) {
 
   async function toggleApproved(id, approved) {
     const { error } = await supabase.from('trips').update({ approved: !approved }).eq('id', id)
-    if (!error) {
-      if (!approved) {
-        const trip = trips.find(t => t.id === id)
-        if (trip?.user_email) {
-          fetch('/api/send-approval-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_API_SECRET || '' },
-            body: JSON.stringify({
-              to:    trip.user_email,
-              name:  trip.name,
-              route: `${trip.from_city} → ${trip.to_city}`,
-              date:  trip.date,
-            }),
-          })
-            .then(r => r.json().then(data => { if (!r.ok) {/* Silent fail */} }))
-            .catch(err => {/* Silent fail */})
-        }
-      }
-      setTrips(prev => prev.map(t => t.id === id ? { ...t, approved: !approved } : t))
-      showToast(approved ? 'Listing unapproved' : 'Listing approved — now live!')
+    if (error) {
+      showToast(`⚠️ Error: ${error.message}`)
+      console.error('toggleApproved error:', error)
+      return
     }
+    if (!approved) {
+      const trip = trips.find(t => t.id === id)
+      if (trip?.user_email) {
+        fetch('/api/send-approval-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-secret': import.meta.env.VITE_ADMIN_API_SECRET || '' },
+          body: JSON.stringify({
+            to:    trip.user_email,
+            name:  trip.name,
+            route: `${trip.from_city} → ${trip.to_city}`,
+            date:  trip.date,
+          }),
+        }).catch(() => {})
+      }
+    }
+    setTrips(prev => prev.map(t => t.id === id ? { ...t, approved: !approved } : t))
+    showToast(approved ? 'Listing unapproved' : 'Listing approved — now live!')
   }
 
   async function toggleFeatured(id, featured) {
@@ -305,7 +306,7 @@ export default function AdminPanel({ onSignOut }) {
     }
   }
 
-  const pending  = trips.filter(t => !t.approved)
+  const pending  = trips.filter(t => t.approved !== true && !t.suspended)
   const active   = trips.filter(t => t.approved && !t.suspended)
   const filtered = trips.filter(t => {
     const q = search.toLowerCase()
@@ -785,10 +786,9 @@ export default function AdminPanel({ onSignOut }) {
                     if (!window.confirm(`Approve all ${pending.length} pending listings?`)) return
                     const ids = pending.map(t => t.id)
                     const { error } = await supabase.from('trips').update({ approved: true }).in('id', ids)
-                    if (!error) {
-                      setTrips(prev => prev.map(t => ids.includes(t.id) ? { ...t, approved: true } : t))
-                      showToast(`✓ ${ids.length} listings approved`)
-                    }
+                    if (error) { showToast(`⚠️ Error: ${error.message}`); return }
+                    setTrips(prev => prev.map(t => ids.includes(t.id) ? { ...t, approved: true } : t))
+                    showToast(`✓ ${ids.length} listings approved`)
                   }}
                 >
                   ✓ Approve All

@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { ShieldCheck, Plane, MapPin } from 'lucide-react'
-import { ShipIcon } from './Icons'
+import { ShieldCheck } from 'lucide-react'
 import ContactModal from './ContactModal'
 
 function WhatsAppIcon({ size = 15 }) {
@@ -14,42 +13,44 @@ function WhatsAppIcon({ size = 15 }) {
 function formatPrice(raw) {
   if (!raw) return null
   const num = parseFloat(String(raw))
-  if (!isNaN(num)) return `$${num}`
-  return String(raw).replace('/kg/kg', '/kg')
+  return !isNaN(num) ? `$${num}` : String(raw).replace('/kg/kg', '/kg')
 }
 
-function daysUntil(dateStr) {
-  if (!dateStr) return null
-  const diff = Math.ceil((new Date(dateStr) - new Date().setHours(0, 0, 0, 0)) / 86400000)
+function formatDate(str, locale) {
+  if (!str) return null
+  const d = new Date(str)
+  return isNaN(d) ? str : d.toLocaleDateString(locale, { day: 'numeric', month: 'short' })
+}
+
+function daysUntil(str) {
+  if (!str) return null
+  const diff = Math.ceil((new Date(str) - new Date().setHours(0,0,0,0)) / 86400000)
   return diff < 0 ? null : diff
 }
 
 export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }) {
   const [showModal, setShowModal] = useState(false)
-  const [hovered, setHovered] = useState(false)
-  const isFr = lang === 'fr'
+  const [avatarErr, setAvatarErr] = useState(false)
 
-  const fromCity   = gp.from_city || gp.from || '—'
-  const toCity     = gp.to_city   || gp.to   || '—'
-  const initials   = gp.initials  || gp.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
-  const price      = formatPrice(gp.price)
-  const accent     = gp.color || '#C8891C'
-  const days       = daysUntil(gp.date)
-  const isFull     = gp.availability_status === 'full'
-  const isUnavail  = gp.availability_status === 'unavailable'
-  const isDisabled = isFull || isUnavail
-  const verified   = gp.phone_verified || gp.verified?.phone
-  const isGroupage = gp.service_type === 'groupage'
+  const isFr      = lang === 'fr'
+  const locale    = isFr ? 'fr-FR' : 'en-US'
+  const from      = gp.from_city || gp.from || '—'
+  const to        = gp.to_city   || gp.to   || '—'
+  const initials  = (gp.name || 'GP').split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || 'GP'
+  const price     = formatPrice(gp.price)
+  const accent    = gp.color || '#C8891C'
+  const verified  = gp.phone_verified || gp.verified?.phone
+  const days      = daysUntil(gp.date)
+  const isFull    = gp.availability_status === 'full'
+  const isUnavail = gp.availability_status === 'unavailable'
+  const disabled  = isFull || isUnavail
+  const departDate = formatDate(gp.date, locale)
 
-  const dateLabel = (() => {
-    if (days === null) return null
-    if (days === 0) return { text: isFr ? "Aujourd'hui" : 'Today',       color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' }
-    if (days === 1) return { text: isFr ? 'Demain'      : 'Tomorrow',    color: '#d97706', bg: '#fffbeb', border: '#fde68a' }
-    if (days <= 6)  return { text: isFr ? 'Cette semaine' : 'This week',  color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' }
-    const now = new Date(); const tripDate = new Date(gp.date)
-    if (tripDate.getMonth() === now.getMonth() && tripDate.getFullYear() === now.getFullYear())
-      return { text: isFr ? 'Ce mois-ci' : 'This month', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' }
-    return { text: gp.date, color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb' }
+  const urgency = (() => {
+    if (days === 0) return { label: isFr ? "Aujourd'hui" : 'Today',       c: '#059669' }
+    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#D97706' }
+    if (days <= 6)  return { label: isFr ? 'Cette sem.'  : 'This week',   c: '#2563EB' }
+    return null
   })()
 
   const handleContact = (e) => {
@@ -71,366 +72,184 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
       )}
 
       <style>{`
-        .gpcard-v2 {
+        .gpc-wrap {
           background: #fff;
-          border-radius: 14px;
-          font-family: 'DM Sans', sans-serif;
-          transition: all .25s cubic-bezier(.4,0,.2,1);
-          position: relative;
+          border: 1px solid #EBEBEB;
+          border-radius: 20px;
           overflow: hidden;
-          border: 1px solid transparent;
-          box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.06);
-        }
-        .gpcard-v2:hover {
-          box-shadow: 0 10px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04);
-          border-color: rgba(200,137,28,.15);
-          transform: translateY(-1px);
-        }
-        .gpcard-v2::before {
-          content: '';
-          position: absolute;
-          left: 0; top: 0; bottom: 0;
-          width: 3px;
-          background: linear-gradient(180deg, #C8891C 0%, #E6A832 100%);
-          border-radius: 14px 0 0 14px;
-          opacity: 0;
-          transition: opacity .25s;
-        }
-        .gpcard-v2:hover::before { opacity: 1; }
-
-        .gpcard-body {
           display: flex;
-          align-items: center;
-          padding: 18px 20px;
-          gap: 20px;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          transition: box-shadow .18s, border-color .18s;
         }
+        .gpc-wrap:hover { box-shadow: 0 6px 24px rgba(0,0,0,.07); border-color: #DDDAD5; }
 
-        .gpcard-avatar-area {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          min-width: 0;
-          flex-shrink: 0;
-          width: 170px;
-        }
-
-        .gpcard-route-area {
+        /* Left: route */
+        .gpc-route {
+          padding: 22px 28px;
           flex: 1;
           min-width: 0;
+          border-right: 1px solid #F2F0ED;
         }
 
-        .gpcard-action-area {
+        /* Middle: traveler */
+        .gpc-traveler {
+          padding: 22px 24px;
+          background: #FDFBF8;
           display: flex;
           align-items: center;
           gap: 14px;
-          flex-shrink: 0;
+          border-right: 1px solid #F2F0ED;
+          min-width: 220px;
         }
 
-        .gpcard-meta {
+        /* Right: price + CTA */
+        .gpc-action {
+          padding: 22px 22px;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 8px;
-          padding: 0 20px 14px;
-          flex-wrap: wrap;
+          justify-content: center;
+          gap: 12px;
+          min-width: 140px;
         }
 
-        @media (max-width: 768px) {
-          .gpcard-body {
-            flex-direction: column;
-            align-items: stretch;
-            padding: 16px;
-            gap: 14px;
-          }
-          .gpcard-avatar-area {
-            width: 100%;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f3f4f6;
-          }
-          .gpcard-action-area {
-            flex-direction: column;
-            gap: 10px;
-          }
-          .gpcard-action-area .gpcard-price-pill {
-            align-self: flex-start;
-          }
-          .gpcard-action-area .gpcard-cta {
-            width: 100% !important;
-            padding: 14px !important;
-            font-size: 14px !important;
-            border-radius: 12px !important;
-          }
-          .gpcard-meta {
-            padding: 0 16px 12px;
-          }
+        @media (max-width: 640px) {
+          .gpc-wrap { flex-direction: column; }
+          .gpc-route, .gpc-traveler { border-right: none; border-bottom: 1px solid #F2F0ED; }
+          .gpc-traveler { min-width: unset; }
+          .gpc-action { flex-direction: row; justify-content: space-between; min-width: unset; }
+          .gpc-cta { flex: 1; justify-content: center !important; }
         }
       `}</style>
 
       <div
-        className="gpcard-v2"
-        style={{ opacity: isDisabled ? 0.55 : 1, cursor: isDisabled ? 'default' : 'pointer' }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => !isDisabled && onViewProfile?.(gp)}
+        className="gpc-wrap"
+        style={{ opacity: disabled ? 0.5 : 1, cursor: disabled ? 'default' : 'pointer' }}
+        onClick={() => !disabled && onViewProfile?.(gp)}
       >
-        {/* Main body */}
-        <div className="gpcard-body">
 
-          {/* Avatar + Name */}
-          <div className="gpcard-avatar-area">
-            <div style={{ position: 'relative', flexShrink: 0 }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: '50%',
-                background: gp.avatar_url ? '#f3f4f6' : `linear-gradient(135deg, ${accent}20, ${accent}08)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'DM Serif Display', serif",
-                fontSize: 17, fontWeight: 700, color: accent,
-                overflow: 'hidden',
-                border: `2px solid ${gp.avatar_url ? '#f3f4f6' : accent + '25'}`,
-                transition: 'border-color .2s',
-                ...(hovered && !isDisabled ? { borderColor: accent + '50' } : {}),
-              }}>
-                {gp.avatar_url
-                  ? <img src={gp.avatar_url} alt={gp.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : initials}
-              </div>
-              {verified && (
-                <div style={{
-                  position: 'absolute', bottom: -2, right: -2,
-                  width: 18, height: 18, borderRadius: '50%',
-                  background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 1px 3px rgba(0,0,0,.1)',
-                }}>
-                  <ShieldCheck size={12} color="#059669" strokeWidth={2.5} />
-                </div>
-              )}
+        {/* ── Route ── */}
+        <div className="gpc-route">
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 14 }}>
+            {isFr ? 'Itinéraire' : 'Route'}
+          </div>
+
+          {/* Cities + arrow */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: '#111', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{from}</div>
+              {gp.pickup_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.pickup_area}</div>}
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{
-                fontSize: 14, fontWeight: 700, color: '#111827',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                lineHeight: 1.3,
-              }}>
-                {gp.name || 'Traveler'}
-              </div>
-              {verified && (
-                <span style={{ fontSize: 11, fontWeight: 500, color: '#059669', lineHeight: 1.2 }}>
-                  {isFr ? 'Vérifié' : 'Verified'}
-                </span>
-              )}
-              {gp.photo_verified && (
-                <span style={{ fontSize: 11, fontWeight: 500, color: '#d97706', marginLeft: verified ? 8 : 0 }}>
-                  {isFr ? 'Photo ID' : 'Photo ID'}
-                </span>
-              )}
+
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 0, minWidth: 40 }}>
+              <div style={{ flex: 1, height: '1.5px', background: `linear-gradient(90deg, #D4C9BA, ${accent})` }} />
+              <div style={{ fontSize: 16, margin: '0 2px', lineHeight: 1 }}>✈</div>
+            </div>
+
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 28, fontWeight: 900, color: accent, letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
+              {gp.dropoff_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.dropoff_area}</div>}
             </div>
           </div>
 
-          {/* Route */}
-          <div className="gpcard-route-area">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {/* From city */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{
-                  fontSize: 17, fontWeight: 800, color: '#111827',
-                  lineHeight: 1.1, letterSpacing: '-.2px',
-                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                }}>
-                  {fromCity}
-                </div>
-              </div>
-
-              {/* Flight line */}
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 40, gap: 0 }}>
-                <div style={{
-                  width: 5, height: 5, borderRadius: '50%',
-                  background: '#d1d5db', flexShrink: 0,
-                }} />
-                <div style={{
-                  flex: 1, height: 0,
-                  borderTop: '1.5px dashed #d1d5db',
-                  margin: '0 -1px',
-                }} />
-                <div style={{
-                  flexShrink: 0, width: 28, height: 28, borderRadius: '50%',
-                  background: isGroupage ? '#eff6ff' : '#fffbeb',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {isGroupage
-                    ? <ShipIcon size={13} color="#2563eb" />
-                    : <Plane size={13} color="#C8891C" strokeWidth={2} />
-                  }
-                </div>
-                <div style={{
-                  flex: 1, height: 0,
-                  borderTop: '1.5px dashed #d1d5db',
-                  margin: '0 -1px',
-                }} />
-                <div style={{
-                  width: 5, height: 5, borderRadius: '50%',
-                  background: '#C8891C', flexShrink: 0,
-                }} />
-              </div>
-
-              {/* To city */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{
-                  fontSize: 17, fontWeight: 800, color: '#C8891C',
-                  lineHeight: 1.1, letterSpacing: '-.2px',
-                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                }}>
-                  {toCity}
-                </div>
-              </div>
-            </div>
-
-            {/* Date + flight number row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-              {dateLabel && (
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center',
-                  padding: '2px 10px', borderRadius: 20,
-                  background: dateLabel.bg, border: `1px solid ${dateLabel.border}`,
-                  fontSize: 11, fontWeight: 600, color: dateLabel.color,
-                  lineHeight: 1.6,
-                }}>
-                  {dateLabel.text}
-                </span>
-              )}
-              {gp.flight_number && (
-                <span style={{
-                  fontSize: 11, fontWeight: 600, color: '#9ca3af',
-                  letterSpacing: '.03em', fontFamily: "'DM Mono', 'SF Mono', monospace",
-                }}>
-                  {gp.flight_number}
-                </span>
+          {/* Departure */}
+          {departDate && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
+                {isFr ? 'Départ' : 'Departs'}
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: urgency ? urgency.c : '#374151' }}>
+                {urgency ? urgency.label : departDate}
+              </span>
+              {urgency && (
+                <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
               )}
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Price + CTA */}
-          <div className="gpcard-action-area">
-            {/* Price */}
-            <div className="gpcard-price-pill" style={{
-              background: price ? '#f9fafb' : 'transparent',
-              borderRadius: 10,
-              padding: price ? '8px 14px' : '8px 0',
-              textAlign: 'center',
-              minWidth: 64,
+        {/* ── Traveler ── */}
+        <div className="gpc-traveler">
+          {/* Avatar */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <div style={{
+              width: 46, height: 46, borderRadius: '50%',
+              background: `linear-gradient(135deg, ${accent}28, ${accent}0e)`,
+              border: `2px solid ${accent}30`,
+              overflow: 'hidden',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'DM Serif Display', serif",
+              fontSize: 16, fontWeight: 700, color: accent,
             }}>
-              {price ? (
-                <>
-                  <div style={{
-                    fontSize: 20, fontWeight: 800, color: '#111827',
-                    fontFamily: "'DM Serif Display', serif",
-                    lineHeight: 1, letterSpacing: '-.3px',
-                  }}>
-                    {price}
-                  </div>
-                  <div style={{ fontSize: 10, fontWeight: 500, color: '#9ca3af', marginTop: 2, textTransform: 'uppercase', letterSpacing: '.04em' }}>
-                    {isFr ? '/ kg' : '/ kg'}
-                  </div>
-                </>
-              ) : (
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#9ca3af', fontStyle: 'italic' }}>
-                  {isFr ? 'Négociable' : 'Negotiable'}
-                </span>
-              )}
+              {gp.avatar_url && !avatarErr
+                ? <img src={gp.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setAvatarErr(true)} />
+                : initials}
             </div>
-
-            {/* CTA */}
-            {isDisabled ? (
+            {verified && (
               <div style={{
-                padding: '8px 16px', borderRadius: 10,
-                background: isFull ? '#fef3c7' : '#fee2e2',
-                fontSize: 12, fontWeight: 700,
-                color: isFull ? '#92400e' : '#991b1b',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
+                position: 'absolute', bottom: 0, right: 0,
+                width: 16, height: 16, borderRadius: '50%',
+                background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
+                <ShieldCheck size={9} color="#16A34A" strokeWidth={2.5} />
               </div>
-            ) : (
-              <button
-                className="gpcard-cta"
-                onClick={handleContact}
-                style={{
-                  padding: '10px 20px',
-                  background: 'linear-gradient(135deg, #25D366, #20BA5A)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 10,
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                  transition: 'all .2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 7,
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(37,211,102,.25)',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, #20BA5A, #1DA851)'
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(37,211,102,.35)'
-                  e.currentTarget.style.transform = 'translateY(-1px)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'linear-gradient(135deg, #25D366, #20BA5A)'
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,211,102,.25)'
-                  e.currentTarget.style.transform = 'translateY(0)'
-                }}
-              >
-                <WhatsAppIcon size={14} />
-                {isFr ? 'Contacter' : 'Contact'}
-              </button>
             )}
+          </div>
+
+          {/* Info */}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {gp.name || 'Traveler'}
+            </div>
+            <div style={{ fontSize: 11, marginTop: 4, color: verified ? '#16A34A' : '#9CA3AF', fontWeight: verified ? 600 : 400 }}>
+              {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'Voyageur' : 'Traveler')}
+            </div>
           </div>
         </div>
 
-        {/* Meta footer — service type + pickup/dropoff */}
-        {(gp.service_type || gp.pickup_area || gp.dropoff_area) && (
-          <div className="gpcard-meta">
-            {isGroupage && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
-                padding: '3px 9px', borderRadius: 6,
-                background: '#eff6ff', color: '#2563eb',
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-              }}>
-                <ShipIcon size={10} color="#2563eb" />
-                {isFr ? 'Bateau' : 'Boat'}
-              </span>
-            )}
-            {gp.service_type === 'baggage' && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
-                padding: '3px 9px', borderRadius: 6,
-                background: '#fffbeb', color: '#d97706',
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-              }}>
-                <Plane size={10} color="#d97706" strokeWidth={2.5} />
-                {isFr ? 'Avion' : 'Plane'}
-              </span>
-            )}
-            {gp.pickup_area && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280' }}>
-                <MapPin size={10} color="#9ca3af" strokeWidth={2} />
-                {gp.pickup_area}
-              </span>
-            )}
-            {gp.pickup_area && gp.dropoff_area && (
-              <span style={{ fontSize: 10, color: '#d1d5db' }}>→</span>
-            )}
-            {gp.dropoff_area && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280' }}>
-                <MapPin size={10} color="#C8891C" strokeWidth={2} />
-                {gp.dropoff_area}
-              </span>
-            )}
-          </div>
-        )}
+        {/* ── Price + CTA ── */}
+        <div className="gpc-action">
+          {/* Price */}
+          {price ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#111', fontFamily: "'DM Serif Display', serif", lineHeight: 1, letterSpacing: '-.3px' }}>
+                {price}
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 2 }}>/ kg</div>
+            </div>
+          ) : (
+            <div style={{ fontSize: 11, color: '#B5AFA8', fontStyle: 'italic' }}>{isFr ? 'Négociable' : 'Negotiable'}</div>
+          )}
+
+          {/* CTA */}
+          {disabled ? (
+            <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#FEF3C7' : '#FEE2E2', color: isFull ? '#92400E' : '#991B1B' }}>
+              {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
+            </div>
+          ) : (
+            <button
+              className="gpc-cta"
+              onClick={handleContact}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                padding: '10px 16px', borderRadius: 12, border: 'none',
+                background: '#111', color: '#fff',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                fontFamily: "'DM Sans', sans-serif",
+                transition: 'opacity .15s', whiteSpace: 'nowrap',
+                width: '100%', justifyContent: 'center',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              <WhatsAppIcon size={13} />
+              {isFr ? 'Contacter' : 'Contact'}
+            </button>
+          )}
+        </div>
+
       </div>
     </>
   )

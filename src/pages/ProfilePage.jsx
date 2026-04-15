@@ -66,6 +66,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [editingReq, setEditingReq]     = useState(null)
   const [savingReq, setSavingReq]       = useState(false)
   const [notifSeen, setNotifSeen]       = useState(false)
+  const [profileData, setProfileData]   = useState(null)
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
@@ -82,12 +83,14 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     fetchTrips()
     fetchRequests()
     if (user?.id) {
-      supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified').eq('id', user.id).single()
+      supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified, id_verification_status').eq('id', user.id).maybeSingle()
         .then(({ data }) => {
-          if (data?.avatar_url) setAvatarUrl(data.avatar_url)
-          if (data?.full_name)  setProfileName(data.full_name)
-          if (data?.country_of_origin) setBaseCountry(data.country_of_origin)
-          if (data?.photo_verified) setPhotoVerified(true)
+          if (!data) return
+          setProfileData(data)
+          if (data.avatar_url)       setAvatarUrl(data.avatar_url)
+          if (data.full_name)        setProfileName(data.full_name)
+          if (data.country_of_origin) setBaseCountry(data.country_of_origin)
+          if (data.photo_verified)   setPhotoVerified(true)
         })
     }
   }, [user])
@@ -161,8 +164,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const notifications = trips.flatMap(tr => {
     const items = []
-    if (tr.approved && !tr.suspended) items.push({ type: 'approved', trip: tr, id: `approved-${tr.id}` })
-    if (tr.suspended)                 items.push({ type: 'suspended', trip: tr, id: `suspended-${tr.id}` })
+    if (tr.suspended)                   items.push({ type: 'suspended', trip: tr, id: `suspended-${tr.id}` })
+    else if (tr.approved)               items.push({ type: 'approved',  trip: tr, id: `approved-${tr.id}` })
+    else                                items.push({ type: 'pending',   trip: tr, id: `pending-${tr.id}` })
     return items
   })
   const notifBadge = notifSeen ? 0 : notifications.length
@@ -399,7 +403,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         </div>
       </div>
       <div style={{ marginBottom: 16 }}>
-        <IDVerificationUpload user={user} lang={lang} />
+        <IDVerificationUpload user={user} profile={profileData} lang={lang} />
       </div>
       <SocialProfileLinks profile={user} lang={lang} />
     </div>
@@ -416,35 +420,42 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7 }}>{t.notifEmpty}</div>
         </div>
       )}
-      {!loading && notifications.map(({ type, trip, id }) => (
-        <div key={id} style={{
-          display: 'flex', alignItems: 'flex-start', gap: 14,
-          background: type === 'approved' ? '#F0FAF4' : '#FEF2F2',
-          border: `1px solid ${type === 'approved' ? '#C8E6D4' : '#FECACA'}`,
-          borderRadius: 14, padding: '16px 18px', marginBottom: 10,
-        }}>
-          <div style={{ flexShrink: 0 }}>
-            {type === 'approved'
-              ? <CheckCircleIcon size={24} color="#2D8B4E" />
-              : <WarningIcon size={24} color="#DC2626" />}
+      {!loading && notifications.map(({ type, trip, id }) => {
+        const styles = {
+          approved: { bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
+          suspended: { bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
+          pending:  { bg: '#FFF8EB', border: '#F0C878', color: '#92650A' },
+        }[type] || {}
+        return (
+          <div key={id} style={{
+            display: 'flex', alignItems: 'flex-start', gap: 14,
+            background: styles.bg,
+            border: `1px solid ${styles.border}`,
+            borderRadius: 14, padding: '16px 18px', marginBottom: 10,
+          }}>
+            <div style={{ flexShrink: 0 }}>
+              {type === 'approved'  && <CheckCircleIcon size={24} color="#2D8B4E" />}
+              {type === 'suspended' && <WarningIcon     size={24} color="#DC2626" />}
+              {type === 'pending'   && <span style={{ fontSize: 22 }}>⏳</span>}
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 3 }}>
+                {type === 'approved'  && (isFr ? 'Annonce approuvée !' : 'Listing approved!')}
+                {type === 'suspended' && (isFr ? 'Annonce suspendue' : 'Listing suspended')}
+                {type === 'pending'   && (isFr ? 'Annonce en cours de révision' : 'Listing under review')}
+              </div>
+              <div style={{ fontSize: 13, color: styles.color, marginBottom: 6 }}>
+                {trip.from_city || trip.from} → {trip.to_city || trip.to} · {trip.date}
+              </div>
+              <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.6 }}>
+                {type === 'approved'  && (isFr ? 'Votre annonce est maintenant visible par les expéditeurs.' : 'Your listing is now visible to senders.')}
+                {type === 'suspended' && (isFr ? "Contactez-nous si vous pensez qu'il s'agit d'une erreur." : 'Contact us at hello@yobbu.co if you think this is a mistake.')}
+                {type === 'pending'   && (isFr ? 'Nous révisons votre annonce. Cela prend généralement moins de 24h.' : 'We\'re reviewing your listing. This usually takes less than 24h.')}
+              </div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 3 }}>
-              {type === 'approved'
-                ? (isFr ? 'Annonce approuvée !' : 'Listing approved!')
-                : (isFr ? 'Annonce suspendue' : 'Listing suspended')}
-            </div>
-            <div style={{ fontSize: 13, color: type === 'approved' ? '#1A5C38' : '#DC2626', marginBottom: 6 }}>
-              {trip.from_city} → {trip.to_city} · {trip.date}
-            </div>
-            <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.6 }}>
-              {type === 'approved'
-                ? (isFr ? 'Votre annonce est maintenant visible par les expéditeurs.' : 'Your listing is now visible to senders.')
-                : (isFr ? "Contactez-nous si vous pensez qu'il s'agit d'une erreur." : 'Contact us at hello@yobbu.co if you think this is a mistake.')}
-            </div>
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 
