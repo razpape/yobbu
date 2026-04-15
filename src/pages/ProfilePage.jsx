@@ -65,6 +65,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [loadingReqs, setLoadingReqs]   = useState(true)
   const [editingReq, setEditingReq]     = useState(null)
   const [savingReq, setSavingReq]       = useState(false)
+  const [notifSeen, setNotifSeen]       = useState(false)
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
@@ -164,11 +165,18 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     if (tr.suspended)                 items.push({ type: 'suspended', trip: tr, id: `suspended-${tr.id}` })
     return items
   })
+  const notifBadge = notifSeen ? 0 : notifications.length
+
+  function handleSetSection(key) {
+    if (key === 'notifications') setNotifSeen(true)
+    setSection(key)
+  }
 
   const menuItems = [
     { key: 'trips',         Icon: PlaneIcon,       label: t.menuTrips },
+    { key: 'requests',      Icon: PackageIcon,     label: t.menuRequests },
     { key: 'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Verification' },
-    { key: 'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifications.length },
+    { key: 'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifBadge },
     { key: 'settings',      Icon: SettingsIcon,    label: t.menuSettings },
   ]
 
@@ -187,6 +195,19 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     <div>
       {loading && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
 
+
+      {!loading && trips.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <PlaneIcon size={40} color="#E8DDD0" />
+          </div>
+          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{t.noTrips}</div>
+          <button onClick={() => setView('post')}
+            style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            {t.postNew}
+          </button>
+        </div>
+      )}
 
       {!loading && trips.map(trip => {
         const st = tripStatus(trip)
@@ -367,21 +388,13 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         </div>
         <TrustBadges profile={user} lang={lang} size="md" />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-        <div style={{ background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 12, padding: 14, textAlign: 'center' }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+        <div style={{ flex: 1, background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#2D8B4E', lineHeight: 1 }}>
             {trips.filter(tr => tr.approved).length}
           </div>
           <div style={{ fontSize: 11, color: '#2D8B4E', marginTop: 3 }}>
             {isFr ? 'Voyages approuvés' : 'Approved trips'}
-          </div>
-        </div>
-        <div style={{ background: '#FFF8EB', border: '1px solid #F0C878', borderRadius: 12, padding: 14, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#C8891C', lineHeight: 1 }}>
-            {trips.filter(tr => tr.approved).length >= 5 ? '5/5' : `${trips.filter(tr => tr.approved).length}/5`}
-          </div>
-          <div style={{ fontSize: 11, color: '#C8891C', marginTop: 3 }}>
-            {isFr ? 'Vers Super Voyageur' : 'To Super Traveler'}
           </div>
         </div>
       </div>
@@ -645,8 +658,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             {isFr ? 'Déconnexion' : 'Sign out'}
           </button>
           <button className="pf-nav-signout" onClick={onSignOut}
-            style={{ display: 'none', fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-            {isFr ? 'Déco' : 'Sign out'}
+            style={{ display: 'none', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 12px', borderRadius: 20, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            <LogOutIcon size={13} color="#DC2626" />
+            {isFr ? 'Déco' : 'Out'}
           </button>
         </div>
       </nav>
@@ -656,8 +670,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={setAvatarUrl} />
         </div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 2, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
-        <div style={{ fontSize: 13, color: '#8A8070', marginBottom: 16 }}>{contact}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 16, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#F7F4EF', borderRadius: 20, padding: '6px 12px' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -675,7 +688,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       {/* Mobile tab bar (horizontal scroll, below hero) */}
       <div className="pf-mobile-tabs" style={{ overflowX: 'auto', borderBottom: '1px solid rgba(0,0,0,.06)', background: '#fff', padding: '0 16px', gap: 0, display: 'none' }}>
         {menuItems.map(({ key, Icon, label, badge }) => (
-          <button key={key} onClick={() => setSection(key)}
+          <button key={key} onClick={() => handleSetSection(key)}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, color: section === key ? '#C8891C' : '#8A8070', borderBottom: section === key ? '2px solid #C8891C' : '2px solid transparent', whiteSpace: 'nowrap', flexShrink: 0, position: 'relative' }}>
             <span style={{ position: 'relative', display: 'flex' }}>
               <Icon size={16} color={section === key ? '#C8891C' : '#8A8070'} />
@@ -718,7 +731,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           {/* Menu */}
           <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 16, overflow: 'hidden' }}>
             {menuItems.map(({ key, Icon, label, badge }) => (
-              <div key={key} onClick={() => setSection(key)}
+              <div key={key} onClick={() => handleSetSection(key)}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontSize: 13, fontWeight: 500, transition: 'background .15s', background: section === key ? '#FFF8EB' : 'transparent', color: section === key ? '#C8891C' : '#3D3829', borderRight: section === key ? '3px solid #C8891C' : '3px solid transparent' }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: section === key ? '#FFF8EB' : '#F7F3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icon size={14} color={section === key ? '#C8891C' : '#3D3829'} />
@@ -769,7 +782,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         boxShadow: '0 -4px 20px rgba(0,0,0,.08)', zIndex: 40,
       }}>
         {menuItems.map(({ key, Icon, label, badge }) => (
-          <button key={key} onClick={() => setSection(key)}
+          <button key={key} onClick={() => handleSetSection(key)}
             style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: section === key ? '#C8891C' : '#8A8070' }}>
             <div style={{ position: 'relative' }}>
               <Icon size={22} color={section === key ? '#C8891C' : '#8A8070'} />

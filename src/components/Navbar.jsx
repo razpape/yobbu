@@ -1,5 +1,15 @@
 import { useState } from 'react'
 
+function LogOutIcon({ size = 16, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+  )
+}
+
 export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const isFr = lang === 'fr'
@@ -127,7 +137,8 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
             )}
             {user && (
               <button onClick={() => { onSignOut(); setMenuOpen(false) }}
-                style={{ background: 'transparent', color: '#8A8070', border: '1px solid rgba(0,0,0,.08)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, cursor: 'pointer' }}>
+                style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <LogOutIcon size={15} color="#DC2626" />
                 {isFr ? 'Déconnexion' : 'Sign out'}
               </button>
             )}

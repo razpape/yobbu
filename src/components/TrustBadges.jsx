@@ -12,19 +12,45 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
   
   const badges = []
   
-  // WhatsApp Verified
+  // Phone Verified
   if (profile?.whatsapp_verified || profile?.phone_verified) {
     badges.push({
-      key: 'whatsapp',
+      key: 'phone',
       icon: '📱',
-      label: isFr ? 'WhatsApp vérifié' : 'WhatsApp verified',
+      label: isFr ? 'Téléphone vérifié' : 'Phone verified',
       color: '#25D366',
       bg: '#F0FAF4',
       border: '#25D366',
-      tooltip: isFr ? 'Numéro de téléphone vérifié via WhatsApp' : 'Phone number verified via WhatsApp'
+      tooltip: isFr ? 'Numéro de téléphone vérifié' : 'Phone number verified'
     })
   }
-  
+
+  // Email Verified
+  if (profile?.email && !profile?.email?.endsWith('@phone.yobbu.app')) {
+    badges.push({
+      key: 'email',
+      icon: '✉️',
+      label: isFr ? 'Email vérifié' : 'Email verified',
+      color: '#185FA5',
+      bg: '#E6F1FB',
+      border: '#185FA5',
+      tooltip: isFr ? 'Adresse email vérifiée' : 'Email address verified'
+    })
+  }
+
+  // ID Verified
+  if (profile?.id_verified) {
+    badges.push({
+      key: 'id',
+      icon: '🪪',
+      label: isFr ? 'ID vérifié' : 'ID verified',
+      color: '#7A3B1E',
+      bg: '#FDF0E8',
+      border: '#C8891C',
+      tooltip: isFr ? 'Pièce d\'identité vérifiée par Yobbu' : 'ID document verified by Yobbu'
+    })
+  }
+
   // Photo Verified (admin approved profile photo)
   if (profile?.photo_verified) {
     badges.push({
@@ -38,19 +64,6 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
     })
   }
 
-  // ID Verified
-  if (profile?.id_verified) {
-    badges.push({
-      key: 'id',
-      icon: '🛡️',
-      label: isFr ? 'ID vérifié' : 'ID verified',
-      color: '#C8891C',
-      bg: '#FFF8EB',
-      border: '#F0C878',
-      tooltip: isFr ? 'Pièce d\'identité vérifiée par Yobbu' : 'ID document verified by Yobbu'
-    })
-  }
-  
   // Flight Number Provided
   if (profile?.flight_verified || profile?.has_flight_number) {
     badges.push({
@@ -63,28 +76,14 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
       tooltip: isFr ? 'Numéro de vol fourni pour plus de confiance' : 'Flight number provided for added trust'
     })
   }
-  
-  // Super Traveler (5+ completed trips)
-  const completedTrips = profile?.completed_trips || profile?.trips_count || 0
-  if (completedTrips >= 5) {
-    badges.push({
-      key: 'super',
-      icon: '⭐',
-      label: isFr ? 'Super Voyageur' : 'Super Traveler',
-      color: '#7A3B1E',
-      bg: '#FDF0E8',
-      border: '#C8891C',
-      tooltip: isFr ? `${completedTrips} voyages complétés - Voyageur de confiance` : `${completedTrips} trips completed - Trusted traveler`
-    })
-  }
-  
+
   // Social Profiles Linked
-  const hasSocial = profile?.facebook_url || profile?.linkedin_url
+  const hasSocial = profile?.facebook_url || profile?.linkedin_url || profile?.instagram_url || profile?.twitter_url
   if (hasSocial) {
     badges.push({
       key: 'social',
-      icon: '👤',
-      label: isFr ? 'Profil social' : 'Social profile',
+      icon: '🔗',
+      label: isFr ? 'Profil social' : 'Social linked',
       color: '#534AB7',
       bg: '#F0EBF8',
       border: '#534AB7',
