@@ -480,7 +480,7 @@ export default function AdminPanel({ onSignOut }) {
         )}
 
         {/* OVERVIEW TAB */}
-        {tab === 'overview' && useMemo(() => {
+        {tab === 'overview' && (() => {
           // Top routes
           const routeCounts = {}
           trips.forEach(t => {
@@ -703,7 +703,7 @@ export default function AdminPanel({ onSignOut }) {
 
             </div>
           )
-        }, [trips, users])}
+        })()}
 
         {/* TRAVELERS TAB */}
         {tab === 'travelers' && (
