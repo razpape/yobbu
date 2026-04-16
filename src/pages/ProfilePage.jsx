@@ -67,6 +67,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [savingReq, setSavingReq]       = useState(false)
   const [notifSeen, setNotifSeen]       = useState(false)
   const [profileData, setProfileData]   = useState(null)
+  const [showAvatarUpload, setShowAvatarUpload] = useState(false)
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
@@ -478,7 +479,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 </div>
               </div>
               {action && (
-                <button onClick={() => {}}
+                <button onClick={() => step === 2 ? setShowAvatarUpload(true) : null}
                   style={{ alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8, border: 'none', background: '#C8891C', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                   {action}
                 </button>
@@ -929,6 +930,39 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           {isFr ? 'Envoyer' : 'Send'}
         </button>
       </div>
+
+      {/* Avatar upload modal */}
+      {showAvatarUpload && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', borderRadius: 16, padding: 32, maxWidth: 400, width: '90%' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1710', marginBottom: 20 }}>
+              {isFr ? 'Ajouter une photo de profil' : 'Add a profile photo'}
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <AvatarUpload
+                user={user}
+                avatarUrl={avatarUrl}
+                initials={profileName?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'}
+                size={120}
+                onUpload={(url) => {
+                  setAvatarUrl(url)
+                  setShowAvatarUpload(false)
+                  setTimeout(() => {
+                    fetchProfile()
+                  }, 1000)
+                }}
+              />
+            </div>
+            <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 16, textAlign: 'center' }}>
+              {isFr ? 'Une photo claire de vous-même. Sera examinée par nos modérateurs.' : 'A clear photo of yourself. Will be reviewed by our team.'}
+            </div>
+            <button onClick={() => setShowAvatarUpload(false)}
+              style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+              {isFr ? 'Fermer' : 'Close'}
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   )

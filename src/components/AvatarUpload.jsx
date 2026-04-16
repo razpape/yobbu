@@ -61,7 +61,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
 
       const { error: updateErr } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl, photo_verified: true })
+        .update({ avatar_url: publicUrl, photo_pending: true, photo_verified: false })
         .eq('id', user.id)
 
       if (updateErr) throw updateErr
