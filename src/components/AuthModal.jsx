@@ -1,21 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { PhoneIcon, MailIcon, LockIcon, CheckCircleIcon } from './Icons'
-
-const COUNTRY_CODES = [
-  { code: '+1',    flag: '🇺🇸' },
-  { code: '+33',   flag: '🇫🇷' },
-  { code: '+32',   flag: '🇧🇪' },
-  { code: '+221',  flag: '🇸🇳' },
-  { code: '+224',  flag: '🇬🇳' },
-  { code: '+225',  flag: '🇨🇮' },
-  { code: '+223',  flag: '🇲🇱' },
-  { code: '+229',  flag: '🇧🇯' },
-  { code: '+228',  flag: '🇹🇬' },
-  { code: '+233',  flag: '🇬🇭' },
-  { code: '+44',   flag: '🇬🇧' },
-  { code: '+1514', flag: '🇨🇦' },
-]
+import { COUNTRY_CODES } from '../utils/constants'
 
 // steps: 'entry' | 'sms-otp' | 'phone-verify' | 'phone-otp' | 'whatsapp'
 

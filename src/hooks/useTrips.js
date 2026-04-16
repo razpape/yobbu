@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import { deriveInitials } from '../utils/string'
 
 const PROFILE_SELECT = 'id, full_name, whatsapp_verified, phone, avatar_url, photo_verified'
 
@@ -48,12 +49,6 @@ function rowToTrip(row, profile = {}) {
   }
 }
 
-function deriveInitials(name) {
-  if (!name) return 'GP'
-  const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2)
-  return initials || 'GP'
-}
-
 // Maps our form data → the shape Supabase expects
 function tripToRow(trip) {
   return {
@@ -81,13 +76,17 @@ function tripToRow(trip) {
   }
 }
 
-async function fetchProfileForRow(row) {
+async function fetchProfileForRow(row, cache = {}) {
   if (!row.user_id) return rowToTrip(row)
+  if (cache[row.user_id]) return rowToTrip(row, cache[row.user_id])
+
   const { data: p } = await supabase
     .from('profiles')
     .select(PROFILE_SELECT)
     .eq('id', row.user_id)
-    .maybeSingle()           // won't throw on 0 rows
+    .maybeSingle()
+
+  if (p) cache[row.user_id] = p
   return rowToTrip(row, p || {})
 }
 
@@ -95,6 +94,7 @@ export function useTrips() {
   const [trips,   setTrips]   = useState([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
+  const profileCacheRef = useRef({})
 
   async function fetchTrips() {
     setLoading(true)
@@ -120,6 +120,7 @@ export function useTrips() {
         .select(PROFILE_SELECT)
         .in('id', userIds)
       profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
+      profileCacheRef.current = profileMap
     }
 
     setTrips(data.map(row => rowToTrip(row, profileMap[row.user_id] || {})))
@@ -131,14 +132,12 @@ export function useTrips() {
 
     const channel = supabase
       .channel('trips-changes')
-      // INSERT — guard against duplicate: realtime fires after our manual push in addTrip
-      // so we skip realtime-inserts for rows we already have in state
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trips' }, async ({ new: row }) => {
-        const trip = await fetchProfileForRow(row)
+        const trip = await fetchProfileForRow(row, profileCacheRef.current)
         setTrips(prev => prev.some(t => t.id === row.id) ? prev : [trip, ...prev])
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trips' }, async ({ new: row }) => {
-        const trip = await fetchProfileForRow(row)
+        const trip = await fetchProfileForRow(row, profileCacheRef.current)
         setTrips(prev => prev.map(t => t.id === row.id ? trip : t))
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'trips' }, ({ old: row }) => {

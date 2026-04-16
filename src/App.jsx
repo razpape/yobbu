@@ -73,18 +73,18 @@ export default function App() {
   useEffect(() => {
     handleOAuthCallback()
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', session.user.id).single()
-        setView(data?.onboarding_complete ? 'profile' : 'onboarding', true)
-      }
-    })
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') setView('home', true)
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  // Once useAuth finishes loading, check if we need to navigate to onboarding or profile
+  useEffect(() => {
+    if (!authLoading && user && view === 'home') {
+      setView(user.onboarding_complete ? 'profile' : 'onboarding', true)
+    }
+  }, [authLoading, user])
 
   if (view === 'admin') return <Admin />
 
