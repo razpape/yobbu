@@ -386,12 +386,45 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const verificationContent = (
     <div>
+      {/* Verification Steps */}
+      <div style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '.06em' }}>
+          {isFr ? 'Étapes de vérification' : 'Verification Steps'}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[
+            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', completed: true, icon: '📱' },
+            { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', completed: profileData?.photo_verified || photoVerified, icon: '📸' },
+            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', completed: profileData?.id_verified, icon: '🆔', badge: true },
+          ].map(({ step, label, completed, icon, badge }) => (
+            <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
+              <div style={{ fontSize: 18 }}>{icon}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 2 }}>
+                  {label}
+                </div>
+                {badge && (
+                  <div style={{ fontSize: 11, color: '#3B82F6' }}>
+                    {isFr ? 'Déverrouille le badge Vérifié' : 'Unlocks Verified badge'}
+                  </div>
+                )}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: completed ? '#F0FAF4' : '#F5F3EF', border: `2px solid ${completed ? '#22c55e' : '#D0CCCB'}` }}>
+                {completed && <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e' }}>✓</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Your Badges */}
       <div style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '.06em' }}>
           {isFr ? 'Vos badges' : 'Your badges'}
         </div>
         <TrustBadges profile={user} lang={lang} size="md" />
       </div>
+
       <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
         <div style={{ flex: 1, background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 12, padding: 14, textAlign: 'center' }}>
           <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#2D8B4E', lineHeight: 1 }}>
