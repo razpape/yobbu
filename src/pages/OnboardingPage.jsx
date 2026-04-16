@@ -46,7 +46,7 @@ const MAX_MB   = 3
 export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   const isFr = lang === 'fr'
 
-  const [role,            setRole]            = useState('traveler')
+  const [role,            setRole]            = useState('traveler') // Always traveler
   const [fullName,        setFullName]        = useState('')
   const [email,           setEmail]           = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
@@ -163,90 +163,14 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
       <div style={{ flex: 1, maxWidth: 480, width: '100%', margin: '0 auto', padding: '32px 24px 48px', boxSizing: 'border-box' }}>
 
         <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: '#1A1710', letterSpacing: '-.5px', lineHeight: 1.2, marginBottom: 8 }}>
-          {isFr ? 'Bienvenue sur Yobbu !' : 'Welcome to Yobbu!'}
+          {isFr ? 'Créer votre profil ✈️' : 'Create your profile ✈️'}
         </h1>
 
-        {/* ── Step 1: Role picker ── */}
-        {role === null && (
-          <>
-            <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
-              {isFr ? 'Comment allez-vous utiliser Yobbu ?' : 'How will you use Yobbu?'}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                {
-                  id: 'traveler',
-                  emoji: '✈️',
-                  title: isFr ? 'Je suis voyageur' : 'I am a traveler',
-                  desc: isFr ? 'Je voyage et peux transporter des colis pour gagner de l\'argent.' : 'I travel and can carry packages to earn money.',
-                },
-                {
-                  id: 'sender',
-                  emoji: '📦',
-                  title: isFr ? 'Je veux envoyer un colis' : 'I want to send a package',
-                  desc: isFr ? 'Je cherche un voyageur pour envoyer quelque chose à ma famille.' : 'I am looking for a traveler to send something to my family.',
-                },
-              ].map(({ id, emoji, title, desc }) => (
-                <button
-                  key={id}
-                  onClick={() => setRole(id)}
-                  style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    padding: '16px 18px', borderRadius: 14, border: '2px solid #E5E1DB',
-                    background: '#fff', cursor: 'pointer', textAlign: 'left',
-                    fontFamily: "'DM Sans', sans-serif", transition: 'border-color .15s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = '#C8891C'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = '#E5E1DB'}
-                >
-                  <span style={{ fontSize: 26, flexShrink: 0 }}>{emoji}</span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1710', marginBottom: 3 }}>{title}</div>
-                    <div style={{ fontSize: 13, color: '#8A8070', lineHeight: 1.5 }}>{desc}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* ── Step 2a: Sender — no account needed ── */}
-        {role === 'sender' && (
-          <div style={{ textAlign: 'center', padding: '8px 0 24px' }}>
-            <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
-            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: '#1A1710', marginBottom: 10 }}>
-              {isFr ? 'Bonne nouvelle !' : 'Good news!'}
-            </h2>
-            <p style={{ fontSize: 14, color: '#5A5248', lineHeight: 1.75, marginBottom: 28 }}>
-              {isFr
-                ? "Vous n'avez pas besoin d'un compte pour parcourir les voyageurs et les contacter sur WhatsApp. C'est 100\u00a0% gratuit\u00a0!"
-                : "You don't need an account to browse travelers and contact them on WhatsApp. It's 100% free!"}
-            </p>
-            <button
-              onClick={() => onBrowse?.()}
-              style={{
-                width: '100%', padding: '15px', borderRadius: 14, border: 'none',
-                background: '#C8891C', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", marginBottom: 14,
-              }}
-            >
-              {isFr ? 'Voir les voyageurs \u2192' : 'Browse travelers \u2192'}
-            </button>
-            <button
-              onClick={() => setRole(null)}
-              style={{ background: 'none', border: 'none', fontSize: 13, color: '#8A8070', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {isFr ? '\u2190 Retour' : '\u2190 Go back'}
-            </button>
-          </div>
-        )}
-
-        {/* ── Step 2b: Traveler form ── */}
-        {role === 'traveler' && (
-          <>
-            <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
-              {isFr ? 'Quelques infos rapides pour démarrer.' : 'Just a few quick details to get started.'}
-            </p>
+        {/* Traveler form */}
+        <>
+          <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
+            {isFr ? 'Quelques infos rapides pour démarrer.' : 'Just a few quick details to get started.'}
+          </p>
 
             {/* Photo */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
@@ -373,14 +297,8 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
               {busy ? <span className="ob-spinner" /> : (isFr ? "C'est parti \u2192" : "Let's go \u2192")}
             </button>
 
-            <button
-              onClick={() => setRole(null)}
-              style={{ display: 'block', margin: '14px auto 0', background: 'none', border: 'none', fontSize: 13, color: '#8A8070', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {isFr ? '\u2190 Retour' : '\u2190 Go back'}
-            </button>
-          </>
-        )}
+        </>
+        {/* End traveler form */}
 
       </div>
     </div>
