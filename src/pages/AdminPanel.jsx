@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import FacebookGPPosts from '../components/FacebookGPPosts'
 import FacebookGPExtractor from '../components/FacebookGPExtractor'
@@ -69,20 +69,20 @@ export default function AdminPanel({ onSignOut }) {
 
   // Real-time photo upload notifications
   useEffect(() => {
+    let timeoutId = null
     const subscription = supabase
       .channel('photos-pending')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
-        // Only show notification if photo_pending = true
-        if (payload.new?.photo_pending === true) {
-          console.log('[Admin] New photo pending:', payload.new)
-          showToast(`📸 New photo from ${payload.new.full_name || 'User'} - needs approval`)
-          // Refresh photos list
-          setTimeout(() => fetchPhotoPending(), 500)
-        }
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: 'photo_pending=true' }, payload => {
+        showToast(`📸 New photo from ${payload.new.full_name || 'User'} - needs approval`)
+        if (timeoutId) clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => fetchPhotoPending(), 500)
       })
       .subscribe()
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [])
 
   async function fetchAll() {
@@ -324,13 +324,13 @@ export default function AdminPanel({ onSignOut }) {
     }
   }
 
-  const pending  = trips.filter(t => t.approved !== true && !t.suspended)
-  const active   = trips.filter(t => t.approved && !t.suspended)
-  const filtered = trips.filter(t => {
+  const pending  = useMemo(() => trips.filter(t => t.approved !== true && !t.suspended), [trips])
+  const active   = useMemo(() => trips.filter(t => t.approved && !t.suspended), [trips])
+  const filtered = useMemo(() => trips.filter(t => {
     const q = search.toLowerCase()
     return !q || t.name?.toLowerCase().includes(q) || t.from_city?.toLowerCase().includes(q) || t.to_city?.toLowerCase().includes(q)
-  })
-  const filteredUsers = users.filter(u => {
+  }), [trips, search])
+  const filteredUsers = useMemo(() => users.filter(u => {
     const q = userSearch.toLowerCase()
     const matchSearch = !q || u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
     const matchFilter =
@@ -341,7 +341,13 @@ export default function AdminPanel({ onSignOut }) {
       userFilter === 'whatsapp'  ? (u.whatsapp_verified && !u.whatsapp_verified_by_admin) :
       true
     return matchSearch && matchFilter
-  })
+  }), [users, userSearch, userFilter])
+
+  const statsBaggageCount = useMemo(() => trips.filter(t => t.service_type === 'baggage').length, [trips])
+  const statsGroupageCount = useMemo(() => trips.filter(t => t.service_type === 'groupage').length, [trips])
+  const statsNoTypeCount = useMemo(() => trips.filter(t => !t.service_type).length, [trips])
+  const statsVerifiedUsers = useMemo(() => users.filter(u => u.whatsapp_verified).length, [users])
+  const statsTotalCapacity = useMemo(() => trips.reduce((s, t) => s + (parseFloat(t.space) || 0), 0).toLocaleString() + ' kg', [trips])
 
   const s = {
     page:   { minHeight:'100vh', background:'#0f0f0f', fontFamily:"'Inter',sans-serif", color:'#fff' },
@@ -430,15 +436,11 @@ export default function AdminPanel({ onSignOut }) {
         </div>
         {/* Stats row 2 */}
         <div className="admin-stats" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:10, marginBottom:24 }}>
-          <StatCard n={trips.filter(t=>t.service_type==='baggage').length} label="Plane listings" color="#C8810A" />
-          <StatCard n={trips.filter(t=>t.service_type==='groupage').length} label="Boat / groupage" color="#38bdf8" />
-          <StatCard n={trips.filter(t=>!t.service_type).length} label="Type not set" color="#555" />
-          <StatCard n={users.filter(u=>u.whatsapp_verified).length} label="Verified users" color="#22c55e" />
-          <StatCard
-            n={trips.reduce((s,t)=>s+(parseFloat(t.space)||0),0).toLocaleString()+' kg'}
-            label="Total capacity listed"
-            color="#818cf8"
-          />
+          <StatCard n={statsBaggageCount} label="Plane listings" color="#C8810A" />
+          <StatCard n={statsGroupageCount} label="Boat / groupage" color="#38bdf8" />
+          <StatCard n={statsNoTypeCount} label="Type not set" color="#555" />
+          <StatCard n={statsVerifiedUsers} label="Verified users" color="#22c55e" />
+          <StatCard n={statsTotalCapacity} label="Total capacity listed" color="#818cf8" />
         </div>
 
         {/* Pending alert */}
@@ -478,7 +480,7 @@ export default function AdminPanel({ onSignOut }) {
         )}
 
         {/* OVERVIEW TAB */}
-        {tab === 'overview' && (() => {
+        {tab === 'overview' && useMemo(() => {
           // Top routes
           const routeCounts = {}
           trips.forEach(t => {
@@ -495,7 +497,7 @@ export default function AdminPanel({ onSignOut }) {
           // Recent activity (last 10 trips sorted by created_at)
           const recentActivity = [...trips].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10)
 
-          // Verification funnel (using loaded users or quickStats)
+          // Verification funnel
           const phoneVerified    = trips.filter(t=>t.phone_verified).length
           const idVerified       = trips.filter(t=>t.id_verified).length
           const communityVerified= trips.filter(t=>t.community_verified).length
@@ -701,7 +703,7 @@ export default function AdminPanel({ onSignOut }) {
 
             </div>
           )
-        })()}
+        }, [trips, users])}
 
         {/* TRAVELERS TAB */}
         {tab === 'travelers' && (

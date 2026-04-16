@@ -135,10 +135,15 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     setLoadingReqs(false)
   }
 
+  async function deleteItem(table, id, stateUpdater, itemLabel) {
+    const msg = isFr ? `Supprimer ce${itemLabel === 'trip' ? 't' : 'tte'} ${itemLabel}?` : `Delete this ${itemLabel}?`
+    if (!window.confirm(msg)) return
+    const { error } = await supabase.from(table).delete().eq('id', id).eq('user_id', user.id)
+    if (!error) stateUpdater(prev => prev.filter(item => item.id !== id))
+  }
+
   async function deleteRequest(id) {
-    if (!window.confirm(isFr ? 'Supprimer cette demande?' : 'Delete this request?')) return
-    const { error } = await supabase.from('package_requests').delete().eq('id', id).eq('user_id', user.id)
-    if (!error) setRequests(prev => prev.filter(r => r.id !== id))
+    await deleteItem('package_requests', id, setRequests, 'request')
   }
 
   async function saveEditReq() {
@@ -161,9 +166,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   }
 
   async function deleteTrip(id) {
-    if (!window.confirm(isFr ? 'Supprimer cette annonce?' : 'Delete this listing?')) return
-    const { error } = await supabase.from('trips').delete().eq('id', id).eq('user_id', user.id)
-    if (!error) setTrips(prev => prev.filter(tr => tr.id !== id))
+    await deleteItem('trips', id, setTrips, 'listing')
   }
 
   async function updateAvailability(id, status) {
