@@ -414,13 +414,15 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, icon: '📱', action: null },
-            { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', desc: isFr ? 'Téléchargez une photo claire de vous' : 'Upload a clear photo of yourself', completed: profileData?.photo_verified || photoVerified, status: profileData?.photo_verified || photoVerified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), icon: '📸', action: isFr ? 'Télécharger une photo' : 'Upload photo' },
-            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : profileData?.id_verification_status === 'pending' ? (isFr ? 'En révision' : 'Under review') : (isFr ? 'En attente' : 'Pending'), icon: '🆔', badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
-          ].map(({ step, label, desc, completed, status, icon, badge, action }) => (
+            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, action: null },
+            { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', desc: isFr ? 'Téléchargez une photo claire de vous' : 'Upload a clear photo of yourself', completed: profileData?.photo_verified || photoVerified, status: profileData?.photo_verified || photoVerified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), action: isFr ? 'Télécharger une photo' : 'Upload photo' },
+            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : profileData?.id_verification_status === 'pending' ? (isFr ? 'En révision' : 'Under review') : (isFr ? 'En attente' : 'Pending'), badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
+          ].map(({ step, label, desc, completed, status, badge, action }) => (
             <div key={step} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ fontSize: 18, marginTop: 2 }}>{icon}</div>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: completed ? '#F0FAF4' : '#F5F3EF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 700, color: completed ? '#22c55e' : '#8A8070' }}>
+                  {completed ? '✓' : step}
+                </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 2 }}>
                     {label}
@@ -435,12 +437,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                   )}
                   {badge && !completed && (
                     <div style={{ fontSize: 10, color: '#3B82F6', marginTop: 4 }}>
-                      🔓 {isFr ? 'Déverrouille le badge Vérifié' : 'Unlocks Verified badge'}
+                      {isFr ? 'Déverrouille le badge Vérifié' : 'Unlocks Verified badge'}
                     </div>
                   )}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: completed ? '#F0FAF4' : '#F5F3EF', border: `2px solid ${completed ? '#22c55e' : '#D0CCCB'}`, flexShrink: 0 }}>
-                  {completed ? <span style={{ fontSize: 14, fontWeight: 700, color: '#22c55e' }}>✓</span> : <span style={{ fontSize: 12, color: '#8A8070' }}>{step}</span>}
                 </div>
               </div>
               {action && (
