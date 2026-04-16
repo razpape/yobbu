@@ -51,6 +51,7 @@ export default function App() {
   const [view, setViewState]            = useState(getInitialView)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
+  const [installPrompt, setInstallPrompt] = useState(null)
   const { trips, loading: tripsLoading, error, addTrip } = useTrips()
   const { user, loading: authLoading, signOut } = useAuth()
 
@@ -86,6 +87,24 @@ export default function App() {
     }
   }, [authLoading, user])
 
+  // PWA install prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault()
+      setInstallPrompt(e)
+    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  }, [])
+
+  const handleInstallApp = async () => {
+    if (!installPrompt) return
+    installPrompt.prompt()
+    const { outcome } = await installPrompt.userChoice
+    console.log(`User response: ${outcome}`)
+    setInstallPrompt(null)
+  }
+
   if (view === 'admin') return <Admin />
 
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
@@ -119,7 +138,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
-        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
+        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} showInstall={!!installPrompt} onInstallClick={handleInstallApp} />
 
         {view === 'home' && (
           <>

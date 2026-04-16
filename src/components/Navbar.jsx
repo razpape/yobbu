@@ -10,7 +10,7 @@ function LogOutIcon({ size = 16, color = 'currentColor' }) {
   )
 }
 
-export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
+export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick, showInstall, onInstallClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const isFr = lang === 'fr'
 
@@ -59,6 +59,13 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
               style={{ fontSize: 14, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '8px 16px', transition: 'color .2s' }}>
               {isFr ? 'Voir les GPs' : 'Browse GPs'}
             </span>
+
+            {showInstall && (
+              <button className="btn-post" onClick={onInstallClick}
+                style={{ background: '#C8891C', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
+                {isFr ? '📱 Installer' : '📱 Install'}
+              </button>
+            )}
 
             {user ? (
               <>
