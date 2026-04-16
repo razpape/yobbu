@@ -222,7 +222,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
           {isFr ? 'Voyage soumis !' : 'Trip submitted!'}
         </h2>
         <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
-          {isFr ? 'Votre annonce sera examinée et publiée sous peu.' : 'Your listing will be reviewed and published shortly.'}
+          {isFr ? 'Votre annonce a été envoyée à l\'équipe admin pour approbation. Elle sera publiée dès qu\'elle sera approuvée (généralement < 24h).' : 'Your listing has been sent to the admin team for approval. It will be published once approved (usually < 24h).'}
         </p>
         <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
           <button onClick={() => setView('profile')}
