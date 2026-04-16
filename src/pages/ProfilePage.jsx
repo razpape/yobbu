@@ -81,7 +81,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   function fetchProfile() {
     if (!user?.id) return
-    supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified, id_verification_status').eq('id', user.id).maybeSingle()
+    supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified').eq('id', user.id).maybeSingle()
       .then(({ data, error }) => {
         if (error) {
           console.error('[ProfilePage] Error fetching profile:', error)
@@ -431,7 +431,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           {[
             { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, action: null },
             { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', desc: isFr ? 'Téléchargez une photo claire de vous' : 'Upload a clear photo of yourself', completed: profileData?.photo_verified || photoVerified, status: profileData?.photo_verified || photoVerified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), action: isFr ? 'Télécharger une photo' : 'Upload photo' },
-            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : profileData?.id_verification_status === 'pending' ? (isFr ? 'En révision' : 'Under review') : (isFr ? 'En attente' : 'Pending'), badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
+            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
           ].map(({ step, label, desc, completed, status, badge, action }) => (
             <div key={step} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
