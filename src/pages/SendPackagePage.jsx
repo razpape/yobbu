@@ -1,50 +1,59 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { MapPinIcon, PackageIcon, CalendarIcon, PhoneIcon, PlaneIcon } from '../components/Icons'
+import { CITIES } from '../utils/constants'
 
-const FROM_CITIES = [
-  'New York', 'Washington DC', 'Atlanta', 'Houston',
-  'Paris', 'London', 'Montreal', 'Brussels',
-]
-const TO_CITIES = [
-  'Dakar', 'Conakry', 'Abidjan', 'Bamako', 'Lomé', 'Accra', 'Lagos', 'Cotonou', 'Casablanca',
-]
-
-export default function SendPackagePage({ lang, user, onBack, onLoginRequired }) {
+export default function SendPackagePage({ lang, setView }) {
   const isFr = lang === 'fr'
   const [step, setStep] = useState(1) // 1 = form, 2 = success
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [form, setForm] = useState({
-    from_city: '', to_city: '',
-    weight: '', description: '',
-    deadline: '', phone: '',
-    budget: '',
+    sender_name: '',
+    sender_phone: '',
+    from_city: '',
+    to_city: '',
+    weight: '',
+    description: '',
+    deadline: '',
   })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!user) { onLoginRequired(); return }
     setLoading(true)
     setError(null)
+
+    // Validation
+    if (!form.sender_name || !form.sender_phone || !form.from_city || !form.to_city || !form.weight) {
+      setError(isFr ? 'Veuillez remplir tous les champs obligatoires' : 'Please fill all required fields')
+      setLoading(false)
+      return
+    }
+
+    if (form.sender_phone.replace(/\D/g, '').length < 9) {
+      setError(isFr ? 'Numéro invalide' : 'Invalid phone number')
+      setLoading(false)
+      return
+    }
+
     try {
       const { error: err } = await supabase.from('package_requests').insert({
-        user_id:     user.id,
-        from_city:   form.from_city,
-        to_city:     form.to_city,
-        weight:      parseFloat(form.weight) || null,
-        description: form.description,
-        deadline:    form.deadline || null,
-        phone:       form.phone,
-        budget:      form.budget || null,
-        status:      'open',
+        sender_name:   form.sender_name,
+        sender_phone:  form.sender_phone,
+        from_city:     form.from_city,
+        to_city:       form.to_city,
+        weight:        parseFloat(form.weight) || null,
+        description:   form.description || null,
+        deadline:      form.deadline || null,
+        status:        'open',
+        created_at:    new Date().toISOString(),
       })
       if (err) throw err
       setStep(2)
     } catch (err) {
-      setError(err.message)
+      setError(err.message || (isFr ? 'Erreur' : 'Error'))
+      console.error('[SendPackage]', err)
     }
     setLoading(false)
   }
@@ -76,21 +85,21 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
           </div>
           <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7, marginBottom: 28 }}>
             {isFr
-              ? `Votre demande pour ${form.from_city} → ${form.to_city} est en ligne. Les voyageurs sur cette route pourront vous contacter.`
-              : `Your request for ${form.from_city} → ${form.to_city} is live. Travelers on this route will be able to reach out to you.`}
+              ? `Votre demande pour ${form.from_city} → ${form.to_city} est en ligne. Les voyageurs vérifiés vous contacteront bientôt sur WhatsApp.`
+              : `Your request for ${form.from_city} → ${form.to_city} is live. Verified travelers will reach out to you on WhatsApp.`}
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
             <button
-              onClick={() => { setStep(1); setForm({ from_city:'', to_city:'', weight:'', description:'', deadline:'', phone:'', budget:'' }) }}
+              onClick={() => { setStep(1); setForm({ sender_name:'', sender_phone:'', from_city:'', to_city:'', weight:'', description:'', deadline:'' }) }}
               style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #E5E1DB', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1A1710' }}
             >
               {isFr ? 'Nouvelle demande' : 'Post another'}
             </button>
             <button
-              onClick={onBack}
+              onClick={() => setView('home')}
               style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#C8891C', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
             >
-              {isFr ? 'Voir les voyageurs' : 'Browse travelers'}
+              {isFr ? 'Accueil' : 'Home'}
             </button>
           </div>
         </div>
@@ -104,10 +113,10 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
       {/* Nav */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 32px', borderBottom: '1px solid #EDEAE4', background: '#fff', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710' }}>
+          <div onClick={() => setView('home')} style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710', cursor: 'pointer' }}>
             Yob<span style={{ color: '#C8891C' }}>bu</span>
           </div>
-          <button onClick={onBack} style={{ fontSize: 13, color: '#8A8070', cursor: 'pointer', background: 'none', border: 'none', fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button onClick={() => setView('home')} style={{ fontSize: 13, color: '#8A8070', cursor: 'pointer', background: 'none', border: 'none', fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
             ← {isFr ? 'Retour' : 'Back'}
           </button>
         </div>
@@ -131,7 +140,40 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
           </p>
         </div>
 
+        {error && (
+          <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', padding: 12, borderRadius: 10, marginBottom: 20, fontSize: 13 }}>
+            ⚠️ {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
+
+          {/* Your info */}
+          <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16 }}>
+              {isFr ? 'Vos informations' : 'Your information'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={labelStyle}>{isFr ? 'Nom' : 'Name'} *</label>
+                <input
+                  required type="text"
+                  value={form.sender_name} onChange={e => set('sender_name', e.target.value)}
+                  placeholder={isFr ? 'Votre nom' : 'Your name'}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>{isFr ? 'WhatsApp' : 'WhatsApp'} *</label>
+                <input
+                  required type="tel"
+                  value={form.sender_phone} onChange={e => set('sender_phone', e.target.value)}
+                  placeholder="+221 77 123 45 67"
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Route */}
           <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
@@ -145,7 +187,7 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
                 <div style={{ position: 'relative' }}>
                   <select required value={form.from_city} onChange={e => set('from_city', e.target.value)} style={{ ...inputStyle, appearance: 'none', paddingRight: 32 }}>
                     <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
-                    {FROM_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070', fontSize: 11 }}>▾</span>
                 </div>
@@ -155,7 +197,7 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
                 <div style={{ position: 'relative' }}>
                   <select required value={form.to_city} onChange={e => set('to_city', e.target.value)} style={{ ...inputStyle, appearance: 'none', paddingRight: 32 }}>
                     <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
-                    {TO_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070', fontSize: 11 }}>▾</span>
                 </div>
@@ -190,9 +232,8 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
               </div>
             </div>
             <div>
-              <label style={labelStyle}>{isFr ? 'Description du colis' : 'What are you sending?'}</label>
+              <label style={labelStyle}>{isFr ? 'Description du colis (optionnel)' : 'Description (optional)'}</label>
               <textarea
-                required
                 value={form.description} onChange={e => set('description', e.target.value)}
                 placeholder={isFr ? 'Ex: vêtements, médicaments, documents, électronique...' : 'e.g. clothing, medicine, documents, electronics...'}
                 rows={3}
@@ -201,30 +242,18 @@ export default function SendPackagePage({ lang, user, onBack, onLoginRequired })
             </div>
           </div>
 
-          {/* Date + Contact */}
+          {/* Deadline */}
           <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <PhoneIcon size={14} color="#C8891C" />
-              {isFr ? 'Contact & disponibilité' : 'Contact & availability'}
+              Calendar
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div>
-                <label style={labelStyle}>{isFr ? 'Avant le (optionnel)' : 'Needed by (optional)'}</label>
-                <input
-                  type="date"
-                  value={form.deadline} onChange={e => set('deadline', e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{isFr ? 'Votre WhatsApp' : 'Your WhatsApp'}</label>
-                <input
-                  required type="tel"
-                  value={form.phone} onChange={e => set('phone', e.target.value)}
-                  placeholder="+1 (555) 000-0000"
-                  style={inputStyle}
-                />
-              </div>
+            <div>
+              <label style={labelStyle}>{isFr ? 'Avant le (optionnel)' : 'Needed by (optional)'}</label>
+              <input
+                type="date"
+                value={form.deadline} onChange={e => set('deadline', e.target.value)}
+                style={inputStyle}
+              />
             </div>
           </div>
 
