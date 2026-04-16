@@ -388,30 +388,58 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     <div>
       {/* Verification Steps */}
       <div style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '.06em' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>
           {isFr ? 'Étapes de vérification' : 'Verification Steps'}
         </div>
+        {/* Progress bar */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ flex: 1, height: 8, background: '#E5E1DB', borderRadius: 20, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: '#22c55e', width: `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0)) / 3 * 100}%`, transition: 'width .3s' }} />
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#8A8070', minWidth: 40 }}>
+              {((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0))}/3
+            </div>
+          </div>
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', completed: true, icon: '📱' },
-            { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', completed: profileData?.photo_verified || photoVerified, icon: '📸' },
-            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', completed: profileData?.id_verified, icon: '🆔', badge: true },
-          ].map(({ step, label, completed, icon, badge }) => (
-            <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
-              <div style={{ fontSize: 18 }}>{icon}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 2 }}>
-                  {label}
-                </div>
-                {badge && (
-                  <div style={{ fontSize: 11, color: '#3B82F6' }}>
-                    {isFr ? 'Déverrouille le badge Vérifié' : 'Unlocks Verified badge'}
+            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, icon: '📱', action: null },
+            { step: 2, label: isFr ? 'Photo de profil' : 'Profile picture', desc: isFr ? 'Téléchargez une photo claire de vous' : 'Upload a clear photo of yourself', completed: profileData?.photo_verified || photoVerified, status: profileData?.photo_verified || photoVerified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), icon: '📸', action: isFr ? 'Télécharger une photo' : 'Upload photo' },
+            { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : profileData?.id_verification_status === 'pending' ? (isFr ? 'En révision' : 'Under review') : (isFr ? 'En attente' : 'Pending'), icon: '🆔', badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
+          ].map(({ step, label, desc, completed, status, icon, badge, action }) => (
+            <div key={step} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ fontSize: 18, marginTop: 2 }}>{icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 2 }}>
+                    {label}
                   </div>
-                )}
+                  <div style={{ fontSize: 11, color: '#8A8070', marginBottom: 4 }}>
+                    {desc}
+                  </div>
+                  {status && (
+                    <div style={{ fontSize: 10, fontWeight: 700, color: completed ? '#22c55e' : '#D97706', display: 'inline-block', padding: '2px 8px', background: completed ? '#F0FAF4' : '#FFF8EB', borderRadius: 12 }}>
+                      {status}
+                    </div>
+                  )}
+                  {badge && !completed && (
+                    <div style={{ fontSize: 10, color: '#3B82F6', marginTop: 4 }}>
+                      🔓 {isFr ? 'Déverrouille le badge Vérifié' : 'Unlocks Verified badge'}
+                    </div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: completed ? '#F0FAF4' : '#F5F3EF', border: `2px solid ${completed ? '#22c55e' : '#D0CCCB'}`, flexShrink: 0 }}>
+                  {completed ? <span style={{ fontSize: 14, fontWeight: 700, color: '#22c55e' }}>✓</span> : <span style={{ fontSize: 12, color: '#8A8070' }}>{step}</span>}
+                </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: completed ? '#F0FAF4' : '#F5F3EF', border: `2px solid ${completed ? '#22c55e' : '#D0CCCB'}` }}>
-                {completed && <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e' }}>✓</span>}
-              </div>
+              {action && (
+                <button onClick={() => {}}
+                  style={{ alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8, border: 'none', background: '#C8891C', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  {action}
+                </button>
+              )}
             </div>
           ))}
         </div>
