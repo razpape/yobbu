@@ -48,7 +48,6 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
 
   const [role,            setRole]            = useState('traveler') // Always traveler
   const [fullName,        setFullName]        = useState('')
-  const [email,           setEmail]           = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [avatarBlob,      setAvatarBlob]      = useState(null)
   const [avatarPreview,   setAvatarPreview]   = useState(null)
@@ -98,7 +97,6 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
     try {
       const updates = {
         full_name:         fullName.trim(),
-        email:             email.trim() || null,
         country_of_origin: countryOfOrigin || null,
         role:              'traveler',
       }
@@ -227,18 +225,6 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
                 onChange={e => { setFullName(e.target.value); if (error) setError(null) }}
                 autoComplete="name"
                 required
-              />
-            </div>
-
-            {/* Email */}
-            <div style={{ marginBottom: 18 }}>
-              <label style={lbl}>{isFr ? 'Email (optionnel)' : 'Email (optional)'}</label>
-              <input
-                className="ob-input" style={inp}
-                type="email" placeholder="you@email.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                autoComplete="email"
               />
             </div>
 
