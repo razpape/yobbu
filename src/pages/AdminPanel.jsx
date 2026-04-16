@@ -67,6 +67,22 @@ export default function AdminPanel({ onSignOut }) {
   useEffect(() => { if (tab === 'users') fetchUsers() }, [tab])
   useEffect(() => { if (tab === 'photos') fetchPhotoPending() }, [tab])
 
+  // Real-time photo upload notifications
+  useEffect(() => {
+    const subscription = supabase
+      .channel('photos')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: 'photo_pending=eq.true' }, payload => {
+        console.log('[Admin] New photo pending:', payload.new)
+        showToast(`📸 New photo upload from ${payload.new.full_name || 'user'}`)
+        if (tab === 'photos') {
+          fetchPhotoPending()
+        }
+      })
+      .subscribe()
+
+    return () => subscription.unsubscribe()
+  }, [tab])
+
   async function fetchAll() {
     setLoading(true)
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
