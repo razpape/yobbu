@@ -106,8 +106,12 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
         setUploading(true)
         const path = `${user.id}.jpg`
         const { error: upErr } = await supabase.storage.from('avatars').upload(path, avatarBlob, { upsert: true, contentType: 'image/jpeg' })
-        if (upErr) throw upErr
+        if (upErr) {
+          console.error('[Onboarding] Upload error:', upErr)
+          throw upErr
+        }
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+        console.log('[Onboarding] Avatar uploaded, URL:', publicUrl)
         updates.avatar_url     = publicUrl
         updates.photo_pending  = true
         updates.photo_verified = false

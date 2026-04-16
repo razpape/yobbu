@@ -82,10 +82,17 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   function fetchProfile() {
     if (!user?.id) return
     supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified, id_verification_status').eq('id', user.id).maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[ProfilePage] Error fetching profile:', error)
+          return
+        }
         if (!data) return
         setProfileData(data)
-        if (data.avatar_url)       setAvatarUrl(data.avatar_url)
+        if (data.avatar_url) {
+          setAvatarUrl(data.avatar_url)
+          console.log('[ProfilePage] Avatar URL loaded:', data.avatar_url)
+        }
         if (data.full_name)        setProfileName(data.full_name)
         if (data.country_of_origin) setBaseCountry(data.country_of_origin)
         if (data.photo_verified)   setPhotoVerified(true)
