@@ -170,6 +170,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
 
   const generateInboundCode = async () => {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/generate-inbound-code', {
         method: 'POST',
@@ -181,33 +182,56 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         setInboundCode(data.code)
         setWaCountdown(600)
         setWaMethod('inbound')
+      } else {
+        setError(data.error || 'Failed to generate code')
       }
-    } catch {}
+    } catch (err) {
+      console.error('Error generating inbound code:', err)
+      setError('Network error. Please try again.')
+    }
     finally { setLoading(false) }
   }
 
   // Poll for verification status when in inbound mode
   useEffect(() => {
-    if (waMethod !== 'inbound') return
+    if (waMethod !== 'inbound' || !userId) return
+
     const timer = setInterval(() => setWaCountdown(c => c > 0 ? c - 1 : 0), 1000)
     const check = setInterval(async () => {
-      const { data } = await supabase.from('profiles').select('whatsapp_verified').eq('id', userId).single()
-      if (data?.whatsapp_verified) {
-        clearInterval(timer)
-        clearInterval(check)
-        onSuccess()
+      try {
+        const { data, error } = await supabase.from('profiles').select('whatsapp_verified').eq('id', userId).single()
+        if (error) {
+          console.error('Verification check failed:', error)
+          return
+        }
+        if (data?.whatsapp_verified) {
+          clearInterval(timer)
+          clearInterval(check)
+          onSuccess()
+        }
+      } catch (err) {
+        console.error('Unexpected error checking verification:', err)
       }
     }, 3000)
-    return () => { clearInterval(timer); clearInterval(check) }
-  }, [waMethod, userId])
+
+    return () => {
+      clearInterval(timer)
+      clearInterval(check)
+    }
+  }, [waMethod, userId, onSuccess])
 
   const handleWaSave = async () => {
     setLoading(true)
     try {
       if (waPhone.trim() && userId) {
-        await supabase.auth.updateUser({ data: { whatsapp_phone: fullWaPhone } })
+        const { error } = await supabase.auth.updateUser({ data: { whatsapp_phone: fullWaPhone } })
+        if (error) {
+          console.warn('WhatsApp number update warning:', error.message)
+        }
       }
-    } catch { /* non-critical */ }
+    } catch (err) {
+      console.warn('Failed to save WhatsApp number (non-critical):', err)
+    }
     finally { setLoading(false) }
     onSuccess()
   }

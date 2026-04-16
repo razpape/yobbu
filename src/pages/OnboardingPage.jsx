@@ -109,13 +109,12 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
           throw upErr
         }
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-        console.log('[Onboarding] Avatar uploaded, URL:', publicUrl)
         updates.avatar_url     = publicUrl
         updates.photo_pending  = true
         updates.photo_verified = false
         setUploading(false)
       }
-      const { error: err } = await supabase.from('profiles').update(updates).eq('id', user.id)
+      const { error: err } = await supabase.from('profiles').upsert([{ id: user.id, ...updates }])
       if (err) throw err
       await supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id)
       onComplete()

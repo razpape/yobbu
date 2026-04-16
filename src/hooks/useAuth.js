@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 export function useAuth() {
-  const [user, setUser]       = useState(null)   // profile row + auth id
-  const [loading, setLoading] = useState(true)   // true until first session check completes
+  const [user, setUser]       = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState(null)
 
   async function loadProfile(authUser) {
     if (!authUser) {
@@ -11,36 +12,66 @@ export function useAuth() {
       return
     }
 
-    // Fetch full profile row
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', authUser.id)
-      .maybeSingle()
+    try {
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .maybeSingle()
 
-    // Merge auth user fields with profile fields
-    setUser(profile ? { ...authUser, ...profile } : authUser)
+      if (fetchError) throw fetchError
+      setUser(profile ? { ...authUser, ...profile } : authUser)
+      setError(null)
+    } catch (err) {
+      console.error('Failed to load profile:', err)
+      setUser(authUser)
+      setError(err.message)
+    }
   }
 
   useEffect(() => {
-    // Await profile load before marking loading done — prevents signed-in users
-    // from briefly seeing the signed-out UI while the profile row is fetched.
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      await loadProfile(session?.user ?? null)
-      setLoading(false)
-    })
+    let isMounted = true
+
+    supabase.auth.getSession()
+      .then(async ({ data: { session }, error: sessionError }) => {
+        if (sessionError) {
+          console.error('Session check failed:', sessionError)
+          if (isMounted) setError(sessionError.message)
+          if (isMounted) setLoading(false)
+          return
+        }
+        if (isMounted) await loadProfile(session?.user ?? null)
+        if (isMounted) setLoading(false)
+      })
+      .catch(err => {
+        console.error('Unexpected error in getSession:', err)
+        if (isMounted) {
+          setError(err.message)
+          setLoading(false)
+        }
+      })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      loadProfile(session?.user ?? null)
+      if (isMounted) loadProfile(session?.user ?? null)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
+    try {
+      const { error: signOutError } = await supabase.auth.signOut()
+      if (signOutError) throw signOutError
+      setUser(null)
+      setError(null)
+    } catch (err) {
+      console.error('Sign out failed:', err)
+      setError(err.message)
+    }
   }
 
-  return { user, loading, signOut }
+  return { user, loading, error, signOut }
 }

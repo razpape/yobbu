@@ -175,6 +175,19 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
                 </button>
 
+                <div style={{ display:'flex', gap:10, marginTop:16, marginBottom:10 }}>
+                  <button
+                    onClick={() => setView('send')}
+                    style={{
+                      flex:1, padding:'12px 0', borderRadius:12, border:'1.5px solid #E5E1DB',
+                      background:'transparent', color:'#8A8070', fontSize:13, fontWeight:600,
+                      cursor:'pointer', fontFamily:"'DM Sans', sans-serif",
+                    }}
+                  >
+                    {isFr ? 'Poster une demande' : 'Post a request'}
+                  </button>
+                </div>
+
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:10, fontSize:13, color:'#8A8070' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   {isFr ? 'Tous les voyageurs sont vérifiés' : 'All travelers are phone verified'}

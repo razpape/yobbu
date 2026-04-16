@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { CITIES } from '../utils/constants'
+import { PackageIcon, PlaneIcon } from '../components/Icons'
 
 export default function SendPackagePage({ lang, setView }) {
   const isFr = lang === 'fr'
@@ -282,11 +283,6 @@ export default function SendPackagePage({ lang, setView }) {
           >
             {loading ? (isFr ? 'Envoi...' : 'Posting...') : (isFr ? 'Publier ma demande' : 'Post my request')}
           </button>
-          {!user && (
-            <p style={{ textAlign: 'center', fontSize: 12, color: '#8A8070', marginTop: 10 }}>
-              {isFr ? 'Connexion requise pour publier.' : 'You need to be logged in to post.'}
-            </p>
-          )}
         </form>
       </div>
     </div>

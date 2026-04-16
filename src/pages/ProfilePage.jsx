@@ -92,7 +92,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         setProfileData(data)
         if (data.avatar_url) {
           setAvatarUrl(data.avatar_url)
-          console.log('[ProfilePage] Avatar URL loaded:', data.avatar_url)
         }
         if (data.full_name)        setProfileName(data.full_name)
         if (data.country_of_origin) setBaseCountry(data.country_of_origin)
@@ -110,7 +109,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     const subscription = supabase
       .channel(`profile:${user.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, payload => {
-        console.log('[ProfilePage] Profile updated in real-time:', payload.new)
         fetchProfile()
       })
       .subscribe()

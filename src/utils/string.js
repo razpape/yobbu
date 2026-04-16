@@ -19,9 +19,10 @@ export function formatPrice(price) {
   return `€${parseFloat(price).toFixed(2)}`
 }
 
-export function formatDate(dateStr) {
+export function formatDate(dateStr, locale = 'en') {
   if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('en-GB', {
+  const localeCode = locale === 'fr' ? 'fr-FR' : 'en-GB'
+  return new Date(dateStr).toLocaleDateString(localeCode, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

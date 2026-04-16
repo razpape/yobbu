@@ -85,7 +85,7 @@ export default function App() {
     if (!authLoading && user && view === 'home') {
       setView(user.onboarding_complete ? 'profile' : 'onboarding', true)
     }
-  }, [authLoading, user])
+  }, [authLoading, user, view])
 
   // PWA install prompt
   useEffect(() => {
@@ -101,7 +101,6 @@ export default function App() {
     if (!installPrompt) return
     installPrompt.prompt()
     const { outcome } = await installPrompt.userChoice
-    console.log(`User response: ${outcome}`)
     setInstallPrompt(null)
   }
 
@@ -132,7 +131,7 @@ export default function App() {
   if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} /></ErrorBoundary>
   if (view === 'privacy')    return <PrivacyPage lang={lang} setView={setView} />
   if (view === 'terms')      return <TermsPage lang={lang} setView={setView} />
-  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} user={user} onBack={() => setView('browse')} onLoginRequired={() => setView('phone-auth')} /></ErrorBoundary>
+  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} setView={setView} /></ErrorBoundary>
   if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
 
   return (

@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import GPCard from './GPCard'
+import RequestCard from './RequestCard'
 import { ShieldCheckIcon } from './Icons'
+import { supabase } from '../lib/supabase'
 
 const DESTINATION_GROUPS = [
   {
@@ -350,6 +352,8 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
   const [applied, setApplied]             = useState({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' })
   const [drawerOpen, setDrawerOpen]   = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [requests, setRequests]       = useState([])
+  const [requestsLoading, setRequestsLoading] = useState(true)
   const [recentSearches, setRecentSearches]  = useState(() => {
     try { return JSON.parse(localStorage.getItem('yobbu_recent_searches') || '[]') } catch { return [] }
   })
@@ -426,6 +430,53 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
     if (searchFilter.dest) setToFilter(searchFilter.dest)
     if (searchFilter.from) setFromFilter(searchFilter.from)
   }, [searchFilter])
+
+  // Memoize route extraction
+  const routes = useMemo(() => {
+    if (!trips || trips.length === 0) return []
+    const routeSet = new Set()
+    trips.forEach(t => {
+      const from = t.from_city || t.from || ''
+      const to = t.to_city || t.to || ''
+      if (from && to) routeSet.add(`${from}||${to}`)
+    })
+    return Array.from(routeSet).map(r => r.split('||'))
+  }, [trips])
+
+  // Fetch package requests matching traveler's routes
+  useEffect(() => {
+    if (!user || routes.length === 0) {
+      setRequestsLoading(false)
+      return
+    }
+
+    setRequestsLoading(true)
+
+    const loadRequests = async () => {
+      try {
+        const { data, error: err } = await supabase
+          .from('package_requests')
+          .select('*')
+          .eq('status', 'open')
+
+        if (err) throw err
+
+        const today = new Date().toISOString().slice(0, 10)
+        const matchingRequests = data.filter(req => {
+          const routeMatch = routes.some(([from, to]) => req.from_city === from && req.to_city === to)
+          const deadlineValid = !req.deadline || req.deadline >= today
+          return routeMatch && deadlineValid
+        })
+        setRequests(matchingRequests)
+      } catch (err) {
+        setRequests([])
+      } finally {
+        setRequestsLoading(false)
+      }
+    }
+
+    loadRequests()
+  }, [user, routes])
 
   // Close drawer on Escape
   useEffect(() => {
@@ -800,6 +851,20 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
               {sorted.map(gp => (
                 <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
               ))}
+            </div>
+          )}
+
+          {/* Package Requests Section */}
+          {!loading && requests.length > 0 && (
+            <div style={{ marginTop: 40 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16, paddingBottom: 12, borderBottom: '1.5px solid #E5E1DB' }}>
+                {isFr ? 'Demandes de colis' : 'Package requests'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {requests.map(req => (
+                  <RequestCard key={req.id} req={req} lang={lang} />
+                ))}
+              </div>
             </div>
           )}
         </div>

@@ -376,14 +376,14 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert([{
+          id: user.id,
           first_name: profileData.firstName,
           last_name: profileData.lastName,
           role: profileData.role,
           whatsapp_number: profileData.whatsapp || null,
           terms_accepted_at: profileData.termsAcceptedAt || null,
-        })
-        .eq('id', user.id)
+        }])
 
       if (error) throw error
 
