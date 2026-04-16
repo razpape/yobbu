@@ -72,10 +72,12 @@ export default function AdminPanel({ onSignOut }) {
     let timeoutId = null
     const subscription = supabase
       .channel('photos-pending')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: 'photo_pending=true' }, payload => {
-        showToast(`📸 New photo from ${payload.new.full_name || 'User'} - needs approval`)
-        if (timeoutId) clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => fetchPhotoPending(), 500)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, payload => {
+        if (payload.new?.avatar_url) {
+          showToast(`📸 New photo from ${payload.new.full_name || 'User'} - awaiting verification`)
+          if (timeoutId) clearTimeout(timeoutId)
+          timeoutId = setTimeout(() => fetchPhotoPending(), 500)
+        }
       })
       .subscribe()
 
@@ -116,7 +118,8 @@ export default function AdminPanel({ onSignOut }) {
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name, phone, avatar_url, photo_pending, photo_verified, created_at')
-      .eq('photo_pending', true)
+      .not('avatar_url', 'is', null)
+      .order('photo_verified', { ascending: true })
       .order('created_at', { ascending: false })
     setPhotoPending(data || [])
     setPhotosLoading(false)
@@ -881,12 +884,11 @@ export default function AdminPanel({ onSignOut }) {
           </>
         )}
 
-        {/* FACEBOOK GP POSTS TAB */}
         {/* PHOTOS TAB */}
         {tab === 'photos' && (
           <div>
             <div style={{ color:'#aaa', fontSize:13, marginBottom:16 }}>
-              Users who uploaded a profile photo — approve to give them the Photo Verified badge, reject to remove the photo.
+              All users with profile photos. Verify to give them the Photo Verified badge. Empty photos cannot be verified.
             </div>
 
             {photosLoading && (
@@ -895,7 +897,7 @@ export default function AdminPanel({ onSignOut }) {
 
             {!photosLoading && photoPending.length === 0 && (
               <div style={{ textAlign:'center', padding:'60px 0', color:'#444', fontSize:14 }}>
-                No pending photo approvals.
+                No photos to review.
               </div>
             )}
 
@@ -905,15 +907,16 @@ export default function AdminPanel({ onSignOut }) {
                 {/* Photo */}
                 <div style={{ flexShrink:0 }}>
                   {u.avatar_url
-                    ? <img src={u.avatar_url} alt={u.full_name} style={{ width:72, height:72, borderRadius:'50%', objectFit:'cover', border:'2px solid #333' }} />
+                    ? <img src={u.avatar_url} alt={u.full_name} style={{ width:72, height:72, borderRadius:'50%', objectFit:'cover', border: u.photo_verified ? '2px solid #22c55e' : '2px solid #333' }} />
                     : <div style={{ width:72, height:72, borderRadius:'50%', background:'#2a2a2a', display:'flex', alignItems:'center', justifyContent:'center', color:'#555', fontSize:11 }}>No photo</div>
                   }
                 </div>
 
                 {/* Info */}
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontWeight:700, color:'#fff', fontSize:15, marginBottom:3 }}>
+                  <div style={{ fontWeight:700, color:'#fff', fontSize:15, marginBottom:3, display:'flex', alignItems:'center', gap:8 }}>
                     {u.full_name || 'Unnamed user'}
+                    {u.photo_verified && <span style={{ fontSize:11, background:'#22c55e', color:'#fff', padding:'2px 8px', borderRadius:4, fontWeight:700 }}>VERIFIED</span>}
                   </div>
                   <div style={{ color:'#666', fontSize:12, marginBottom:4 }}>{u.phone || u.id}</div>
                   <div style={{ color:'#555', fontSize:11 }}>
@@ -923,8 +926,14 @@ export default function AdminPanel({ onSignOut }) {
 
                 {/* Actions */}
                 <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-                  <Btn type="approve" onClick={() => approvePhoto(u.id)}>✓ Approve</Btn>
-                  <Btn type="reject"  onClick={() => rejectPhoto(u.id)}>✕ Reject</Btn>
+                  {u.photo_verified ? (
+                    <Btn type="reject" onClick={() => rejectPhoto(u.id)}>✕ Revoke</Btn>
+                  ) : (
+                    <>
+                      <Btn type="approve" onClick={() => approvePhoto(u.id)}>✓ Verify</Btn>
+                      <Btn type="reject"  onClick={() => rejectPhoto(u.id)}>✕ Reject</Btn>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
