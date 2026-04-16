@@ -96,6 +96,10 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     fetchTrips()
     fetchRequests()
     fetchProfile()
+
+    // Refetch profile data periodically to catch updates from other pages
+    const interval = setInterval(() => fetchProfile(), 2000)
+    return () => clearInterval(interval)
   }, [user])
 
   async function fetchTrips() {
@@ -177,6 +181,10 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   function handleSetSection(key) {
     if (key === 'notifications') setNotifSeen(true)
     setSection(key)
+    // Refetch profile when switching sections
+    if (key === 'trips' || key === 'verification') {
+      fetchProfile()
+    }
   }
 
   function handleAvatarUpload(url) {
