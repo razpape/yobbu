@@ -70,18 +70,20 @@ export default function AdminPanel({ onSignOut }) {
   // Real-time photo upload notifications
   useEffect(() => {
     const subscription = supabase
-      .channel('photos')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: 'photo_pending=eq.true' }, payload => {
-        console.log('[Admin] New photo pending:', payload.new)
-        showToast(`📸 New photo upload from ${payload.new.full_name || 'user'}`)
-        if (tab === 'photos') {
-          fetchPhotoPending()
+      .channel('photos-pending')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
+        // Only show notification if photo_pending = true
+        if (payload.new?.photo_pending === true) {
+          console.log('[Admin] New photo pending:', payload.new)
+          showToast(`📸 New photo from ${payload.new.full_name || 'User'} - needs approval`)
+          // Refresh photos list
+          setTimeout(() => fetchPhotoPending(), 500)
         }
       })
       .subscribe()
 
     return () => subscription.unsubscribe()
-  }, [tab])
+  }, [])
 
   async function fetchAll() {
     setLoading(true)
