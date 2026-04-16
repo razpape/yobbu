@@ -79,20 +79,23 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     ? new Date(user.created_at).toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { month: 'long', year: 'numeric' })
     : '—'
 
+  function fetchProfile() {
+    if (!user?.id) return
+    supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified, id_verification_status').eq('id', user.id).maybeSingle()
+      .then(({ data }) => {
+        if (!data) return
+        setProfileData(data)
+        if (data.avatar_url)       setAvatarUrl(data.avatar_url)
+        if (data.full_name)        setProfileName(data.full_name)
+        if (data.country_of_origin) setBaseCountry(data.country_of_origin)
+        if (data.photo_verified)   setPhotoVerified(true)
+      })
+  }
+
   useEffect(() => {
     fetchTrips()
     fetchRequests()
-    if (user?.id) {
-      supabase.from('profiles').select('avatar_url, full_name, country_of_origin, photo_verified, id_verified, id_verification_status').eq('id', user.id).maybeSingle()
-        .then(({ data }) => {
-          if (!data) return
-          setProfileData(data)
-          if (data.avatar_url)       setAvatarUrl(data.avatar_url)
-          if (data.full_name)        setProfileName(data.full_name)
-          if (data.country_of_origin) setBaseCountry(data.country_of_origin)
-          if (data.photo_verified)   setPhotoVerified(true)
-        })
-    }
+    fetchProfile()
   }, [user])
 
   async function fetchTrips() {
@@ -174,6 +177,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   function handleSetSection(key) {
     if (key === 'notifications') setNotifSeen(true)
     setSection(key)
+  }
+
+  function handleAvatarUpload(url) {
+    setAvatarUrl(url)
+    // Refetch profile to update photo_verified status
+    setTimeout(() => fetchProfile(), 500)
   }
 
   const menuItems = [
@@ -746,7 +755,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       {/* Mobile hero / profile header */}
       <div className="pf-hero" style={{ background: '#fff', borderBottom: '1px solid rgba(0,0,0,.06)', padding: '28px 24px 20px', textAlign: 'center', display: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-          <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={setAvatarUrl} />
+          <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={handleAvatarUpload} />
         </div>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 16, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -787,7 +796,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           {/* User card */}
           <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 16, padding: 20, textAlign: 'center', marginBottom: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-              <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={60} onUpload={setAvatarUrl} />
+              <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={60} onUpload={handleAvatarUpload} />
             </div>
             <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1A1710', marginBottom: 2 }}>{fullName}</div>
             <div style={{ fontSize: 11, color: '#8A8070' }}>{contact}</div>
