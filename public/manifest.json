@@ -10,24 +10,16 @@
   "theme_color": "#C8891C",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23C8891C' width='192' height='192'/%3E%3Ctext x='50%' y='50%' font-size='80' font-weight='bold' fill='white' text-anchor='middle' dy='.3em' font-family='DM Serif Display'%3EY%3C/text%3E%3Ctext x='50%' y='50%' font-size='80' font-weight='bold' fill='%23C8891C' text-anchor='middle' dy='.3em' font-family='DM Serif Display' opacity='0.3' x='85%'%3Ebu%3C/text%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23C8891C' width='192' height='192'/><text x='96' y='110' font-size='100' font-weight='bold' fill='white' text-anchor='middle' font-family='serif'>Y</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23C8891C' width='512' height='512'/%3E%3Ctext x='50%' y='50%' font-size='220' font-weight='bold' fill='white' text-anchor='middle' dy='.3em' font-family='DM Serif Display'%3EY%3C/text%3E%3Ctext x='50%' y='50%' font-size='220' font-weight='bold' fill='%23C8891C' text-anchor='middle' dy='.3em' font-family='DM Serif Display' opacity='0.3' x='85%'%3Ebu%3C/text%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23C8891C' width='512' height='512'/><text x='256' y='340' font-size='280' font-weight='bold' fill='white' text-anchor='middle' font-family='serif'>Y</text></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect fill='%23FDFBF7' width='540' height='720'/%3E%3Ctext x='50%' y='50%' font-size='40' font-weight='bold' fill='%231A1710' text-anchor='middle' dy='.3em'%3EYobbu%3C/text%3E%3C/svg%3E",
-      "sizes": "540x720",
-      "type": "image/svg+xml",
-      "form_factor": "narrow"
     }
   ],
   "categories": ["shopping", "productivity"],
@@ -36,27 +28,13 @@
       "name": "Browse travelers",
       "short_name": "Browse",
       "description": "Find travelers going to your destination",
-      "url": "/browse",
-      "icons": [
-        {
-          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect fill='%23C8891C' width='96' height='96'/%3E%3Ctext x='50%' y='50%' font-size='50' font-weight='bold' fill='white' text-anchor='middle' dy='.25em'%3E🌍%3C/text%3E%3C/svg%3E",
-          "sizes": "96x96",
-          "type": "image/svg+xml"
-        }
-      ]
+      "url": "/browse"
     },
     {
       "name": "Post your trip",
       "short_name": "Post trip",
       "description": "List your luggage space and earn money",
-      "url": "/post",
-      "icons": [
-        {
-          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect fill='%23C8891C' width='96' height='96'/%3E%3Ctext x='50%' y='50%' font-size='50' font-weight='bold' fill='white' text-anchor='middle' dy='.25em'%3E✈️%3C/text%3E%3C/svg%3E",
-          "sizes": "96x96",
-          "type": "image/svg+xml"
-        }
-      ]
+      "url": "/post"
     }
   ]
 }
