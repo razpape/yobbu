@@ -847,7 +847,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
           {/* Cards */}
           {!loading && !error && sorted.length > 0 && (
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:10, maxWidth:600 }}>
               {sorted.map(gp => (
                 <GPCard key={gp.id} gp={gp} lang={lang} user={user} onContactClick={onLoginRequired} onViewProfile={onViewProfile} />
               ))}
@@ -856,7 +856,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
           {/* Package Requests Section */}
           {!loading && requests.length > 0 && (
-            <div style={{ marginTop: 40 }}>
+            <div style={{ marginTop: 40, maxWidth: 600 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16, paddingBottom: 12, borderBottom: '1.5px solid #E5E1DB' }}>
                 {isFr ? 'Demandes de colis' : 'Package requests'}
               </div>
