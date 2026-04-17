@@ -234,10 +234,10 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         </div>
 
         {/* ── RIGHT: CTA + date ── */}
-        <div className="gpc-action" style={{ padding: '16px 18px' }}>
+        <div className="gpc-action" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           {/* Price */}
           {price && !disabled && (
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', marginBottom: 4 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', textAlign: 'center' }}>
               {price}/kg
             </div>
           )}
@@ -258,7 +258,6 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 fontSize: 12, fontWeight: 700, cursor: 'pointer',
                 fontFamily: "'DM Sans', sans-serif",
                 transition: 'opacity .15s', whiteSpace: 'nowrap',
-                margin: '0 auto',
               }}
               onMouseEnter={e => e.currentTarget.style.opacity = '.8'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
@@ -268,12 +267,10 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             </button>
           )}
 
-          {/* Date posted — bottom right */}
+          {/* Date posted */}
           {departDate && (
-            <div style={{ position: 'absolute', bottom: 10, right: 22, fontSize: 9, color: '#B5AFA8', fontWeight: 600 }}>
-              Posted on: {urgency
-                ? <span style={{ color: urgency.c }}>{urgency.label}</span>
-                : departDate}
+            <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center' }}>
+              Posted on: <span style={{ color: urgency.c }}>{urgency.label}</span>
             </div>
           )}
         </div>
