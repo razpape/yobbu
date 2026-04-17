@@ -88,10 +88,6 @@ export default function App() {
     }
   }, [authLoading, user, view])
 
-
-  if (view === 'admin') return <Admin />
-  if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
-
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
   const handlePhoneAuthComplete = async (completedUser) => {
@@ -111,6 +107,9 @@ export default function App() {
     setViewState('gp') // don't push /gp to URL — back button should go to browse
     window.history.pushState({ view: 'gp' }, '', '/browse')
   }
+
+  if (view === 'admin') return <Admin />
+  if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
 
   if (authLoading) return <LoadingSpinner />
 
