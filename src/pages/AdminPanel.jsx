@@ -118,8 +118,7 @@ export default function AdminPanel({ onSignOut }) {
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name, phone, avatar_url, photo_pending, photo_verified, created_at')
-      .not('avatar_url', 'is', null)
-      .order('photo_verified', { ascending: true })
+      .eq('photo_pending', true)
       .order('created_at', { ascending: false })
     setPhotoPending(data || [])
     setPhotosLoading(false)
@@ -130,7 +129,9 @@ export default function AdminPanel({ onSignOut }) {
       photo_verified: true,
       photo_pending:  false,
     }).eq('id', userId)
-    if (!error) {
+    if (error) {
+      showToast(`⚠️ Error: ${error.message}`)
+    } else {
       setPhotoPending(prev => prev.filter(u => u.id !== userId))
       showToast('Photo badge approved!')
     }
@@ -142,7 +143,9 @@ export default function AdminPanel({ onSignOut }) {
       photo_pending:  false,
       avatar_url:     null,
     }).eq('id', userId)
-    if (!error) {
+    if (error) {
+      showToast(`⚠️ Error: ${error.message}`)
+    } else {
       setPhotoPending(prev => prev.filter(u => u.id !== userId))
       showToast('Photo rejected and removed.')
     }
