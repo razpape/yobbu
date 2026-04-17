@@ -237,7 +237,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         <div className="gpc-action" style={{ padding: '16px 18px' }}>
           {/* Price */}
           {price && !disabled && (
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', marginBottom: 8 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', marginBottom: 4 }}>
               {price}/kg
             </div>
           )}
