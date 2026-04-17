@@ -201,12 +201,24 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     }),
   ]
   const notifBadge = section === 'notifications' ? 0 : notifications.length
-  const [dismissedNotifs, setDismissedNotifs] = useState([])
+  const [dismissedNotifs, setDismissedNotifs] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('yobbu_dismissed_notifs') || '[]')
+    } catch {
+      return []
+    }
+  })
 
   const visibleNotifications = notifications.filter(n => !dismissedNotifs.includes(n.id))
 
   const dismissNotification = (id) => {
-    setDismissedNotifs(prev => [...prev, id])
+    setDismissedNotifs(prev => {
+      const updated = [...prev, id]
+      try {
+        localStorage.setItem('yobbu_dismissed_notifs', JSON.stringify(updated))
+      } catch {}
+      return updated
+    })
   }
 
   function handleSetSection(key) {
