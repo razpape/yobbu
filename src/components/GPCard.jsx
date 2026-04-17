@@ -163,20 +163,11 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
           {/* Name */}
           <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 4 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {gp.name || 'Traveler'}
             </div>
-            {gp.rating && (
-              <div style={{ fontSize: 11, color: '#8A8070', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#F59E0B' }}>★</span>
-                <span style={{ fontWeight: 600, color: '#1A1710' }}>{gp.rating}</span>
-                {gp.deliveries && (
-                  <span style={{ color: '#A09080', fontSize: 10 }}>({gp.deliveries})</span>
-                )}
-              </div>
-            )}
             {badge && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', background: '#EFF6FF', borderRadius: 12, border: '1px solid #3B82F6' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, padding: '2px 8px', background: '#EFF6FF', borderRadius: 12, border: '1px solid #3B82F6' }}>
                 <BadgeCheck size={12} color="#3B82F6" strokeWidth={2.5} />
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6' }}>
                   {isFr ? 'Vérifié' : 'Verified'}
@@ -184,8 +175,17 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               </div>
             )}
             {!badge && (
-              <div style={{ fontSize: 11, color: verified ? '#16A34A' : '#9CA3AF', fontWeight: verified ? 600 : 400 }}>
+              <div style={{ fontSize: 11, color: verified ? '#16A34A' : '#9CA3AF', fontWeight: verified ? 600 : 400, marginTop: 4 }}>
                 {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'Voyageur' : 'Traveler')}
+              </div>
+            )}
+            {gp.rating && (
+              <div style={{ fontSize: 11, color: '#8A8070', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: '#F59E0B' }}>★</span>
+                <span style={{ fontWeight: 600, color: '#1A1710' }}>{gp.rating}</span>
+                {gp.deliveries && (
+                  <span style={{ color: '#A09080', fontSize: 10 }}>({gp.deliveries})</span>
+                )}
               </div>
             )}
           </div>
