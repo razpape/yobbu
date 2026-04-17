@@ -208,14 +208,22 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
           {/* Departure */}
           {departDate && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
                 {isFr ? 'Départ' : 'Departs'}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: urgency.c }}>
+              <div style={{
+                background: urgency.c,
+                color: '#fff',
+                padding: '6px 14px',
+                borderRadius: 20,
+                fontSize: 12,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+              }}>
                 {urgency.label}
-              </span>
-              <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
+              </div>
+              <span style={{ fontSize: 11, color: '#6B7280' }}>{departDate}</span>
             </div>
           )}
         </div>
