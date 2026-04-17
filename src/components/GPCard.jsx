@@ -258,6 +258,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 fontSize: 12, fontWeight: 700, cursor: 'pointer',
                 fontFamily: "'DM Sans', sans-serif",
                 transition: 'opacity .15s', whiteSpace: 'nowrap',
+                margin: '0 auto',
               }}
               onMouseEnter={e => e.currentTarget.style.opacity = '.8'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
