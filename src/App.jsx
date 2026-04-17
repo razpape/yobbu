@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import SendPackagePage from './pages/SendPackagePage'
+import PackagesPage from './pages/PackagesPage'
 import OnboardingPage from './pages/OnboardingPage'
 import Admin from './pages/Admin'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -21,7 +22,7 @@ import { useAuth } from './hooks/useAuth'
 import { supabase } from './lib/supabase'
 
 // Map URL paths → view names and back
-const PATH_TO_VIEW = { '/': 'home', '/browse': 'browse', '/send': 'send', '/post': 'post', '/privacy': 'privacy', '/terms': 'terms', '/login': 'phone-auth', '/profile': 'profile' }
+const PATH_TO_VIEW = { '/': 'home', '/browse': 'browse', '/send': 'send', '/packages': 'packages', '/post': 'post', '/privacy': 'privacy', '/terms': 'terms', '/login': 'phone-auth', '/profile': 'profile' }
 const VIEW_TO_PATH = Object.fromEntries(Object.entries(PATH_TO_VIEW).map(([k, v]) => [v, k]))
 
 function getInitialView() {
@@ -131,7 +132,8 @@ export default function App() {
   if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} /></ErrorBoundary>
   if (view === 'privacy')    return <PrivacyPage lang={lang} setView={setView} />
   if (view === 'terms')      return <TermsPage lang={lang} setView={setView} />
-  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} setView={setView} /></ErrorBoundary>
+  if (view === 'packages')   return <ErrorBoundary><PackagesPage lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onSendPackage={() => setView('send')} onBrowseTravelers={() => setView('browse')} /></ErrorBoundary>
+  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} user={user} onBack={() => setView('packages')} onLoginRequired={() => setView('phone-auth')} /></ErrorBoundary>
   if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
 
   return (

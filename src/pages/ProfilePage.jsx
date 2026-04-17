@@ -68,6 +68,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const [notifSeen, setNotifSeen]       = useState(false)
   const [profileData, setProfileData]   = useState(null)
   const [showAvatarUpload, setShowAvatarUpload] = useState(false)
+  const [photoPending, setPhotoPending] = useState(false)
   const t        = T[lang]
   const isFr     = lang === 'fr'
   const meta     = user?.user_metadata || {}
@@ -95,7 +96,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         }
         if (data.full_name)        setProfileName(data.full_name)
         if (data.country_of_origin) setBaseCountry(data.country_of_origin)
-        if (data.photo_verified)   setPhotoVerified(true)
+        setPhotoVerified(!!data.photo_verified)
+        setPhotoPending(!!data.photo_pending)
       })
   }
 
@@ -104,12 +106,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     fetchRequests()
     fetchProfile()
 
-    // Subscribe to real-time profile changes
     if (!user?.id) return
     const subscription = supabase
       .channel(`profile:${user.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, ({ new: row }) => {
         fetchProfile()
+        if (row.photo_verified && !row.photo_pending) setNotifSeen(false)
       })
       .subscribe()
 
@@ -188,13 +190,17 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     setSaving(false)
   }
 
-  const notifications = trips.flatMap(tr => {
-    const items = []
-    if (tr.suspended)                   items.push({ type: 'suspended', trip: tr, id: `suspended-${tr.id}` })
-    else if (tr.approved)               items.push({ type: 'approved',  trip: tr, id: `approved-${tr.id}` })
-    else                                items.push({ type: 'pending',   trip: tr, id: `pending-${tr.id}` })
-    return items
-  })
+  const notifications = [
+    ...(photoVerified  ? [{ type: 'photo_approved', id: 'photo_approved' }] : []),
+    ...(photoPending && !photoVerified ? [{ type: 'photo_pending', id: 'photo_pending' }] : []),
+    ...trips.flatMap(tr => {
+      const items = []
+      if (tr.suspended)       items.push({ type: 'suspended', trip: tr, id: `suspended-${tr.id}` })
+      else if (tr.approved)   items.push({ type: 'approved',  trip: tr, id: `approved-${tr.id}` })
+      else                    items.push({ type: 'pending',   trip: tr, id: `pending-${tr.id}` })
+      return items
+    }),
+  ]
   const notifBadge = notifSeen ? 0 : notifications.length
 
   function handleSetSection(key) {
@@ -525,35 +531,44 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       )}
       {!loading && notifications.map(({ type, trip, id }) => {
         const styles = {
-          approved: { bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
-          suspended: { bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
-          pending:  { bg: '#FFF8EB', border: '#F0C878', color: '#92650A' },
+          approved:      { bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
+          suspended:     { bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
+          pending:       { bg: '#FFF8EB', border: '#F0C878', color: '#92650A' },
+          photo_approved:{ bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
+          photo_pending: { bg: '#FFF8EB', border: '#F0C878', color: '#92650A' },
         }[type] || {}
         return (
           <div key={id} style={{
             display: 'flex', alignItems: 'flex-start', gap: 14,
-            background: styles.bg,
-            border: `1px solid ${styles.border}`,
+            background: styles.bg, border: `1px solid ${styles.border}`,
             borderRadius: 14, padding: '16px 18px', marginBottom: 10,
           }}>
             <div style={{ flexShrink: 0 }}>
-              {type === 'approved'  && <CheckCircleIcon size={24} color="#2D8B4E" />}
-              {type === 'suspended' && <WarningIcon     size={24} color="#DC2626" />}
-              {type === 'pending'   && <span style={{ fontSize: 22 }}>⏳</span>}
+              {type === 'approved'       && <CheckCircleIcon size={24} color="#2D8B4E" />}
+              {type === 'suspended'      && <WarningIcon     size={24} color="#DC2626" />}
+              {type === 'pending'        && <span style={{ fontSize: 22 }}>⏳</span>}
+              {type === 'photo_approved' && <span style={{ fontSize: 22 }}>🪪</span>}
+              {type === 'photo_pending'  && <span style={{ fontSize: 22 }}>⏳</span>}
             </div>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 3 }}>
-                {type === 'approved'  && (isFr ? 'Annonce approuvée !' : 'Listing approved!')}
-                {type === 'suspended' && (isFr ? 'Annonce suspendue' : 'Listing suspended')}
-                {type === 'pending'   && (isFr ? 'Annonce en cours de révision' : 'Listing under review')}
+                {type === 'approved'       && (isFr ? 'Annonce approuvée !' : 'Listing approved!')}
+                {type === 'suspended'      && (isFr ? 'Annonce suspendue' : 'Listing suspended')}
+                {type === 'pending'        && (isFr ? 'Annonce en cours de révision' : 'Listing under review')}
+                {type === 'photo_approved' && (isFr ? 'Photo de profil approuvée !' : 'Profile photo approved!')}
+                {type === 'photo_pending'  && (isFr ? 'Photo en cours de vérification' : 'Photo under review')}
               </div>
-              <div style={{ fontSize: 13, color: styles.color, marginBottom: 6 }}>
-                {trip.from_city || trip.from} → {trip.to_city || trip.to} · {trip.date}
-              </div>
+              {trip && (
+                <div style={{ fontSize: 13, color: styles.color, marginBottom: 6 }}>
+                  {trip.from_city || trip.from} → {trip.to_city || trip.to} · {trip.date}
+                </div>
+              )}
               <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.6 }}>
-                {type === 'approved'  && (isFr ? 'Votre annonce est maintenant visible par les expéditeurs.' : 'Your listing is now visible to senders.')}
-                {type === 'suspended' && (isFr ? "Contactez-nous si vous pensez qu'il s'agit d'une erreur." : 'Contact us at hello@yobbu.co if you think this is a mistake.')}
-                {type === 'pending'   && (isFr ? 'Nous révisons votre annonce. Cela prend généralement moins de 24h.' : 'We\'re reviewing your listing. This usually takes less than 24h.')}
+                {type === 'approved'       && (isFr ? 'Votre annonce est maintenant visible par les expéditeurs.' : 'Your listing is now visible to senders.')}
+                {type === 'suspended'      && (isFr ? "Contactez-nous si vous pensez qu'il s'agit d'une erreur." : 'Contact us at hello@yobbu.co if you think this is a mistake.')}
+                {type === 'pending'        && (isFr ? 'Nous révisons votre annonce. Cela prend généralement moins de 24h.' : 'We\'re reviewing your listing. This usually takes less than 24h.')}
+                {type === 'photo_approved' && (isFr ? 'Votre badge photo vérifié est maintenant actif sur votre profil.' : 'Your verified photo badge is now active on your profile.')}
+                {type === 'photo_pending'  && (isFr ? 'Nous vérifions votre photo. Cela prend généralement moins de 24h.' : 'We\'re reviewing your photo. This usually takes less than 24h.')}
               </div>
             </div>
           </div>
