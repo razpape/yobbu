@@ -235,6 +235,13 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         {/* ── RIGHT: CTA + date ── */}
         <div className="gpc-action" style={{ padding: '16px 18px' }}>
+          {/* Price */}
+          {price && !disabled && (
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#C8891C', marginBottom: 8 }}>
+              {price}/kg
+            </div>
+          )}
+
           {/* CTA */}
           {disabled ? (
             <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#FEF3C7' : '#FEE2E2', color: isFull ? '#92400E' : '#991B1B' }}>
