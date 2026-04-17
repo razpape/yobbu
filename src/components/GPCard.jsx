@@ -133,7 +133,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
       >
 
         {/* ── LEFT: Traveler name ── */}
-        <div className="gpc-traveler">
+        <div className="gpc-traveler" style={{ padding: '16px 18px' }}>
           {/* Avatar */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
@@ -183,7 +183,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         </div>
 
         {/* ── MIDDLE: Destination ── */}
-        <div className="gpc-route">
+        <div className="gpc-route" style={{ padding: '16px 20px' }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 10 }}>
             {isFr ? 'Itinéraire' : 'Route'}
           </div>
@@ -205,7 +205,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           )}
 
           {/* Cities + arrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 28, fontWeight: 900, color: '#111', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{from}</div>
               {gp.pickup_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.pickup_area}</div>}
@@ -234,7 +234,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         </div>
 
         {/* ── RIGHT: CTA + date ── */}
-        <div className="gpc-action">
+        <div className="gpc-action" style={{ padding: '16px 18px' }}>
           {/* CTA */}
           {disabled ? (
             <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#FEF3C7' : '#FEE2E2', color: isFull ? '#92400E' : '#991B1B' }}>
