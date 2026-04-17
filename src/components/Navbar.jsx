@@ -82,6 +82,11 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
               {isFr ? 'Voir les GPs' : 'Browse GPs'}
             </span>
 
+            <span className="nav-link" onClick={() => setView('packages')}
+              style={{ fontSize: 14, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '8px 16px', transition: 'color .2s' }}>
+              {isFr ? 'Demandes' : 'Requests'}
+            </span>
+
             {user ? (
               <>
                 <button className="btn-post" onClick={() => setView('post')}
@@ -115,13 +120,6 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
                         {isFr ? 'Mon profil' : 'My profile'}
-                      </button>
-                      <button onClick={() => { setView('packages'); setAvatarMenuOpen(false) }}
-                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        {isFr ? 'Mes demandes' : 'My requests'}
                       </button>
                       <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
                         style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s' }}
