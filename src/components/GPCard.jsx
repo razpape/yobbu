@@ -237,7 +237,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         <div className="gpc-action" style={{ padding: '16px 18px' }}>
           {/* Price */}
           {price && !disabled && (
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#C8891C', marginBottom: 8 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', marginBottom: 8 }}>
               {price}/kg
             </div>
           )}
@@ -252,13 +252,12 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               className="gpc-cta"
               onClick={handleContact}
               style={{
-                display: 'flex', alignItems: 'center', gap: 7,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                 padding: '10px 16px', borderRadius: 12, border: 'none',
                 background: '#25D366', color: '#fff',
                 fontSize: 12, fontWeight: 700, cursor: 'pointer',
                 fontFamily: "'DM Sans', sans-serif",
                 transition: 'opacity .15s', whiteSpace: 'nowrap',
-                width: '100%', justifyContent: 'center',
               }}
               onMouseEnter={e => e.currentTarget.style.opacity = '.8'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
