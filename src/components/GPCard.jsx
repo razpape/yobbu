@@ -179,15 +179,6 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
                 {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'Voyageur' : 'Traveler')}
               </div>
             )}
-            {gp.rating && (
-              <div style={{ fontSize: 11, color: '#8A8070', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#F59E0B' }}>★</span>
-                <span style={{ fontWeight: 600, color: '#1A1710' }}>{gp.rating}</span>
-                {gp.deliveries && (
-                  <span style={{ color: '#A09080', fontSize: 10 }}>({gp.deliveries})</span>
-                )}
-              </div>
-            )}
           </div>
         </div>
 
