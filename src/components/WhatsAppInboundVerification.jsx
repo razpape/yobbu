@@ -276,7 +276,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                   }}
                 >
                   <div style={{
-                    width: 44, height: 44, borderRadius: 10, background: '#C8891C',
+                    width: 44, height: 44, borderRadius: 10, background: '#52B5D9',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}>
                     <PhoneIcon size={22} color="white" />

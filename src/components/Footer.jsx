@@ -55,7 +55,7 @@ export default function Footer({ lang, setView }) {
                 <div key={s.title} title={s.title}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold cursor-pointer transition-colors duration-150"
                   style={{ background: '#2A2826', color: '#888', border: '1px solid #333' }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#C8810A'}
+                  onMouseEnter={e => e.currentTarget.style.background = '#52B5D9'}
                   onMouseLeave={e => e.currentTarget.style.background = '#2A2826'}
                 >
                   {s.label}

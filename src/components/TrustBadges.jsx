@@ -46,7 +46,7 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
       label: isFr ? 'ID vérifié' : 'ID verified',
       color: '#7A3B1E',
       bg: '#FDF0E8',
-      border: '#C8891C',
+      border: '#52B5D9',
       tooltip: isFr ? 'Pièce d\'identité vérifiée par Yobbu' : 'ID document verified by Yobbu'
     })
   }
@@ -57,9 +57,9 @@ export default function TrustBadges({ profile, lang = 'en', size = 'md' }) {
       key: 'photo',
       icon: '📸',
       label: isFr ? 'Photo vérifiée' : 'Photo verified',
-      color: '#C8891C',
-      bg: '#FFF8EB',
-      border: '#F0C878',
+      color: '#52B5D9',
+      bg: '#D4E8F4',
+      border: '#D4A574',
       tooltip: isFr ? 'Photo de profil approuvée par Yobbu' : 'Profile photo approved by Yobbu',
     })
   }

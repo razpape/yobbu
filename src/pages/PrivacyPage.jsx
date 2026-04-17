@@ -8,25 +8,14 @@ export default function PrivacyPage({ lang, setView }) {
     h1:      { fontFamily:'DM Serif Display, serif', fontSize:'clamp(28px,4vw,42px)', color:'#1A1710', letterSpacing:'-.5px', marginBottom:8, lineHeight:1.1 },
     h2:      { fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1A1710', marginBottom:12, marginTop:40 },
     p:       { fontSize:15, color:'#8A8070', lineHeight:1.75, marginBottom:16 },
-    tag:     { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'#C8891C', background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:20, display:'inline-block', padding:'4px 14px', marginBottom:20 },
+    tag:     { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'#52B5D9', background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:20, display:'inline-block', padding:'4px 14px', marginBottom:20 },
     li:      { fontSize:15, color:'#8A8070', lineHeight:1.75, marginBottom:8, paddingLeft:16 },
     divider: { height:1, background:'rgba(0,0,0,.06)', margin:'8px 0' },
   }
 
   return (
     <div style={s.page}>
-      <style>{`@media(max-width:768px){ .pp-nav{padding:14px 16px !important;} .pp-body{padding:32px 16px 60px !important;} }`}</style>
-
-      {/* Nav */}
-      <nav className="pp-nav" style={s.nav}>
-        <div onClick={() => setView('home')} style={{ fontFamily:'DM Serif Display, serif', fontSize:24, color:'#1A1710', cursor:'pointer', letterSpacing:'-.5px' }}>
-          Yob<span style={{ color:'#C8891C' }}>bu</span>
-        </div>
-        <button onClick={() => setView('home')}
-          style={{ fontSize:13, fontWeight:500, padding:'7px 16px', borderRadius:20, border:'1px solid rgba(0,0,0,.1)', background:'transparent', color:'#3D3829', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-          ← {isFr ? 'Retour' : 'Back home'}
-        </button>
-      </nav>
+      <style>{`@media(max-width:768px){ .pp-body{padding:32px 16px 60px !important;} }`}</style>
 
       <div className="pp-body" style={s.body}>
         <div style={s.tag}>{isFr ? 'Confidentialité' : 'Privacy Policy'}</div>
@@ -54,7 +43,7 @@ export default function PrivacyPage({ lang, setView }) {
           isFr ? 'Adresse IP et données d\'utilisation — pour la sécurité et les analyses' : 'IP address and usage data — for security and analytics',
         ].map((item, i) => (
           <div key={i} style={{ display:'flex', gap:10, marginBottom:10 }}>
-            <span style={{ color:'#C8891C', flexShrink:0, marginTop:2 }}>→</span>
+            <span style={{ color:'#52B5D9', flexShrink:0, marginTop:2 }}>→</span>
             <p style={{ ...s.p, margin:0 }}>{item}</p>
           </div>
         ))}
@@ -125,7 +114,7 @@ export default function PrivacyPage({ lang, setView }) {
             </div>
           </div>
           <a href="mailto:hello@yobbu.co"
-            style={{ background:'#C8891C', color:'#fff', textDecoration:'none', padding:'11px 22px', borderRadius:12, fontSize:14, fontWeight:600, fontFamily:'DM Sans, sans-serif' }}>
+            style={{ background:'#52B5D9', color:'#fff', textDecoration:'none', padding:'11px 22px', borderRadius:12, fontSize:14, fontWeight:600, fontFamily:'DM Sans, sans-serif' }}>
             hello@yobbu.co
           </a>
         </div>

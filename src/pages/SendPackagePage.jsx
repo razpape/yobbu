@@ -98,7 +98,7 @@ export default function SendPackagePage({ lang, setView }) {
             </button>
             <button
               onClick={() => setView('home')}
-              style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#C8891C', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+              style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
             >
               {isFr ? 'Accueil' : 'Home'}
             </button>
@@ -109,26 +109,12 @@ export default function SendPackagePage({ lang, setView }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FDFBF7', fontFamily: "'DM Sans', sans-serif" }}>
-
-      {/* Nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 32px', borderBottom: '1px solid #EDEAE4', background: '#fff', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div onClick={() => setView('home')} style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710', cursor: 'pointer' }}>
-            Yob<span style={{ color: '#C8891C' }}>bu</span>
-          </div>
-          <button onClick={() => setView('home')} style={{ fontSize: 13, color: '#8A8070', cursor: 'pointer', background: 'none', border: 'none', fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}>
-            ← {isFr ? 'Retour' : 'Back'}
-          </button>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 24px 80px' }}>
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 24px 80px' }}>
 
         {/* Header */}
         <div style={{ marginBottom: 32 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FFF8EB', border: '1px solid #F0D898', borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600, color: '#7C4E0A', marginBottom: 16 }}>
-            <PackageIcon size={13} color="#C8891C" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#D4E8F4', border: '1px solid #F0D898', borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600, color: '#7C4E0A', marginBottom: 16 }}>
+            <PackageIcon size={13} color="#52B5D9" />
             {isFr ? 'Envoyer un colis' : 'Send a package'}
           </div>
           <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: '#1A1710', letterSpacing: '-.5px', lineHeight: 1.15, marginBottom: 10 }}>
@@ -179,7 +165,7 @@ export default function SendPackagePage({ lang, setView }) {
           {/* Route */}
           <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <PlaneIcon size={14} color="#C8891C" />
+              <PlaneIcon size={14} color="#52B5D9" />
               {isFr ? 'Route' : 'Route'}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -209,7 +195,7 @@ export default function SendPackagePage({ lang, setView }) {
           {/* Package details */}
           <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <PackageIcon size={14} color="#C8891C" />
+              <PackageIcon size={14} color="#52B5D9" />
               {isFr ? 'Détails du colis' : 'Package details'}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -279,7 +265,7 @@ export default function SendPackagePage({ lang, setView }) {
           <button
             type="submit"
             disabled={loading}
-            style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#C8891C', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background .15s' }}
+            style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#52B5D9', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background .15s' }}
           >
             {loading ? (isFr ? 'Envoi...' : 'Posting...') : (isFr ? 'Publier ma demande' : 'Post my request')}
           </button>

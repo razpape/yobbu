@@ -18,7 +18,7 @@ export default function RequestCard({ req, lang }) {
             <div style={{ marginTop: 6, color: '#8A8070' }}>{req.description}</div>
           )}
           {req.deadline && (
-            <div style={{ marginTop: 6, color: '#C8891C', fontWeight: 500 }}>
+            <div style={{ marginTop: 6, color: '#52B5D9', fontWeight: 500 }}>
               {isFr ? 'Avant le' : 'Needed by'}: {formatDate(req.deadline, lang)}
             </div>
           )}

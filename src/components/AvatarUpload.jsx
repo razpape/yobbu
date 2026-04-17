@@ -95,7 +95,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
           {/* Avatar circle */}
           <div style={{
             width: size, height: size, borderRadius: '50%',
-            background: avatarUrl ? 'transparent' : 'linear-gradient(135deg,#C8891C,#E6A832)',
+            background: avatarUrl ? 'transparent' : 'linear-gradient(135deg,#52B5D9,#E6A832)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'DM Serif Display, serif', fontSize: size * 0.33, color: '#fff',
             boxShadow: '0 3px 12px rgba(200,137,28,.25)',
@@ -113,7 +113,7 @@ export default function AvatarUpload({ user, avatarUrl, initials, size = 68, onU
           <div style={{
             position: 'absolute', bottom: 0, right: 0,
             width: size * 0.36, height: size * 0.36, borderRadius: '50%',
-            background: uploading ? '#8A8070' : '#C8891C',
+            background: uploading ? '#8A8070' : '#52B5D9',
             border: '2px solid #fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'background .2s',

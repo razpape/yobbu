@@ -157,7 +157,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
 
         <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
           <button onClick={handleSave} disabled={saving}
-            style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#C8891C', color: '#fff', fontSize: 14, fontWeight: 600, cursor: saving ? 'default' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? 0.6 : 1 }}>
+            style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 14, fontWeight: 600, cursor: saving ? 'default' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? 0.6 : 1 }}>
             {saving ? '...' : t.save}
           </button>
           <button onClick={() => setEditing(false)}
@@ -176,7 +176,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
           {t.title}
         </span>
         <button onClick={() => setEditing(true)}
-          style={{ fontSize: 12, fontWeight: 600, color: '#C8891C', background: 'none', border: 'none', cursor: 'pointer' }}>
+          style={{ fontSize: 12, fontWeight: 600, color: '#52B5D9', background: 'none', border: 'none', cursor: 'pointer' }}>
           {hasLinks ? t.edit : t.add}
         </button>
       </div>

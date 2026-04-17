@@ -162,9 +162,9 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
           gap: 4,
           fontSize: 12,
           fontWeight: 600,
-          color: '#C8891C',
-          background: '#FFF8EB',
-          border: '1px solid #F0C878',
+          color: '#52B5D9',
+          background: '#D4E8F4',
+          border: '1px solid #D4A574',
           borderRadius: 20,
           padding: '4px 12px'
         }}>
@@ -389,7 +389,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
             padding: 14,
             borderRadius: 12,
             border: 'none',
-            background: '#C8891C',
+            background: '#52B5D9',
             color: '#fff',
             fontSize: 14,
             fontWeight: 600,

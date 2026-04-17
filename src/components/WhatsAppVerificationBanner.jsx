@@ -19,7 +19,18 @@ export default function WhatsAppVerificationBanner({ user, lang }) {
       .select('whatsapp_verified')
       .eq('id', user.id)
       .single()
-      .then(({ data }) => setVerified(data?.whatsapp_verified ?? false))
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[WhatsAppBanner] Failed to load verification status:', error)
+          setVerified(false)
+          return
+        }
+        setVerified(data?.whatsapp_verified ?? false)
+      })
+      .catch(err => {
+        console.error('[WhatsAppBanner] Unexpected error:', err)
+        setVerified(false)
+      })
   }, [user])
 
   const handleDismiss = () => {
@@ -47,7 +58,7 @@ export default function WhatsAppVerificationBanner({ user, lang }) {
       )}
 
       <div style={{
-        background:   'linear-gradient(135deg, #F0FAF4 0%, #E8F4ED 100%)',
+        background:   'linear-gradient(135deg, #F0FAF4 0%, #DCFCE7 100%)',
         borderBottom: '1px solid #C8E6D4',
         padding:      '12px 24px',
         display:      'flex',
@@ -67,7 +78,7 @@ export default function WhatsAppVerificationBanner({ user, lang }) {
         </div>
 
         <div style={{ flex: 1, minWidth: 200 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#1A5C38' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#059669' }}>
             {isFr ? 'Vérifiez votre compte WhatsApp' : 'Verify your WhatsApp account'}
           </span>
           <span style={{ fontSize: 13, color: '#2D7A50', marginLeft: 6 }}>

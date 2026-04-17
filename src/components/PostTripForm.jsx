@@ -56,7 +56,7 @@ function AreaInput({ value, onChange, placeholder, city, style: extraStyle }) {
             <div key={s}
               onMouseDown={() => { onChange(s); setFocused(false) }}
               style={{ padding: '10px 14px', fontSize: 14, color: '#1A1710', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontFamily: 'DM Sans, sans-serif' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#FFF8EB'}
+              onMouseEnter={e => e.currentTarget.style.background = '#D4E8F4'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {s}
@@ -100,10 +100,15 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       .select('full_name, avatar_url')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Failed to load profile:', error)
+          return
+        }
         if (data?.full_name)  setProfileName(data.full_name)
         if (data?.avatar_url) setAvatarUrl(data.avatar_url)
       })
+      .catch(err => console.error('[PostTripForm] Unexpected error loading profile:', err))
   }, [user?.id])
 
   const fullName = profileName || fallbackName
@@ -123,18 +128,18 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   const navBar = !inline && (
     <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 24px', borderBottom:'1px solid rgba(0,0,0,.06)', background:'#FDFBF7', position:'sticky', top:0, zIndex:50, fontFamily:'DM Sans, sans-serif' }}>
       <div onClick={() => setView('home')} style={{ fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1A1710', cursor:'pointer', letterSpacing:'-.5px' }}>
-        Yob<span style={{ color:'#C8891C' }}>bu</span>
+        Yob<span style={{ color:'#52B5D9' }}>bu</span>
       </div>
       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
         {user && (
           <button onClick={() => setView('profile')}
-            style={{ display:'flex', alignItems:'center', gap:8, background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-            <div style={{ width:26, height:26, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
+            style={{ display:'flex', alignItems:'center', gap:8, background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
+            <div style={{ width:26, height:26, borderRadius:'50%', background:'#52B5D9', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
               {avatarUrl && !avatarErr
                 ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
                 : initials}
             </div>
-            <span style={{ fontSize:12, fontWeight:600, color:'#C8891C' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
+            <span style={{ fontSize:12, fontWeight:600, color:'#52B5D9' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
           </button>
         )}
       </div>
@@ -156,7 +161,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
               {isFr ? 'Vous devez être connecté pour poster un voyage.' : 'You need to be signed in to post a trip.'}
             </p>
             <button onClick={onLoginRequired}
-              style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
+              style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
               {isFr ? 'Se connecter' : 'Sign in'}
             </button>
             <button onClick={() => setView('browse')}
@@ -180,8 +185,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
     setLoading(true)
     try {
       const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
-      const colors   = ['#C8891C','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
-      const bgs      = ['#FFF8EB','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
+      const colors   = ['#52B5D9','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
+      const bgs      = ['#D4E8F4','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
       const idx      = Math.floor(Math.random() * colors.length)
 
       const { error } = await supabase.from('trips').insert({
@@ -225,7 +230,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         </p>
         <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
           <button onClick={() => setView('profile')}
-            style={{ background:'#C8891C', color:'#fff', border:'none', padding:'13px 28px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
+            style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'13px 28px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
             {isFr ? 'Voir mes voyages' : 'View my trips'}
           </button>
           <button onClick={() => setView('browse')}
@@ -265,8 +270,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       )}
 
       {/* Traveler info */}
-      <div style={{ background:'#FFF8EB', border:'1px solid #F0C878', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
-        <div style={{ width:44, height:44, borderRadius:'50%', background:'#C8891C', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
+      <div style={{ background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
+        <div style={{ width:44, height:44, borderRadius:'50%', background:'#52B5D9', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
           {avatarUrl && !avatarErr
             ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
             : (fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP')
@@ -275,7 +280,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         <div>
           <div style={{ fontSize:15, fontWeight:600, color:'#1A1710' }}>{fullName || (isFr ? 'Chargement...' : 'Loading...')}</div>
         </div>
-        <div style={{ marginLeft:'auto', fontSize:11, color:'#C8891C', fontWeight:600, background:'#fff', border:'1px solid #F0C878', borderRadius:20, padding:'3px 10px' }}>
+        <div style={{ marginLeft:'auto', fontSize:11, color:'#52B5D9', fontWeight:600, background:'#fff', border:'1px solid #D4A574', borderRadius:20, padding:'3px 10px' }}>
           {isFr ? 'Vous' : 'You'}
         </div>
       </div>
@@ -351,7 +356,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         )}
 
         <button onClick={handleSubmit} disabled={loading}
-          style={{ width:'100%', padding:'14px', borderRadius:12, border:'none', background:'#C8891C', color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif', opacity: loading ? .6 : 1 }}>
+          style={{ width:'100%', padding:'14px', borderRadius:12, border:'none', background:'#52B5D9', color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif', opacity: loading ? .6 : 1 }}>
           {loading ? '...' : isFr ? 'Soumettre mon annonce' : 'Submit my listing'}
         </button>
       </div>

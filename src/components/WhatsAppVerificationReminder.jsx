@@ -30,7 +30,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #FFF8EB 0%, #FDF0E8 100%)',
+      background: 'linear-gradient(135deg, #D4E8F4 0%, #FDF0E8 100%)',
       border: '1px solid #F5D0A9',
       borderRadius: 12,
       padding: '14px 18px',
@@ -45,7 +45,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
         width: 40,
         height: 40,
         borderRadius: 10,
-        background: '#C8891C',
+        background: '#52B5D9',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -73,7 +73,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
         onClick={onVerifyClick}
         style={{
           padding: '10px 18px',
-          background: '#C8891C',
+          background: '#52B5D9',
           color: '#fff',
           border: 'none',
           borderRadius: 10,
@@ -86,7 +86,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
           transition: 'background .2s',
         }}
         onMouseEnter={(e) => e.target.style.background = '#B0781A'}
-        onMouseLeave={(e) => e.target.style.background = '#C8891C'}
+        onMouseLeave={(e) => e.target.style.background = '#52B5D9'}
       >
         {isFr ? 'Vérifier maintenant →' : 'Verify now →'}
       </button>

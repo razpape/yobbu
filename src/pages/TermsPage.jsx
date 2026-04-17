@@ -9,23 +9,14 @@ export default function TermsPage({ lang, setView }) {
     h2:      { fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 10, marginTop: 40 },
     p:       { fontSize: 15, color: '#8A8070', lineHeight: 1.75, marginBottom: 14 },
     li:      { fontSize: 15, color: '#8A8070', lineHeight: 1.75, marginBottom: 8 },
-    tag:     { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#C8891C', background: '#FFF8EB', border: '1px solid #F0C878', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 20 },
+    tag:     { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 20 },
     divider: { height: 1, background: 'rgba(0,0,0,.06)', margin: '8px 0' },
-    box:     { background: '#FFF8EB', border: '1px solid #F0C878', borderRadius: 14, padding: '18px 22px', marginBottom: 24 },
+    box:     { background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 14, padding: '18px 22px', marginBottom: 24 },
   }
 
   return (
     <div style={s.page}>
-      <style>{`@media(max-width:768px){ .tos-nav{padding:14px 16px !important;} .tos-body{padding:32px 16px 60px !important;} }`}</style>
-
-      <nav className="tos-nav" style={s.nav}>
-        <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px' }}>
-          Yob<span style={{ color: '#C8891C' }}>bu</span>
-        </div>
-        <button onClick={() => setView('home')} style={{ fontSize: 13, fontWeight: 500, padding: '7px 16px', borderRadius: 20, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#3D3829', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-          ← {isFr ? 'Retour' : 'Back home'}
-        </button>
-      </nav>
+      <style>{`@media(max-width:768px){ .tos-body{padding:32px 16px 60px !important;} }`}</style>
 
       <div className="tos-body" style={s.body}>
         <div style={s.tag}>{isFr ? 'Conditions d\'utilisation' : 'Terms of Service'}</div>
@@ -35,7 +26,7 @@ export default function TermsPage({ lang, setView }) {
 
         {/* Key summary box */}
         <div style={s.box}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#C8891C', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#52B5D9', marginBottom: 10 }}>
             {isFr ? 'En bref' : 'Plain language summary'}
           </div>
           <ul style={{ margin: 0, padding: '0 0 0 18px' }}>

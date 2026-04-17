@@ -263,7 +263,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
     inp:     { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1A1710', fontSize: 14, fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box', marginBottom: 14 },
     btn:     (bg, disabled) => ({
       width: '100%', padding: '13px', borderRadius: 12, border: 'none',
-      background: disabled ? '#E8DDD0' : (bg || '#C8891C'),
+      background: disabled ? '#E8DDD0' : (bg || '#52B5D9'),
       color: '#fff', fontSize: 15, fontWeight: 600,
       cursor: disabled ? 'not-allowed' : 'pointer',
       fontFamily: 'DM Sans, sans-serif', transition: 'all .2s',
@@ -434,7 +434,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               {mode === 'login' ? (isFr ? 'Pas de compte ? ' : 'No account? ') : (isFr ? 'Déjà un compte ? ' : 'Already have one? ')}
               <button
                 onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(null) }}
-                style={{ background: 'none', border: 'none', color: '#C8891C', fontWeight: 700, cursor: 'pointer', fontSize: 13, fontFamily: 'DM Sans, sans-serif' }}
+                style={{ background: 'none', border: 'none', color: '#52B5D9', fontWeight: 700, cursor: 'pointer', fontSize: 13, fontFamily: 'DM Sans, sans-serif' }}
               >
                 {mode === 'login' ? (isFr ? "S'inscrire" : 'Sign up') : (isFr ? 'Se connecter' : 'Log in')}
               </button>
@@ -466,7 +466,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'phone-verify' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
             </div>
@@ -519,7 +519,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'whatsapp' && waMethod === 'choice' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
             </div>
@@ -567,7 +567,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#C8891C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#52B5D9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <PhoneIcon size={22} color="white" />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -646,7 +646,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'whatsapp' && waMethod === 'outbound' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#FFF8EB', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#C8891C', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Numéro WhatsApp requis' : 'WhatsApp number required'}
             </div>

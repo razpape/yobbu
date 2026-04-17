@@ -17,6 +17,7 @@ import PackagesPage from './pages/PackagesPage'
 import OnboardingPage from './pages/OnboardingPage'
 import Admin from './pages/Admin'
 import ErrorBoundary from './components/ErrorBoundary'
+import LoadingSpinner from './components/LoadingSpinner'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './lib/supabase'
@@ -48,11 +49,10 @@ const handleOAuthCallback = () => {
 }
 
 export default function App() {
-  const [lang, setLang]                 = useState('en')
+  const [lang, setLang]                 = useState('fr')
   const [view, setViewState]            = useState(getInitialView)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
-  const [installPrompt, setInstallPrompt] = useState(null)
   const { trips, loading: tripsLoading, error, addTrip } = useTrips()
   const { user, loading: authLoading, signOut } = useAuth()
 
@@ -88,24 +88,9 @@ export default function App() {
     }
   }, [authLoading, user, view])
 
-  // PWA install prompt
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault()
-      setInstallPrompt(e)
-    }
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-  }, [])
-
-  const handleInstallApp = async () => {
-    if (!installPrompt) return
-    installPrompt.prompt()
-    const { outcome } = await installPrompt.userChoice
-    setInstallPrompt(null)
-  }
 
   if (view === 'admin') return <Admin />
+  if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
 
   const handleSearch = (filter) => { setSearchFilter(filter); setView('browse') }
 
@@ -127,19 +112,12 @@ export default function App() {
     window.history.pushState({ view: 'gp' }, '', '/browse')
   }
 
-  if (view === 'profile')    return <ErrorBoundary><ProfilePage user={user} lang={lang} onSignOut={handleSignOut} setView={setView} /></ErrorBoundary>
-  if (view === 'gp' && selectedGp) return <ErrorBoundary><GPProfile gp={selectedGp} lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onBack={() => setView('browse')} /></ErrorBoundary>
-  if (view === 'onboarding') return <ErrorBoundary><OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} /></ErrorBoundary>
-  if (view === 'privacy')    return <PrivacyPage lang={lang} setView={setView} />
-  if (view === 'terms')      return <TermsPage lang={lang} setView={setView} />
-  if (view === 'packages')   return <ErrorBoundary><PackagesPage lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onSendPackage={() => setView('send')} onBrowseTravelers={() => setView('browse')} /></ErrorBoundary>
-  if (view === 'send')       return <ErrorBoundary><SendPackagePage lang={lang} user={user} onBack={() => setView('packages')} onLoginRequired={() => setView('phone-auth')} /></ErrorBoundary>
-  if (view === 'phone-auth') return <PhoneAuth lang={lang} onComplete={handlePhoneAuthComplete} />
+  if (authLoading) return <LoadingSpinner />
 
   return (
     <ErrorBoundary>
       <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
-        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} showInstall={!!installPrompt} onInstallClick={handleInstallApp} />
+        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
 
         {view === 'home' && (
           <>
@@ -162,6 +140,34 @@ export default function App() {
 
         {view === 'post' && (
           <PostTripForm lang={lang} setView={setView} onAdd={addTrip} user={user} onLoginRequired={() => setView('phone-auth')} />
+        )}
+
+        {view === 'profile' && (
+          <ProfilePage user={user} lang={lang} onSignOut={handleSignOut} setView={setView} />
+        )}
+
+        {view === 'gp' && selectedGp && (
+          <GPProfile gp={selectedGp} lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onBack={() => setView('browse')} />
+        )}
+
+        {view === 'onboarding' && (
+          <OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} />
+        )}
+
+        {view === 'privacy' && (
+          <PrivacyPage lang={lang} setView={setView} />
+        )}
+
+        {view === 'terms' && (
+          <TermsPage lang={lang} setView={setView} />
+        )}
+
+        {view === 'packages' && (
+          <PackagesPage lang={lang} user={user} onLoginRequired={() => setView('phone-auth')} onSendPackage={() => setView('send')} onBrowseTravelers={() => setView('browse')} />
+        )}
+
+        {view === 'send' && (
+          <SendPackagePage lang={lang} user={user} onBack={() => setView('packages')} onLoginRequired={() => setView('phone-auth')} />
         )}
       </div>
     </ErrorBoundary>

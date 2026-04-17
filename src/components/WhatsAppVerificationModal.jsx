@@ -250,7 +250,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                 onClick={sendOtp}
                 disabled={loading || cooldown > 0}
                 style={{
-                  width: '100%', padding: '14px', background: loading || cooldown > 0 ? '#E8DDD0' : '#C8891C',
+                  width: '100%', padding: '14px', background: loading || cooldown > 0 ? '#E8DDD0' : '#52B5D9',
                   color: '#fff', border: 'none', borderRadius: 12,
                   fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 600,
                   cursor: loading || cooldown > 0 ? 'not-allowed' : 'pointer',
@@ -352,7 +352,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
               <div style={{ textAlign: 'center' }}>
                 <button
                   onClick={() => { setStep('phone'); setOtp(['','','','','','']); setError('') }}
-                  style={{ fontSize: 13, color: '#C8891C', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}
+                  style={{ fontSize: 13, color: '#52B5D9', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}
                 >
                   {isFr ? '← Changer de numéro' : '← Change number'}
                 </button>

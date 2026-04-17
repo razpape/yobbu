@@ -34,7 +34,7 @@ export default function ContactModal({ gp, lang, onClose, onSend }) {
 
         {/* GP preview */}
         <div style={{ background:'#fff', borderBottom:'1px solid rgba(0,0,0,.06)', padding:'18px 22px', display:'flex', alignItems:'center', gap:14 }}>
-          <div style={{ width:50, height:50, borderRadius:'50%', background:gp.bg||'#FFF8EB', color:gp.color||'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Serif Display, serif', fontSize:17, fontWeight:700, flexShrink:0 }}>
+          <div style={{ width:50, height:50, borderRadius:'50%', background:gp.bg||'#D4E8F4', color:gp.color||'#52B5D9', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Serif Display, serif', fontSize:17, fontWeight:700, flexShrink:0 }}>
             {initials}
           </div>
           <div style={{ flex:1 }}>

@@ -18,7 +18,7 @@ const FROM_CITIES = [
 ]
 
 const TRAVELERS = [
-  { initials: 'AM', name: 'Aminata M.', from: 'JFK', fromCity: 'New York', to: 'DSS', toCity: 'Dakar', date: 'Apr 18', deliveries: 18, rating: 4.9, verified: true, color: '#C8891C' },
+  { initials: 'AM', name: 'Aminata M.', from: 'JFK', fromCity: 'New York', to: 'DSS', toCity: 'Dakar', date: 'Apr 18', deliveries: 18, rating: 4.9, verified: true, color: '#52B5D9' },
   { initials: 'OD', name: 'Oumar D.',   from: 'CDG', fromCity: 'Paris',    to: 'DSS', toCity: 'Dakar', date: 'Apr 22', deliveries: 7,  rating: 4.2, verified: false, color: '#2D8B4E' },
   { initials: 'FN', name: 'Fatou N.',   from: 'JFK', fromCity: 'New York', to: 'CKY', toCity: 'Conakry', date: 'May 1', deliveries: 3, rating: 5.0, verified: true, color: '#7A3B1E' },
   { initials: 'IK', name: 'Ibrahima K.', from: 'JFK', fromCity: 'New York', to: 'DSS', toCity: 'Dakar', date: 'May 5', deliveries: 11, rating: 4.7, verified: true, color: '#185FA5' },
@@ -75,7 +75,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         .anim-5 { animation: fadeUp 0.6s 0.4s ease-out both; }
         .anim-6 { animation: fadeUp 0.8s 0.3s ease-out both; }
         .pulse-dot { animation: pulse 2s infinite; }
-        .fly-plane::after { content:'✈'; position:absolute; top:-10px; font-size:14px; animation:fly 3s ease-in-out infinite; color:#C8891C; }
+        .fly-plane::after { content:'✈'; position:absolute; top:-10px; font-size:14px; animation:fly 3s ease-in-out infinite; color:#52B5D9; }
         .card-enter { animation: slideIn 0.3s ease-out both; }
         .card-exit { animation: slideOut 0.3s ease-out both; }
         .btn-find:hover .arrow-circle { transform: translateX(3px); }
@@ -92,7 +92,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
           .mobile-search-block { display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 32px 20px 24px; box-sizing: border-box; }
           .swap-btn { width: 34px; height: 34px; background: #fff; border: 1px solid #E0D8CE; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,.08); flex-shrink: 0; transition: background .15s; }
           .swap-btn:hover { background: #F7F4F0; }
-          .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #C8891C; color: #fff; border: none; border-radius: 16px; padding: 22px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(200,137,28,.35); transition: background .2s; }
+          .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #52B5D9; color: #fff; border: none; border-radius: 16px; padding: 22px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(200,137,28,.35); transition: background .2s; }
           .mobile-btn-find:hover { background: #E5A630; }
         }
       `}</style>
@@ -133,8 +133,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               <>
                 <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', marginBottom:8, lineHeight:1.2 }}>
                   {isFr
-                    ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em> chez votre famille.</>
-                    : <>Send a package <em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your family back home.</>}
+                    ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#52B5D9' }}>directement</em> chez votre famille.</>
+                    : <>Send a package <em style={{ fontStyle:'italic', color:'#52B5D9' }}>directly</em> to your family back home.</>}
                 </h1>
                 <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5 }}>
                   {isFr
@@ -200,8 +200,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               <>
                 <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1A1710', textAlign:'center', marginBottom:8, lineHeight:1.2 }}>
                   {isFr
-                    ? <>Voyagez et <em style={{ fontStyle:'italic', color:'#C8891C' }}>gagnez</em> de l&apos;argent.</>
-                    : <>Travel and <em style={{ fontStyle:'italic', color:'#C8891C' }}>earn</em> money on the way.</>}
+                    ? <>Voyagez et <em style={{ fontStyle:'italic', color:'#52B5D9' }}>gagnez</em> de l&apos;argent.</>
+                    : <>Travel and <em style={{ fontStyle:'italic', color:'#52B5D9' }}>earn</em> money on the way.</>}
                 </h1>
                 <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:24, lineHeight:1.5 }}>
                   {isFr
@@ -217,7 +217,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                     { n:'3', text: isFr ? 'Transportez et gagnez de l\'argent' : 'Carry packages and get paid' },
                   ].map(({ n, text }) => (
                     <div key={n} style={{ display:'flex', alignItems:'center', gap:14, background:'#fff', borderRadius:12, padding:'12px 16px', border:'1px solid #F0EDE8' }}>
-                      <div style={{ width:28, height:28, borderRadius:'50%', background:'#C8891C', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, color:'#fff', flexShrink:0 }}>{n}</div>
+                      <div style={{ width:28, height:28, borderRadius:'50%', background:'#52B5D9', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:700, color:'#fff', flexShrink:0 }}>{n}</div>
                       <span style={{ fontSize:14, color:'#3D3829', fontWeight:500 }}>{text}</span>
                     </div>
                   ))}
@@ -274,8 +274,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
 
               <h1 className="anim-2 hero-title" style={{ fontSize:'clamp(40px,4.5vw,64px)', lineHeight:1.08, letterSpacing:'-1.5px', color:'#1A1710', marginBottom:20 }}>
                 {isFr
-                  ? <>{`Envoyez un colis`}<br /><em style={{ fontStyle:'italic', color:'#C8891C' }}>directement</em>{` chez`}<br />{`votre famille.`}</>
-                  : <>Send a package<br /><em style={{ fontStyle:'italic', color:'#C8891C' }}>directly</em> to your<br />family back home.</>}
+                  ? <>{`Envoyez un colis`}<br /><em style={{ fontStyle:'italic', color:'#52B5D9' }}>directement</em>{` chez`}<br />{`votre famille.`}</>
+                  : <>Send a package<br /><em style={{ fontStyle:'italic', color:'#52B5D9' }}>directly</em> to your<br />family back home.</>}
               </h1>
 
               {/* 3-step explainer — answers "what is this?" instantly */}
@@ -286,7 +286,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   { n:'3', text: isFr ? 'Votre famille reçoit le colis en quelques jours' : 'Your family receives it in days, not weeks' },
                 ].map(({ n, text }) => (
                   <div key={n} style={{ display:'flex', alignItems:'center', gap:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'#FDF6ED', border:'1.5px solid rgba(200,137,28,.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#C8891C', flexShrink:0 }}>{n}</div>
+                    <div style={{ width:26, height:26, borderRadius:'50%', background:'#FDF6ED', border:'1.5px solid rgba(200,137,28,.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#52B5D9', flexShrink:0 }}>{n}</div>
                     <span style={{ fontSize:15, color:'#5A5348', lineHeight:1.4 }}>{text}</span>
                   </div>
                 ))}
@@ -315,7 +315,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   <span style={{ position:'absolute', right:20, bottom:22, color:'#8A8070', fontSize:12, pointerEvents:'none' }}>▾</span>
                 </div>
                 <button className="btn-find" onClick={handleSearch}
-                  style={{ display:'flex', alignItems:'center', gap:10, background:'#C8891C', color:'#fff', border:'none', padding:'0 32px', fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', transition:'all .25s', whiteSpace:'nowrap' }}>
+                  style={{ display:'flex', alignItems:'center', gap:10, background:'#52B5D9', color:'#fff', border:'none', padding:'0 32px', fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', transition:'all .25s', whiteSpace:'nowrap' }}>
                   {isFr ? 'Trouver' : 'Find travelers'}
                   <span className="arrow-circle" style={{ display:'flex', alignItems:'center', justifyContent:'center', width:28, height:28, background:'rgba(255,255,255,.25)', borderRadius:'50%', transition:'transform .2s' }}>→</span>
                 </button>
@@ -326,7 +326,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 <span style={{ fontSize:13, color:'#8A8070' }}>{isFr ? 'Vous avez un colis ?' : 'Have a package to send?'}</span>
                 <button
                   onClick={() => onSend?.() || setView('send')}
-                  style={{ fontSize:13, fontWeight:700, color:'#C8891C', background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Sans', sans-serif", textDecoration:'underline', textUnderlineOffset:3 }}
+                  style={{ fontSize:13, fontWeight:700, color:'#52B5D9', background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Sans', sans-serif", textDecoration:'underline', textUnderlineOffset:3 }}
                 >
                   {isFr ? 'Poster une demande →' : 'Post a request →'}
                 </button>
@@ -355,7 +355,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                     <div style={{ fontSize:12, color:'#8A8070', marginTop:2 }}>{t.fromCity}</div>
                   </div>
                   <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:4 }}>
-                    <div className="fly-plane" style={{ width:'100%', height:2, background:'linear-gradient(90deg, #C8891C 0%, #E5A630 50%, #C8891C 100%)', position:'relative' }} />
+                    <div className="fly-plane" style={{ width:'100%', height:2, background:'linear-gradient(90deg, #52B5D9 0%, #E5A630 50%, #52B5D9 100%)', position:'relative' }} />
                     <div style={{ fontSize:11, color:'#8A8070' }}>~7h direct</div>
                   </div>
                   <div style={{ textAlign:'center' }}>
@@ -365,7 +365,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 </div>
 
                 {/* Traveler — animated */}
-                <div className={animating ? 'card-exit' : 'card-enter'} style={{ display:'flex', alignItems:'center', gap:14, padding:16, background:'#FFF8EB', borderRadius:14, marginBottom:20 }}>
+                <div className={animating ? 'card-exit' : 'card-enter'} style={{ display:'flex', alignItems:'center', gap:14, padding:16, background:'#D4E8F4', borderRadius:14, marginBottom:20 }}>
                   <div style={{ width:48, height:48, borderRadius:'50%', background:t.color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, color:'#fff', fontWeight:700, flexShrink:0 }}>
                     {t.initials}
                   </div>
@@ -377,7 +377,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                       {t.deliveries} {isFr ? 'livraisons' : 'deliveries'} · {t.rating} ★
                     </div>
                   </div>
-                  <div style={{ fontSize:13, fontWeight:600, color:'#C8891C', whiteSpace:'nowrap' }}>{t.date}</div>
+                  <div style={{ fontSize:13, fontWeight:600, color:'#52B5D9', whiteSpace:'nowrap' }}>{t.date}</div>
                 </div>
 
                 <button className="send-btn" onClick={() => setView('browse')}
@@ -390,7 +390,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   {TRAVELERS.map((_, i) => (
                     <button key={i} className={`dot-btn ${i === current ? 'active' : ''}`}
                       onClick={() => setCurrent(i)}
-                      style={{ width: i === current ? 20 : 6, height:6, borderRadius: i === current ? 3 : '50%', background: i === current ? '#C8891C' : '#E8DDD0', border:'none', cursor:'pointer', padding:0 }} />
+                      style={{ width: i === current ? 20 : 6, height:6, borderRadius: i === current ? 3 : '50%', background: i === current ? '#52B5D9' : '#E8DDD0', border:'none', cursor:'pointer', padding:0 }} />
                   ))}
                 </div>
 
@@ -409,7 +409,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             { n: isFr ? 'Direct' : 'Direct',  l: isFr ? 'Contact WhatsApp'           : 'WhatsApp contact' },
           ].map(({ n, l }, i) => (
             <div className="stat-item" key={l} style={{ flex:1, textAlign:'center', padding:'0 32px', borderRight: i < 3 ? '1px solid rgba(0,0,0,.06)' : 'none' }}>
-              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:32, color:'#C8891C', letterSpacing:'-.5px' }}>{n}</div>
+              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:32, color:'#52B5D9', letterSpacing:'-.5px' }}>{n}</div>
               <div style={{ fontSize:13, color:'#8A8070', marginTop:4 }}>{l}</div>
             </div>
           ))}

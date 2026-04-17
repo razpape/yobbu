@@ -45,7 +45,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
   const to        = gp.to_city   || gp.to   || '—'
   const initials  = (gp.name || 'GP').split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || 'GP'
   const price     = formatPrice(gp.price)
-  const accent    = gp.color || '#C8891C'
+  const accent    = gp.color || '#52B5D9'
   const verified  = gp.phone_verified || gp.verified?.phone
   const days      = daysUntil(gp.date)
   const isFull    = gp.availability_status === 'full'
@@ -56,7 +56,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
   const urgency = (() => {
     if (days === 0) return { label: isFr ? "Aujourd'hui" : 'Today',       c: '#059669' }
-    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#D97706' }
+    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#52B5D9' }
     if (days <= 6)  return { label: isFr ? 'Cette sem.'  : 'This week',   c: '#2563EB' }
     if (days <= 30) return { label: isFr ? 'Ce mois'     : 'This month',  c: '#7C3AED' }
     return { label: isFr ? 'Prochain mois' : 'Next month', c: '#6366F1' }
@@ -194,9 +194,9 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               {gp.name || 'Traveler'}
             </div>
             {badge && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, padding: '2px 8px', background: '#EFF6FF', borderRadius: 12, border: '1px solid #3B82F6' }}>
-                <BadgeCheck size={12} color="#3B82F6" strokeWidth={2.5} />
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#3B82F6' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, padding: '2px 8px', background: '#D7E8DC', borderRadius: 12, border: '1px solid #4A9B5F' }}>
+                <BadgeCheck size={12} color="#4A9B5F" strokeWidth={2.5} />
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#4A9B5F' }}>
                   {isFr ? 'Vérifié' : 'Verified'}
                 </span>
               </div>
@@ -218,7 +218,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {departDate && (
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
               <div style={{
-                background: countdown ? '#DC2626' : urgency.c,
+                background: countdown ? '#A85A3A' : urgency.c,
                 color: '#fff',
                 padding: '3px 10px',
                 borderRadius: 14,
@@ -265,13 +265,13 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {/* Price */}
           {price && !disabled && (
             <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginTop: 8 }}>
-              <span style={{ color: '#C8891C' }}>{price}</span><span style={{ color: '#2D8B4E' }}>/kg</span>
+              <span style={{ color: '#52B5D9' }}>{price}</span><span style={{ color: '#4A9B5F' }}>/kg</span>
             </div>
           )}
 
           {/* CTA */}
           {disabled ? (
-            <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#FEF3C7' : '#FEE2E2', color: isFull ? '#92400E' : '#991B1B' }}>
+            <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#EDD8C4' : '#F3F4F6', color: isFull ? '#8B4A2E' : '#6B7280' }}>
               {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
             </div>
           ) : (

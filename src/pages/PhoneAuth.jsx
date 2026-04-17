@@ -23,13 +23,13 @@ function ProfileStep({ isFr, phone, onComplete }) {
   const roles = [
     {
       id: 'traveler',
-      icon: <Plane size={20} color={role === 'traveler' ? '#C8891C' : '#8A8070'} />,
+      icon: <Plane size={20} color={role === 'traveler' ? '#52B5D9' : '#8A8070'} />,
       title: isFr ? 'Je voyage avec de la place' : 'I travel with space to spare',
       desc: isFr ? 'Je transporte des colis quand je voyage.' : 'I carry packages when I travel.',
     },
     {
       id: 'both',
-      icon: <Users size={20} color={role === 'both' ? '#C8891C' : '#8A8070'} />,
+      icon: <Users size={20} color={role === 'both' ? '#52B5D9' : '#8A8070'} />,
       title: isFr ? 'Les deux' : 'Both',
       desc: isFr ? 'J\'envoie et je transporte selon les occasions.' : 'I do both depending on the situation.',
     },
@@ -44,7 +44,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
   const continueBtn = (onClick, disabled, text) => (
     <button onClick={onClick} disabled={disabled} style={{
       width: '100%', padding: '15px 24px',
-      background: !disabled ? '#C8891C' : '#E0DAD0',
+      background: !disabled ? '#52B5D9' : '#E0DAD0',
       color: !disabled ? '#fff' : '#A09080',
       border: 'none', borderRadius: 14, fontSize: 16, fontWeight: 600,
       cursor: !disabled ? 'pointer' : 'not-allowed',
@@ -62,7 +62,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
       {[1,2,3].map(n => (
         <div key={n} style={{
           height: 4, flex: 1, borderRadius: 2,
-          background: n <= sub ? '#C8891C' : '#E0DAD0',
+          background: n <= sub ? '#52B5D9' : '#E0DAD0',
           transition: 'background .2s',
         }} />
       ))}
@@ -86,7 +86,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
           type="text" value={firstName} onChange={e => setFirstName(e.target.value)}
           placeholder={isFr ? 'Ex: Aminata' : 'e.g. Aminata'}
           style={inputStyle}
-          onFocus={e => e.target.style.borderColor = '#C8891C'}
+          onFocus={e => e.target.style.borderColor = '#52B5D9'}
           onBlur={e => e.target.style.borderColor = '#E0DAD0'}
         />
       </div>
@@ -97,7 +97,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
           type="text" value={lastName} onChange={e => setLastName(e.target.value)}
           placeholder={isFr ? 'Ex: Diallo' : 'e.g. Diallo'}
           style={inputStyle}
-          onFocus={e => e.target.style.borderColor = '#C8891C'}
+          onFocus={e => e.target.style.borderColor = '#52B5D9'}
           onBlur={e => e.target.style.borderColor = '#E0DAD0'}
         />
       </div>
@@ -110,7 +110,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
           <button key={opt.id} onClick={() => setRole(opt.id)} style={{
             display: 'flex', alignItems: 'flex-start', gap: 14,
             padding: '14px 16px', textAlign: 'left',
-            border: `2px solid ${role === opt.id ? '#C8891C' : '#E0DAD0'}`,
+            border: `2px solid ${role === opt.id ? '#52B5D9' : '#E0DAD0'}`,
             borderRadius: 14,
             background: role === opt.id ? '#FDF6ED' : '#fff',
             cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
@@ -123,7 +123,7 @@ function ProfileStep({ isFr, phone, onComplete }) {
             </div>
             {role === opt.id && (
               <div style={{ marginLeft: 'auto', marginTop: 2, flexShrink: 0 }}>
-                <CheckCircle size={18} color="#C8891C" />
+                <CheckCircle size={18} color="#52B5D9" />
               </div>
             )}
           </button>
@@ -194,8 +194,8 @@ function ProfileStep({ isFr, phone, onComplete }) {
         <ArrowLeft size={16} /> {isFr ? 'Retour' : 'Back'}
       </button>
 
-      <div style={{ width: 52, height: 52, background: '#FFF8EB', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+      <div style={{ width: 52, height: 52, background: '#D4E8F4', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
       </div>
 
       <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 4, fontFamily: "'DM Sans', sans-serif" }}>
@@ -224,15 +224,15 @@ function ProfileStep({ isFr, phone, onComplete }) {
       </div>
 
       {/* Terms checkbox */}
-      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', marginBottom: 24, padding: '14px 16px', border: `2px solid ${termsAccepted ? '#C8891C' : '#E0DAD0'}`, borderRadius: 14, background: termsAccepted ? '#FDF6ED' : '#fff', transition: 'all .15s' }}>
+      <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', marginBottom: 24, padding: '14px 16px', border: `2px solid ${termsAccepted ? '#52B5D9' : '#E0DAD0'}`, borderRadius: 14, background: termsAccepted ? '#FDF6ED' : '#fff', transition: 'all .15s' }}>
         <input
           type="checkbox" checked={termsAccepted} onChange={e => setTerms(e.target.checked)}
-          style={{ width: 18, height: 18, accentColor: '#C8891C', flexShrink: 0, marginTop: 2 }}
+          style={{ width: 18, height: 18, accentColor: '#52B5D9', flexShrink: 0, marginTop: 2 }}
         />
         <span style={{ fontSize: 13, color: '#3D3829', lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
           {isFr
-            ? <>J'ai lu et j'accepte les <strong style={{ color: '#C8891C' }}>Conditions d'utilisation</strong> et la <strong style={{ color: '#C8891C' }}>Politique de confidentialité</strong> de Yobbu.</>
-            : <>I have read and agree to Yobbu's <strong style={{ color: '#C8891C' }}>Terms of Service</strong> and <strong style={{ color: '#C8891C' }}>Privacy Policy</strong>.</>}
+            ? <>J'ai lu et j'accepte les <strong style={{ color: '#52B5D9' }}>Conditions d'utilisation</strong> et la <strong style={{ color: '#52B5D9' }}>Politique de confidentialité</strong> de Yobbu.</>
+            : <>I have read and agree to Yobbu's <strong style={{ color: '#52B5D9' }}>Terms of Service</strong> and <strong style={{ color: '#52B5D9' }}>Privacy Policy</strong>.</>}
         </span>
       </label>
 
@@ -435,7 +435,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
     }}>
       <div style={{
         width: 80, height: 80,
-        background: 'linear-gradient(135deg, #C8891C 0%, #A07015 100%)',
+        background: 'linear-gradient(135deg, #52B5D9 0%, #A07015 100%)',
         borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 28px',
         boxShadow: '0 6px 24px rgba(200, 137, 28, 0.25)',
@@ -464,7 +464,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         onClick={() => setStep(STEPS.PHONE)}
         style={{
           width: '100%', padding: '16px 24px',
-          background: '#C8891C', color: '#fff',
+          background: '#52B5D9', color: '#fff',
           border: 'none', borderRadius: 14,
           fontSize: 16, fontWeight: 600, cursor: 'pointer',
           fontFamily: "'DM Sans', sans-serif",
@@ -489,7 +489,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           marginBottom: 28,
           transition: 'border-color .15s',
         }}
-        onMouseEnter={e => e.currentTarget.style.borderColor = '#C8891C80'}
+        onMouseEnter={e => e.currentTarget.style.borderColor = '#52B5D980'}
         onMouseLeave={e => e.currentTarget.style.borderColor = '#E0DAD0'}
       >
         {isFr ? "Parcourir d'abord" : 'Browse First'}
@@ -501,7 +501,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           <button
             onClick={() => setStep(STEPS.PHONE)}
             style={{
-              color: '#C8891C', background: 'none', border: 'none',
+              color: '#52B5D9', background: 'none', border: 'none',
               cursor: 'pointer', fontWeight: 600, fontSize: 13,
               fontFamily: "'DM Sans', sans-serif",
             }}
@@ -554,7 +554,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           disabled={!phoneValid || loading}
           style={{
             width: '100%', padding: '16px 24px',
-            background: phoneValid && !loading ? '#C8891C' : '#E0DAD0',
+            background: phoneValid && !loading ? '#52B5D9' : '#E0DAD0',
             color: phoneValid && !loading ? '#fff' : '#A09080',
             border: 'none', borderRadius: 14,
             fontSize: 16, fontWeight: 600,
@@ -587,7 +587,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 20px',
         }}>
-          <Smartphone size={28} color="#C8891C" />
+          <Smartphone size={28} color="#52B5D9" />
         </div>
 
         <h2 style={{
@@ -617,7 +617,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{
             width: 22, height: 22,
-            border: '3px solid #E0DAD0', borderTopColor: '#C8891C',
+            border: '3px solid #E0DAD0', borderTopColor: '#52B5D9',
             borderRadius: '50%', animation: 'auth-spin 1s linear infinite',
             margin: '0 auto 8px',
           }} />
@@ -631,13 +631,13 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         {countdown > 0 ? (
           <p style={{ color: '#8A8070', fontSize: 13, fontFamily: "'DM Sans', sans-serif" }}>
             {isFr ? 'Renvoyer dans' : 'Resend in'}{' '}
-            <span style={{ fontWeight: 700, color: '#C8891C' }}>{countdown}s</span>
+            <span style={{ fontWeight: 700, color: '#52B5D9' }}>{countdown}s</span>
           </p>
         ) : (
           <button
             onClick={handlePhoneSubmit}
             style={{
-              background: 'none', border: 'none', color: '#C8891C',
+              background: 'none', border: 'none', color: '#52B5D9',
               fontWeight: 600, fontSize: 14, cursor: 'pointer',
               padding: '6px 14px', fontFamily: "'DM Sans', sans-serif",
             }}
@@ -697,7 +697,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
       </p>
       <div style={{
         width: 28, height: 28, marginTop: 28,
-        border: '3px solid #E0DAD0', borderTopColor: '#C8891C',
+        border: '3px solid #E0DAD0', borderTopColor: '#52B5D9',
         borderRadius: '50%', animation: 'auth-spin 1s linear infinite',
       }} />
     </div>
@@ -764,7 +764,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
             }}>
               <div style={{
                 height: '100%',
-                background: '#C8891C',
+                background: '#52B5D9',
                 width: `${progressPct()}%`,
                 transition: 'width 0.3s ease',
                 borderRadius: 2,

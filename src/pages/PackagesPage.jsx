@@ -49,10 +49,10 @@ function PackageCard({ pkg, lang, user, onLoginRequired }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <div style={{ fontSize: 28, fontWeight: 900, color: '#111', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{from}</div>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 40 }}>
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, #D4C9BA, #C8891C)' }} />
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, #D4C9BA, #52B5D9)' }} />
             <div style={{ fontSize: 16, margin: '0 4px' }}>📦</div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 900, color: '#C8891C', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
+          <div style={{ fontSize: 28, fontWeight: 900, color: '#52B5D9', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
         </div>
         {pkg.deadline && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -134,8 +134,18 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
       .eq('status', 'open')
       .order('created_at', { ascending: false })
       .then(({ data, error: err }) => {
-        if (err) setError(err.message)
-        else setPackages(data || [])
+        if (err) {
+          console.error('[PackagesPage] Failed to load packages:', err)
+          setError(err.message)
+        } else {
+          setPackages(data || [])
+          setError(null)
+        }
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('[PackagesPage] Unexpected error loading packages:', err)
+        setError(err.message)
         setLoading(false)
       })
   }, [])
@@ -149,35 +159,8 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
   return (
     <div style={{ minHeight: '100vh', background: '#FDFBF7', fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* Header bar */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #EDEAE4', padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710', cursor: 'pointer' }} onClick={onBrowseTravelers}>
-            Yob<span style={{ color: '#C8891C' }}>bu</span>
-          </div>
-          <button
-            onClick={onBrowseTravelers}
-            style={{ fontSize: 13, color: '#8A8070', cursor: 'pointer', background: 'none', border: 'none', fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}
-          >
-            ← {isFr ? 'Voir les voyageurs' : 'Browse travelers'}
-          </button>
-        </div>
-        <button
-          onClick={onSendPackage}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 20px', borderRadius: 10, border: 'none',
-            background: '#C8891C', color: '#fff',
-            fontSize: 13, fontWeight: 700, cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif",
-          }}
-        >
-          + {isFr ? 'Poster un colis' : 'Post a package'}
-        </button>
-      </div>
-
       {/* Trust bar */}
-      <div style={{ background: '#FFF8EB', borderBottom: '1px solid #F0D898', padding: '10px 48px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ background: '#D4E8F4', borderBottom: '1px solid #F0D898', padding: '10px 48px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 15 }}>📦</span>
         <span style={{ fontSize: 12, fontWeight: 500, color: '#7C4E0A' }}>
           {isFr
@@ -212,7 +195,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
                 fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1A1710',
                 background: '#fff', outline: 'none', width: 130,
               }}
-              onFocus={e => e.target.style.borderColor = '#C8891C'}
+              onFocus={e => e.target.style.borderColor = '#52B5D9'}
               onBlur={e => e.target.style.borderColor = '#E8E4DE'}
             />
             <input
@@ -224,7 +207,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
                 fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1A1710',
                 background: '#fff', outline: 'none', width: 130,
               }}
-              onFocus={e => e.target.style.borderColor = '#C8891C'}
+              onFocus={e => e.target.style.borderColor = '#52B5D9'}
               onBlur={e => e.target.style.borderColor = '#E8E4DE'}
             />
           </div>
@@ -276,7 +259,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
             </p>
             <button
               onClick={onSendPackage}
-              style={{ padding: '12px 28px', borderRadius: 20, border: 'none', background: '#C8891C', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+              style={{ padding: '12px 28px', borderRadius: 20, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
             >
               {isFr ? 'Poster un colis' : 'Post a package'}
             </button>

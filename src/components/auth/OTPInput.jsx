@@ -102,9 +102,9 @@ export default function OTPInput({ length = 6, onComplete, onChange, lang = 'en'
               height: 54,
               border: `2px solid ${
                 focusedIndex === index
-                  ? '#C8891C'
+                  ? '#52B5D9'
                   : digit
-                    ? '#C8891C80'
+                    ? '#52B5D980'
                     : '#E0DAD0'
               }`,
               borderRadius: 12,
@@ -116,7 +116,7 @@ export default function OTPInput({ length = 6, onComplete, onChange, lang = 'en'
               outline: 'none',
               transition: 'all 0.15s',
               fontFamily: "'DM Sans', sans-serif",
-              caretColor: '#C8891C',
+              caretColor: '#52B5D9',
             }}
           />
         ))}

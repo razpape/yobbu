@@ -90,7 +90,7 @@ function Select({ value, onChange, children }) {
           boxSizing: 'border-box',
           transition: 'border-color .15s',
         }}
-        onFocus={e => e.target.style.borderColor = '#C8891C'}
+        onFocus={e => e.target.style.borderColor = '#52B5D9'}
         onBlur={e => e.target.style.borderColor = '#E8E4DE'}
       >
         {children}
@@ -168,9 +168,9 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
                 flex: 1,
                 padding: '9px 0',
                 borderRadius: 10,
-                border: `1.5px solid ${verifyFilter === opt.value ? '#C8891C' : '#E8E4DE'}`,
+                border: `1.5px solid ${verifyFilter === opt.value ? '#52B5D9' : '#E8E4DE'}`,
                 background: verifyFilter === opt.value ? '#FFF7ED' : '#fff',
-                color: verifyFilter === opt.value ? '#C8891C' : '#6B6860',
+                color: verifyFilter === opt.value ? '#52B5D9' : '#6B6860',
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -194,7 +194,7 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
         style={{
           width: '100%',
           padding: '13px',
-          background: '#C8891C',
+          background: '#52B5D9',
           color: '#fff',
           border: 'none',
           borderRadius: 10,
@@ -206,7 +206,7 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
           transition: 'background .15s',
         }}
         onMouseEnter={e => e.currentTarget.style.background = '#A8710C'}
-        onMouseLeave={e => e.currentTarget.style.background = '#C8891C'}
+        onMouseLeave={e => e.currentTarget.style.background = '#52B5D9'}
       >
         {isFr ? 'Appliquer' : 'Apply filters'}
       </button>
@@ -283,7 +283,7 @@ function RightSidebar({ lang, trips }) {
                     {r.to}
                   </span>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#C8891C', flexShrink: 0, marginLeft: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#52B5D9', flexShrink: 0, marginLeft: 8 }}>
                   {r.count} {isFr ? (r.count > 1 ? 'voyages' : 'voyage') : (r.count > 1 ? 'trips' : 'trip')}
                 </span>
               </div>
@@ -291,7 +291,7 @@ function RightSidebar({ lang, trips }) {
                 <div style={{
                   height: '100%',
                   width: `${Math.round((r.count / maxCount) * 100)}%`,
-                  background: i === 0 ? 'linear-gradient(90deg, #C8891C, #E6A832)' : '#D4C4A8',
+                  background: i === 0 ? 'linear-gradient(90deg, #52B5D9, #E6A832)' : '#D4C4A8',
                   borderRadius: 4,
                   transition: 'width .4s ease',
                 }} />
@@ -304,7 +304,7 @@ function RightSidebar({ lang, trips }) {
       {/* Safety tips */}
       <div style={{ background: 'linear-gradient(145deg, #1A1710 0%, #2A2318 100%)', borderRadius: 16, padding: '18px 18px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <ShieldCheckIcon size={15} color="#C8891C" />
+          <ShieldCheckIcon size={15} color="#52B5D9" />
           <span style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-.1px' }}>
             {isFr ? 'Conseils de sécurité' : 'Safety tips'}
           </span>
@@ -312,8 +312,8 @@ function RightSidebar({ lang, trips }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {tips.map((tip, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#C8891C22', border: '1px solid #C8891C55', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                <span style={{ fontSize: 9, fontWeight: 900, color: '#C8891C' }}>{i + 1}</span>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#52B5D922', border: '1px solid #52B5D955', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#52B5D9' }}>{i + 1}</span>
               </div>
               <span style={{ fontSize: 11.5, color: '#C8B898', lineHeight: 1.55 }}>{tip}</span>
             </div>
@@ -323,7 +323,7 @@ function RightSidebar({ lang, trips }) {
 
       {/* Trust badge */}
       <div style={{ background: '#F0FAF4', border: '1.5px solid #C8E6D4', borderRadius: 16, padding: '14px 18px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-        <ShieldCheckIcon size={20} color="#1A5C38" style={{ flexShrink: 0, marginTop: 1 }} />
+        <ShieldCheckIcon size={20} color="#059669" style={{ flexShrink: 0, marginTop: 1 }} />
         <div>
           <div style={{ fontSize: 12, fontWeight: 800, color: '#1A4028', marginBottom: 3 }}>
             {isFr ? '100% vérifiés par téléphone' : '100% phone-verified'}
@@ -556,8 +556,8 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
       {/* Trust bar */}
       <div className="browse-trust-bar" style={{ background:'#F0FAF4', borderBottom:'1px solid #C8E6D4', padding:'10px 48px', display:'flex', alignItems:'center', gap:8 }}>
-        <ShieldCheckIcon size={15} color="#1A5C38" />
-        <span style={{ fontSize:12, fontWeight:500, color:'#1A5C38' }}>
+        <ShieldCheckIcon size={15} color="#059669" />
+        <span style={{ fontSize:12, fontWeight:500, color:'#059669' }}>
           {isFr ? "Chaque voyageur est vérifié par téléphone avant d'apparaître sur Yobbu." : 'Every traveler is phone-verified before appearing on Yobbu.'}
         </span>
       </div>
@@ -573,7 +573,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           </svg>
           {isFr ? 'Filtres' : 'Filters'}
           {activeFilterCount > 0 && (
-            <span style={{ background:'#C8891C', color:'#fff', borderRadius:'50%', width:18, height:18, fontSize:11, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
+            <span style={{ background:'#52B5D9', color:'#fff', borderRadius:'50%', width:18, height:18, fontSize:11, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
               {activeFilterCount}
             </span>
           )}
@@ -649,7 +649,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
             <input
               value={searchText}
               onChange={e => { setSearchText(e.target.value); setShowSuggestions(true) }}
-              onFocus={e => { e.target.style.borderColor = '#C8891C'; setShowSuggestions(true) }}
+              onFocus={e => { e.target.style.borderColor = '#52B5D9'; setShowSuggestions(true) }}
               onBlur={e => { e.target.style.borderColor = '#E8E4DE' }}
               onKeyDown={e => {
                 if (e.key === 'Enter') { saveRecentSearch(searchText); setShowSuggestions(false) }
@@ -688,7 +688,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                       </span>
                       <button
                         onClick={clearRecentSearches}
-                        style={{ background: 'none', border: 'none', fontSize: 10, color: '#C8891C', cursor: 'pointer', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', padding: 0 }}
+                        style={{ background: 'none', border: 'none', fontSize: 10, color: '#52B5D9', cursor: 'pointer', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', padding: 0 }}
                       >
                         {isFr ? 'Effacer' : 'Clear'}
                       </button>
@@ -734,7 +734,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                         onMouseLeave={e => e.currentTarget.style.background = 'none'}
                       >
                         {s.icon === 'pin' && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C8891C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                           </svg>
                         )}
@@ -838,7 +838,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
               </p>
               <button
                 onClick={() => { setFromFilter(''); setToFilter(''); setAvailOption(''); setPriceFilter(''); setVerifyFilter('all'); setServiceFilter('all'); setSearchText(''); setApplied({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' }) }}
-                style={{ background:'#C8891C', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+                style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
               >
                 {isFr ? 'Voir tous les voyageurs' : 'View all travelers'}
               </button>

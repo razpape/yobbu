@@ -84,8 +84,8 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
               {isFr ? 'Bateau — groupage' : 'Boat — groupage'}
             </span>
           ) : (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#FFF8EB', color: '#C8891C', border: '1px solid #F0C878' }}>
-              <PlaneIcon size={13} color="#C8891C" />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#D4E8F4', color: '#52B5D9', border: '1px solid #D4A574' }}>
+              <PlaneIcon size={13} color="#52B5D9" />
               {isFr ? 'Transport avion — bagage cabine' : 'Air transport — carry-on luggage'}
             </span>
           )}
@@ -122,7 +122,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #F0EDE8' }}>
           {[
             { Icon: CalendarIcon, label: isFr ? 'Date de départ' : 'Departure date', value: formatDate(trip.date) || '—',  color: '#1A1710' },
-            { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#C8891C' },
+            { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#52B5D9' },
           ].map(({ Icon, label, value, color }, i) => (
             <div key={label} style={{ padding: '16px 12px', borderRight: i < 1 ? '1px solid #F0EDE8' : 'none', textAlign: 'center' }}>
               <Icon size={16} color="#A09080" />
@@ -138,7 +138,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
             {trip.pickup_area && (
               <div style={{ flex: 1, padding: '14px 20px', borderRight: trip.dropoff_area ? '1px solid #F0EDE8' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#C8891C" />
+                  <MapPinIcon size={13} color="#52B5D9" />
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
                     {isFr ? 'Récupère à' : 'Picks up in'}
                   </span>
@@ -149,7 +149,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
             {trip.dropoff_area && (
               <div style={{ flex: 1, padding: '14px 20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#C8891C" />
+                  <MapPinIcon size={13} color="#52B5D9" />
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
                     {isFr ? 'Livre à' : 'Drops off in'}
                   </span>
@@ -194,9 +194,9 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
           ) : (
             <>
               {!user && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FFF8EB', borderRadius: 10, padding: '10px 14px', marginBottom: 12, border: '1px solid #F0C878' }}>
-                  <LockIcon size={13} color="#C8891C" />
-                  <span style={{ fontSize: 13, color: '#C8891C', fontWeight: 500 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#D4E8F4', borderRadius: 10, padding: '10px 14px', marginBottom: 12, border: '1px solid #D4A574' }}>
+                  <LockIcon size={13} color="#52B5D9" />
+                  <span style={{ fontSize: 13, color: '#52B5D9', fontWeight: 500 }}>
                     {isFr ? 'Connectez-vous pour voir les coordonnées' : 'Sign in to see contact details'}
                   </span>
                 </div>
@@ -222,7 +222,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
 // ── Main GPProfile ────────────────────────────────────────────────────────────
 export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const isFr   = lang === 'fr'
-  const accent = gp.color || '#C8891C'
+  const accent = gp.color || '#52B5D9'
 
   const [profile,   setProfile]   = useState(null)
   const [allTrips,  setAllTrips]  = useState(null)   // null = still loading
@@ -243,7 +243,14 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
       .select('full_name, avatar_url, created_at, whatsapp_verified, id_verified, photo_verified, country_of_origin, facebook_url, instagram_url, twitter_url, linkedin_url')
       .eq('id', gp.user_id)
       .maybeSingle()
-      .then(({ data }) => { if (!cancelled) setProfile(data || null) })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[GPProfile] Failed to load profile:', error)
+          return
+        }
+        if (!cancelled) setProfile(data || null)
+      })
+      .catch(err => console.error('[GPProfile] Unexpected error loading profile:', err))
 
     // Fetch all active trips for this traveler
     supabase
@@ -253,11 +260,17 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
       .eq('approved', true)
       .neq('availability_status', 'unavailable')
       .order('date', { ascending: true })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[GPProfile] Failed to load trips:', error)
+          if (!cancelled) setAllTrips([gp])
+          return
+        }
         if (cancelled) return
         // Fall back to the gp prop so the page is never blank
         setAllTrips(data?.length ? data : [gp])
       })
+      .catch(err => console.error('[GPProfile] Unexpected error loading trips:', err))
 
     return () => { cancelled = true }
   }, [gp?.user_id])
@@ -298,7 +311,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1A1710', letterSpacing: '-.5px' }}>
-            Yob<span style={{ color: '#C8891C' }}>bu</span>
+            Yob<span style={{ color: '#52B5D9' }}>bu</span>
           </div>
           <button onClick={onBack} style={{
             fontSize: 13, color: '#8A8070', cursor: 'pointer',
@@ -331,7 +344,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
               <div style={{ position: 'relative', flexShrink: 0 }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%',
-                  background: gp.bg || '#FFF8EB',
+                  background: gp.bg || '#D4E8F4',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'DM Serif Display, serif', fontSize: 28, fontWeight: 700, color: accent,
                   border: `2px solid ${accent}33`, overflow: 'hidden',
@@ -364,19 +377,19 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                 )}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {mergedProfile.phone_verified && (
-                    <Pill bg="#F0FAF4" color="#1A5C38" border="#B8DCC8">
+                    <Pill bg="#F0FAF4" color="#059669" border="#B8DCC8">
                       <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2D8B4E', display: 'inline-block' }} />
                       {isFr ? 'Téléphone vérifié' : 'Phone verified'}
                     </Pill>
                   )}
                   {mergedProfile.id_verified && (
-                    <Pill bg="#FFF8EB" color="#7A5200" border="#EABD6A">
-                      <ShieldCheckIcon size={10} color="#C8891C" />
+                    <Pill bg="#D4E8F4" color="#7A5200" border="#EABD6A">
+                      <ShieldCheckIcon size={10} color="#52B5D9" />
                       {isFr ? 'ID vérifié' : 'ID verified'}
                     </Pill>
                   )}
                   {mergedProfile.photo_verified && (
-                    <Pill bg="#FFF8EB" color="#7A5200" border="#EABD6A">
+                    <Pill bg="#D4E8F4" color="#7A5200" border="#EABD6A">
                       {isFr ? 'Photo vérifiée' : 'Photo verified'}
                     </Pill>
                   )}

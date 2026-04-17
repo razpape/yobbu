@@ -187,10 +187,10 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
                     width: 28,
                     height: 20,
                     borderRadius: 4,
-                    background: selectedCountry.code === country.code ? '#C8891C20' : '#E8E2D8',
+                    background: selectedCountry.code === country.code ? '#52B5D920' : '#E8E2D8',
                     fontSize: 11,
                     fontWeight: 700,
-                    color: selectedCountry.code === country.code ? '#C8891C' : '#5A5248',
+                    color: selectedCountry.code === country.code ? '#52B5D9' : '#5A5248',
                     letterSpacing: '.04em',
                   }}>
                     {country.iso}

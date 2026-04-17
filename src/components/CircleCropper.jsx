@@ -112,7 +112,7 @@ export default function CircleCropper({ src, onConfirm, onCancel }) {
         {/* Canvas inside a circle border */}
         <div style={{
           position: 'relative', borderRadius: '50%',
-          boxShadow: '0 0 0 3px #C8891C, 0 0 0 6px rgba(200,137,28,.18)',
+          boxShadow: '0 0 0 3px #52B5D9, 0 0 0 6px rgba(200,137,28,.18)',
           cursor: dragging ? 'grabbing' : 'grab',
           touchAction: 'none',
           userSelect: 'none',
@@ -150,7 +150,7 @@ export default function CircleCropper({ src, onConfirm, onCancel }) {
               setScale(newScale)
               setOffset(clampOffset(newOx, newOy, newScale))
             }}
-            style={{ flex: 1, accentColor: '#C8891C' }}
+            style={{ flex: 1, accentColor: '#52B5D9' }}
           />
           <span style={{ fontSize: 11, color: '#A09070' }}>+</span>
         </div>
@@ -165,7 +165,7 @@ export default function CircleCropper({ src, onConfirm, onCancel }) {
           </button>
           <button onClick={handleConfirm} style={{
             flex: 2, padding: '10px 0', borderRadius: 10, border: 'none',
-            background: 'linear-gradient(135deg,#C8891C,#E6A832)', color: '#fff',
+            background: 'linear-gradient(135deg,#52B5D9,#E6A832)', color: '#fff',
             fontSize: 14, fontWeight: 700, cursor: 'pointer',
             boxShadow: '0 3px 12px rgba(200,137,28,.35)',
           }}>

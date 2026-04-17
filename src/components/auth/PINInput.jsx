@@ -128,9 +128,9 @@ export default function PINInput({
                   showError
                     ? '#DC2626'
                     : focusedIndex === index
-                      ? '#C8891C'
+                      ? '#52B5D9'
                       : digit
-                        ? '#C8891C80'
+                        ? '#52B5D980'
                         : '#E0DAD0'
                 }`,
                 borderRadius: 14,
@@ -142,7 +142,7 @@ export default function PINInput({
                 outline: 'none',
                 transition: 'all 0.15s',
                 fontFamily: "'DM Sans', sans-serif",
-                caretColor: '#C8891C',
+                caretColor: '#52B5D9',
               }}
             />
             {/* Filled indicator dot */}
@@ -155,7 +155,7 @@ export default function PINInput({
                 width: 5,
                 height: 5,
                 borderRadius: '50%',
-                background: '#C8891C',
+                background: '#52B5D9',
               }} />
             )}
           </div>

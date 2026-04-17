@@ -61,12 +61,17 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   useEffect(() => {
     if (!user?.id) return
     supabase.from('profiles').select('first_name, last_name, full_name, phone').eq('id', user.id).single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[Onboarding] Failed to load profile:', error)
+          return
+        }
         if (!data) return
         setFirstName(data.first_name || '')
         setLastName(data.last_name || '')
         setCountryOfOrigin(guessCountryFromPhone(data.phone || user.phone || ''))
       })
+      .catch(err => console.error('[Onboarding] Unexpected error loading profile:', err))
   }, [user])
 
   function handlePhotoSelect(e) {
@@ -153,9 +158,9 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
         <CircleCropper src={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} />
       )}
       <style>{`
-        .ob-input:focus { border-color: #C8891C !important; }
+        .ob-input:focus { border-color: #52B5D9 !important; }
         .ob-btn:hover   { background: #B8780C !important; }
-        .ob-photo:hover { border-color: #C8891C !important; }
+        .ob-photo:hover { border-color: #52B5D9 !important; }
         @keyframes ob-spin { to { transform: rotate(360deg); } }
         .ob-spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: ob-spin .7s linear infinite; display: inline-block; }
       `}</style>
@@ -163,7 +168,7 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
       {/* Header */}
       <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'center' }}>
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710' }}>
-          Yob<span style={{ color: '#C8891C' }}>bu</span>
+          Yob<span style={{ color: '#52B5D9' }}>bu</span>
         </div>
       </div>
 
@@ -187,7 +192,7 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
                 onClick={() => fileRef.current?.click()}
                 style={{
                   width: 88, height: 88, borderRadius: '50%',
-                  border: `2.5px dashed ${avatarPreview ? '#C8891C' : '#D0C8C0'}`,
+                  border: `2.5px dashed ${avatarPreview ? '#52B5D9' : '#D0C8C0'}`,
                   background: avatarPreview ? 'transparent' : '#F7F4EF',
                   cursor: 'pointer', overflow: 'hidden',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -204,13 +209,13 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
                   )
                 }
               </button>
-              <div style={{ fontSize: 13, color: avatarPreview ? '#C8891C' : '#8A8070', fontWeight: avatarPreview ? 700 : 400, textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: avatarPreview ? '#52B5D9' : '#8A8070', fontWeight: avatarPreview ? 700 : 400, textAlign: 'center' }}>
                 {avatarPreview
                   ? (isFr ? 'Photo ajoutée ✓ — appuyer pour changer' : 'Photo added ✓ — tap to change')
                   : (isFr ? 'Ajouter une photo (optionnel)' : 'Add a profile photo (optional)')}
               </div>
               {avatarPreview && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6, background: '#FFF8EB', border: '1px solid #F0D898', borderRadius: 20, padding: '4px 12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 6, background: '#D4E8F4', border: '1px solid #F0D898', borderRadius: 20, padding: '4px 12px' }}>
                   <span style={{ fontSize: 11, color: '#7C4E0A', fontWeight: 600 }}>
                     {isFr ? "En attente d'approbation admin" : 'Pending admin approval for badge'}
                   </span>
@@ -280,11 +285,11 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l1.81-1.81a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.01z"/></svg>
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#2D8B4E' }}>{isFr ? 'Téléphone vérifié' : 'Phone verified'}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: avatarPreview ? '#FFF8EB' : '#F0EDE8', border: `1px solid ${avatarPreview ? '#F0D898' : '#E0DAD0'}`, borderRadius: 20, padding: '5px 12px', opacity: avatarPreview ? 1 : 0.5 }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={avatarPreview ? '#C8891C' : '#B0A090'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: avatarPreview ? '#D4E8F4' : '#F0EDE8', border: `1px solid ${avatarPreview ? '#F0D898' : '#E0DAD0'}`, borderRadius: 20, padding: '5px 12px', opacity: avatarPreview ? 1 : 0.5 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={avatarPreview ? '#52B5D9' : '#B0A090'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
                   </svg>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: avatarPreview ? '#C8891C' : '#B0A090' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: avatarPreview ? '#52B5D9' : '#B0A090' }}>
                     {avatarPreview ? (isFr ? 'Photo · en attente' : 'Photo · pending') : (isFr ? 'Photo vérifiée' : 'Photo verified')}
                   </span>
                 </div>
@@ -301,7 +306,7 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
               className="ob-btn"
               disabled={busy}
               onClick={handleSubmit}
-              style={{ width: '100%', padding: '16px', borderRadius: 14, border: 'none', background: '#C8891C', color: '#fff', fontSize: 16, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: busy ? 0.7 : 1, transition: 'background .15s' }}
+              style={{ width: '100%', padding: '16px', borderRadius: 14, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 16, fontWeight: 700, cursor: busy ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", opacity: busy ? 0.7 : 1, transition: 'background .15s' }}
             >
               {busy ? <span className="ob-spinner" /> : (isFr ? "C'est parti \u2192" : "Let's go \u2192")}
             </button>
