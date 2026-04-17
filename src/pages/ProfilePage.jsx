@@ -201,6 +201,13 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     }),
   ]
   const notifBadge = section === 'notifications' ? 0 : notifications.length
+  const [dismissedNotifs, setDismissedNotifs] = useState([])
+
+  const visibleNotifications = notifications.filter(n => !dismissedNotifs.includes(n.id))
+
+  const dismissNotification = (id) => {
+    setDismissedNotifs(prev => [...prev, id])
+  }
 
   function handleSetSection(key) {
     setSection(key)
@@ -519,7 +526,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const notificationsContent = (
     <div>
       {loading && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
-      {!loading && notifications.length === 0 && (
+      {!loading && visibleNotifications.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <BellIcon size={40} color="#E8DDD0" />
@@ -527,7 +534,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7 }}>{t.notifEmpty}</div>
         </div>
       )}
-      {!loading && notifications.map(({ type, trip, id }) => {
+      {!loading && visibleNotifications.map(({ type, trip, id }) => {
         const styles = {
           approved:      { bg: '#F0FAF4', border: '#C8E6D4', color: '#1A5C38' },
           suspended:     { bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
@@ -539,7 +546,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div key={id} style={{
             display: 'flex', alignItems: 'flex-start', gap: 14,
             background: styles.bg, border: `1px solid ${styles.border}`,
-            borderRadius: 14, padding: '16px 18px', marginBottom: 10,
+            borderRadius: 14, padding: '16px 18px', marginBottom: 10, position: 'relative',
           }}>
             <div style={{ flexShrink: 0 }}>
               {type === 'approved'       && <CheckCircleIcon size={24} color="#2D8B4E" />}
@@ -569,6 +576,19 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 {type === 'photo_pending'  && (isFr ? 'Nous vérifions votre photo. Cela prend généralement moins de 24h.' : 'We\'re reviewing your photo. This usually takes less than 24h.')}
               </div>
             </div>
+            <button
+              onClick={() => dismissNotification(id)}
+              style={{
+                position: 'absolute', top: 12, right: 12,
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 18, color: styles.color, opacity: 0.6, padding: 4,
+                transition: 'opacity .2s', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+            >
+              ✕
+            </button>
           </div>
         )
       })}
