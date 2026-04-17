@@ -184,8 +184,21 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         {/* ── MIDDLE: Destination ── */}
         <div className="gpc-route">
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 14 }}>
-            {isFr ? 'Itinéraire' : 'Route'}
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <span>{isFr ? 'Itinéraire' : 'Route'}</span>
+            {departDate && (
+              <div style={{
+                background: urgency.c,
+                color: '#fff',
+                padding: '4px 12px',
+                borderRadius: 16,
+                fontSize: 11,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+              }}>
+                {urgency.label}
+              </div>
+            )}
           </div>
 
           {/* Cities + arrow */}
@@ -206,24 +219,13 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             </div>
           </div>
 
-          {/* Departure */}
+          {/* Date below */}
           {departDate && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
               <span style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
                 {isFr ? 'Départ' : 'Departs'}
               </span>
-              <div style={{
-                background: urgency.c,
-                color: '#fff',
-                padding: '6px 14px',
-                borderRadius: 20,
-                fontSize: 12,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-              }}>
-                {urgency.label}
-              </div>
-              <span style={{ fontSize: 11, color: '#6B7280' }}>{departDate}</span>
+              <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
             </div>
           )}
         </div>
