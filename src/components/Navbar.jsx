@@ -90,12 +90,22 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                 </button>
                 <div style={{ position: 'relative' }} data-avatar-menu>
                   <button className="avatar-btn" onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                    style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden', padding: 0 }}>
+                    onMouseEnter={e => {
+                      e.currentTarget.style.transform = 'scale(1.1)'
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(82,181,217,.2)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = 'scale(1)'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
+                    title={isFr ? 'Menu utilisateur' : 'User menu'}
+                    style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden', padding: 0, position: 'relative' }}>
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       initials
                     )}
+                    <div style={{ position: 'absolute', bottom: -2, right: -2, width: 12, height: 12, background: '#52B5D9', border: '2px solid #fff', borderRadius: '50%', fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>▼</div>
                   </button>
                   {avatarMenuOpen && (
                     <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 180 }} data-avatar-menu>
@@ -105,6 +115,13 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                       >
                         {isFr ? 'Mon profil' : 'My profile'}
+                      </button>
+                      <button onClick={() => { setView('packages'); setAvatarMenuOpen(false) }}
+                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {isFr ? 'Mes demandes' : 'My requests'}
                       </button>
                       <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
                         style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s' }}
@@ -136,12 +153,22 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
             {user && (
               <div style={{ position: 'relative' }} data-avatar-menu>
                 <button onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden', padding: 0 }}>
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'scale(1.1)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(82,181,217,.2)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'scale(1)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                  title={isFr ? 'Menu utilisateur' : 'User menu'}
+                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden', padding: 0, position: 'relative', transition: 'all .2s' }}>
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     initials
                   )}
+                  <div style={{ position: 'absolute', bottom: -2, right: -2, width: 11, height: 11, background: '#52B5D9', border: '2px solid #fff', borderRadius: '50%', fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>▼</div>
                 </button>
                 {avatarMenuOpen && (
                   <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 160 }} data-avatar-menu>
