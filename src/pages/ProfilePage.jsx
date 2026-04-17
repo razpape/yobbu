@@ -111,7 +111,6 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       .channel(`profile:${user.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, ({ new: row }) => {
         fetchProfile()
-        if (row.photo_verified && !row.photo_pending) setNotifSeen(false)
       })
       .subscribe()
 

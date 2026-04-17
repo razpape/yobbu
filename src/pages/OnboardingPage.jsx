@@ -47,7 +47,8 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   const isFr = lang === 'fr'
 
   const [role,            setRole]            = useState('traveler') // Always traveler
-  const [fullName,        setFullName]        = useState('')
+  const [firstName,       setFirstName]       = useState('')
+  const [lastName,        setLastName]        = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [avatarBlob,      setAvatarBlob]      = useState(null)
   const [avatarPreview,   setAvatarPreview]   = useState(null)
@@ -62,8 +63,8 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
     supabase.from('profiles').select('first_name, last_name, full_name, phone').eq('id', user.id).single()
       .then(({ data }) => {
         if (!data) return
-        const name = data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || ''
-        setFullName(name)
+        setFirstName(data.first_name || '')
+        setLastName(data.last_name || '')
         setCountryOfOrigin(guessCountryFromPhone(data.phone || user.phone || ''))
       })
   }, [user])
@@ -91,12 +92,17 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   }
 
   async function handleSubmit() {
-    if (!fullName.trim()) { setError(isFr ? 'Le nom est requis.' : 'Full name is required.'); return }
+    const trimmedFirst = firstName.trim()
+    const trimmedLast = lastName.trim()
+    if (!trimmedFirst) { setError(isFr ? 'Le prénom est requis.' : 'First name is required.'); return }
+    if (!trimmedLast) { setError(isFr ? 'Le nom est requis.' : 'Last name is required.'); return }
     setError(null)
     setLoading(true)
     try {
       const updates = {
-        full_name:         fullName.trim(),
+        first_name:        trimmedFirst,
+        last_name:         trimmedLast,
+        full_name:         `${trimmedFirst} ${trimmedLast}`,
         country_of_origin: countryOfOrigin || null,
         role:              'traveler',
       }
@@ -213,16 +219,30 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
               <input ref={fileRef} type="file" accept={ACCEPTED.join(',')} style={{ display: 'none' }} onChange={handlePhotoSelect} />
             </div>
 
-            {/* Full name */}
+            {/* First name */}
             <div style={{ marginBottom: 18 }}>
-              <label style={lbl}>{isFr ? 'Nom complet *' : 'Full name *'}</label>
+              <label style={lbl}>{isFr ? 'Prénom *' : 'First name *'}</label>
               <input
                 className="ob-input"
-                style={{ ...inp, borderColor: error && !fullName.trim() ? '#DC2626' : inp.borderColor }}
-                placeholder={isFr ? 'ex: Aminata Diallo' : 'e.g. Aminata Diallo'}
-                value={fullName}
-                onChange={e => { setFullName(e.target.value); if (error) setError(null) }}
-                autoComplete="name"
+                style={{ ...inp, borderColor: error && !firstName.trim() ? '#DC2626' : inp.borderColor }}
+                placeholder={isFr ? 'ex: Aminata' : 'e.g. Aminata'}
+                value={firstName}
+                onChange={e => { setFirstName(e.target.value); if (error) setError(null) }}
+                autoComplete="given-name"
+                required
+              />
+            </div>
+
+            {/* Last name */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>{isFr ? 'Nom *' : 'Last name *'}</label>
+              <input
+                className="ob-input"
+                style={{ ...inp, borderColor: error && !lastName.trim() ? '#DC2626' : inp.borderColor }}
+                placeholder={isFr ? 'ex: Diallo' : 'e.g. Diallo'}
+                value={lastName}
+                onChange={e => { setLastName(e.target.value); if (error) setError(null) }}
+                autoComplete="family-name"
                 required
               />
             </div>
