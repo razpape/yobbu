@@ -14,6 +14,7 @@ function LogOutIcon({ size = 16, color = 'currentColor' }) {
 export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState(null)
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
   const isFr = lang === 'fr'
 
   const meta = user?.user_metadata || {}
@@ -28,6 +29,16 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
       })
       .catch(err => console.error('Error fetching avatar:', err))
   }, [user?.id])
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (avatarMenuOpen && !e.target.closest('[data-avatar-menu]')) {
+        setAvatarMenuOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [avatarMenuOpen])
 
   return (
     <>
@@ -77,12 +88,32 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                   style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
                   {isFr ? '+ Poster' : '+ Post a trip'}
                 </button>
-                <div className="avatar-btn" onClick={() => setView('profile')}
-                  style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden' }}>
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    initials
+                <div style={{ position: 'relative' }} data-avatar-menu>
+                  <button className="avatar-btn" onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                    style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden', padding: 0 }}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      initials
+                    )}
+                  </button>
+                  {avatarMenuOpen && (
+                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 180 }} data-avatar-menu>
+                      <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
+                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {isFr ? 'Mon profil' : 'My profile'}
+                      </button>
+                      <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
+                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        {isFr ? 'Déconnexion' : 'Sign out'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </>
@@ -101,14 +132,34 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
           </div>
 
           {/* Mobile */}
-          <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 10 }}>
+          <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 10, position: 'relative' }}>
             {user && (
-              <div onClick={() => setView('profile')}
-                style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden' }}>
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  initials
+              <div style={{ position: 'relative' }} data-avatar-menu>
+                <button onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden', padding: 0 }}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    initials
+                  )}
+                </button>
+                {avatarMenuOpen && (
+                  <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 160 }} data-avatar-menu>
+                    <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
+                      style={{ width: '100%', padding: '12px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {isFr ? 'Mon profil' : 'My profile'}
+                    </button>
+                    <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
+                      style={{ width: '100%', padding: '12px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {isFr ? 'Déconnexion' : 'Sign out'}
+                    </button>
+                  </div>
                 )}
               </div>
             )}
