@@ -184,21 +184,8 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         {/* ── MIDDLE: Destination ── */}
         <div className="gpc-route">
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-            <span>{isFr ? 'Itinéraire' : 'Route'}</span>
-            {departDate && (
-              <div style={{
-                background: urgency.c,
-                color: '#fff',
-                padding: '4px 12px',
-                borderRadius: 16,
-                fontSize: 11,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-              }}>
-                {urgency.label}
-              </div>
-            )}
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 12 }}>
+            {isFr ? 'Itinéraire' : 'Route'}
           </div>
 
           {/* Cities + arrow */}
@@ -208,9 +195,22 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               {gp.pickup_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.pickup_area}</div>}
             </div>
 
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 0, minWidth: 40 }}>
-              <div style={{ flex: 1, height: '1.5px', background: `linear-gradient(90deg, #D4C9BA, ${accent})` }} />
-              <div style={{ fontSize: 16, margin: '0 2px', lineHeight: 1 }}>✈</div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 40 }}>
+              {departDate && (
+                <div style={{
+                  background: urgency.c,
+                  color: '#fff',
+                  padding: '3px 10px',
+                  borderRadius: 14,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {urgency.label}
+                </div>
+              )}
+              <div style={{ flex: 1, width: '100%', height: '1.5px', background: `linear-gradient(90deg, #D4C9BA, ${accent})` }} />
+              <div style={{ fontSize: 16, lineHeight: 1 }}>✈</div>
             </div>
 
             <div style={{ textAlign: 'center' }}>
