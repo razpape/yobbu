@@ -119,13 +119,12 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         </div>
 
         {/* Key info grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #F0EDE8' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #F0EDE8' }}>
           {[
             { Icon: CalendarIcon, label: isFr ? 'Date de départ' : 'Departure date', value: formatDate(trip.date) || '—',  color: '#1A1710' },
-            { Icon: PackageIcon,  label: isFr ? 'Capacité dispo'  : 'Space available', value: trip.space ? `${trip.space} kg` : '—', color: '#1A1710' },
             { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#C8891C' },
           ].map(({ Icon, label, value, color }, i) => (
-            <div key={label} style={{ padding: '16px 12px', borderRight: i < 2 ? '1px solid #F0EDE8' : 'none', textAlign: 'center' }}>
+            <div key={label} style={{ padding: '16px 12px', borderRight: i < 1 ? '1px solid #F0EDE8' : 'none', textAlign: 'center' }}>
               <Icon size={16} color="#A09080" />
               <div style={{ fontSize: 11, color: '#A09080', marginTop: 5, marginBottom: 3 }}>{label}</div>
               <div style={{ fontSize: 15, fontWeight: 800, color }}>{value}</div>
