@@ -18,7 +18,6 @@ import OnboardingPage from './pages/OnboardingPage'
 import Admin from './pages/Admin'
 import ErrorBoundary from './components/ErrorBoundary'
 import LoadingSpinner from './components/LoadingSpinner'
-import DismissibleBanner from './components/DismissibleBanner'
 import { useTrips } from './hooks/useTrips'
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './lib/supabase'
@@ -117,7 +116,6 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <DismissibleBanner lang={lang} />
       <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
         <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
 
