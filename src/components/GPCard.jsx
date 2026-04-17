@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShieldCheck, BadgeCheck } from 'lucide-react'
 import ContactModal from './ContactModal'
 
@@ -31,6 +31,7 @@ function daysUntil(str) {
 export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }) {
   const [showModal, setShowModal] = useState(false)
   const [avatarErr, setAvatarErr] = useState(false)
+  const [countdown, setCountdown] = useState(null)
 
   const isFr      = lang === 'fr'
   const locale    = isFr ? 'fr-FR' : 'en-US'
@@ -54,6 +55,26 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
     if (days <= 30) return { label: isFr ? 'Ce mois'     : 'This month',  c: '#7C3AED' }
     return { label: isFr ? 'Prochain mois' : 'Next month', c: '#6366F1' }
   })()
+
+  useEffect(() => {
+    if (!gp.date) return
+    const updateCountdown = () => {
+      const now = new Date()
+      const departure = new Date(gp.date)
+      const diffMs = departure - now
+      if (diffMs < 0) return
+      const diffHours = Math.floor(diffMs / 3600000)
+      if (diffHours >= 24) {
+        setCountdown(null)
+        return
+      }
+      const mins = Math.floor((diffMs % 3600000) / 60000)
+      setCountdown({ hours: diffHours, mins })
+    }
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 60000)
+    return () => clearInterval(interval)
+  }, [gp.date])
 
   const handleContact = (e) => {
     e.stopPropagation()
@@ -191,15 +212,15 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {departDate && (
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
               <div style={{
-                background: urgency.c,
+                background: countdown ? '#DC2626' : urgency.c,
                 color: '#fff',
                 padding: '3px 10px',
                 borderRadius: 14,
-                fontSize: 9,
+                fontSize: countdown ? 10 : 9,
                 fontWeight: 700,
                 whiteSpace: 'nowrap',
               }}>
-                {urgency.label}
+                {countdown ? `${countdown.hours}h ${countdown.mins}m` : urgency.label}
               </div>
             </div>
           )}
