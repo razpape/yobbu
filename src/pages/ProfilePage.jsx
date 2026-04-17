@@ -200,10 +200,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       return items
     }),
   ]
-  const notifBadge = notifSeen ? 0 : notifications.length
+  const notifBadge = section === 'notifications' ? 0 : notifications.length
 
   function handleSetSection(key) {
-    if (key === 'notifications') setNotifSeen(true)
     setSection(key)
     // Refetch profile when switching sections
     if (key === 'trips' || key === 'verification') {
