@@ -51,7 +51,8 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
     if (days === 0) return { label: isFr ? "Aujourd'hui" : 'Today',       c: '#059669' }
     if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#D97706' }
     if (days <= 6)  return { label: isFr ? 'Cette sem.'  : 'This week',   c: '#2563EB' }
-    return null
+    if (days <= 30) return { label: isFr ? 'Ce mois'     : 'This month',  c: '#7C3AED' }
+    return { label: isFr ? 'Prochain mois' : 'Next month', c: '#6366F1' }
   })()
 
   const handleContact = (e) => {
@@ -211,12 +212,10 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
               <span style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
                 {isFr ? 'Départ' : 'Departs'}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: urgency ? urgency.c : '#374151' }}>
-                {urgency ? urgency.label : departDate}
+              <span style={{ fontSize: 13, fontWeight: 700, color: urgency.c }}>
+                {urgency.label}
               </span>
-              {urgency && (
-                <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
-              )}
+              <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
             </div>
           )}
         </div>
