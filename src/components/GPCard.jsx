@@ -237,8 +237,8 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         <div className="gpc-action" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
           {/* Price */}
           {price && !disabled && (
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#C8891C', textAlign: 'center' }}>
-              {price}/kg
+            <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center' }}>
+              <span style={{ color: '#C8891C' }}>{price}</span><span style={{ color: '#2D8B4E' }}>/kg</span>
             </div>
           )}
 
@@ -267,9 +267,9 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             </button>
           )}
 
-          {/* Date posted */}
+          {/* Date posted — bottom */}
           {departDate && (
-            <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center' }}>
+            <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center', marginTop: 'auto', paddingTop: 8 }}>
               Posted on: <span style={{ color: urgency.c }}>{urgency.label}</span>
             </div>
           )}
