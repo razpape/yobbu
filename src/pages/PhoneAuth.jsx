@@ -542,7 +542,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         {isFr ? 'Nous vous enverrons un code de verification par SMS.' : "We'll send you a verification code via SMS."}
       </p>
 
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 24 }}>
         <PhoneInput value={phone} onChange={setPhone} onValid={setPhoneValid} lang={lang} />
       </div>
 
@@ -560,7 +560,7 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
             fontSize: 16, fontWeight: 600,
             cursor: phoneValid && !loading ? 'pointer' : 'not-allowed',
             fontFamily: "'DM Sans', sans-serif",
-            boxShadow: phoneValid && !loading ? '0 4px 16px rgba(200, 137, 28, 0.25)' : 'none',
+            boxShadow: phoneValid && !loading ? '0 4px 16px rgba(82, 181, 217, 0.25)' : 'none',
             transition: 'all .2s',
           }}
         >
@@ -569,6 +569,58 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
             : (isFr ? 'Continuer' : 'Continue')
           }
         </button>
+
+        <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ flex: 1, height: '1px', background: '#E0DAD0' }} />
+          <span style={{ fontSize: 13, color: '#A09080', fontFamily: "'DM Sans', sans-serif" }}>
+            {isFr ? 'ou' : 'or'}
+          </span>
+          <div style={{ flex: 1, height: '1px', background: '#E0DAD0' }} />
+        </div>
+
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
+            style={{
+              flex: 1, padding: '12px 16px',
+              background: '#fff', border: '1.5px solid #E0DAD0',
+              borderRadius: 12, fontSize: 14, fontWeight: 500,
+              cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+              color: '#1A1710', transition: 'all .2s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            title="Google Sign In"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <g clipPath="url(#clip0)">
+                <path d="M23.745 12.27c0-.79-.1-1.54-.257-2.27H12v4.51h6.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 24c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 24 12 24z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 4.47 2.18 9.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </g>
+            </svg>
+            Google
+          </button>
+          <button
+            style={{
+              flex: 1, padding: '12px 16px',
+              background: '#fff', border: '1.5px solid #E0DAD0',
+              borderRadius: 12, fontSize: 14, fontWeight: 500,
+              cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+              color: '#1A1710', transition: 'all .2s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            title="Apple Sign In"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.05 13.5c-.91 2.18-2.15 4.06-4.11 4.06-2.13 0-2.8-1.28-5.21-1.28-2.48 0-3.32 1.28-5.22 1.28-1.97 0-3.31-1.97-4.36-4.06C1.07 10.13 1 8.9 1 7.62 1 3.55 4.55 0 8.65 0c1.55 0 2.93.75 3.82 1.64.59.55 1.13 1.18 1.53 1.71.4-.53.94-1.16 1.53-1.71C14.42.75 15.8 0 17.35 0 21.45 0 25 3.55 25 7.62c0 1.28-.07 2.51-.95 5.88z"/>
+            </svg>
+            Apple
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -720,24 +772,34 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
         @keyframes auth-spin { to { transform: rotate(360deg); } }
         .auth-container {
           min-height: 100vh;
-          background: linear-gradient(160deg, #F5F1EC 0%, #E8E0D4 50%, #D8CFC0 100%);
+          background: linear-gradient(135deg, #52B5D9 0%, #A07015 25%, #7C3AED 50%, #E5A630 75%, #2563EB 100%);
           display: flex;
           justify-content: center;
           align-items: center;
           padding: 24px 16px;
           font-family: 'DM Sans', sans-serif;
+          position: relative;
+        }
+        .auth-container::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(10px);
+          pointer-events: none;
         }
         .auth-card {
           width: 100%;
           max-width: 420px;
           background: #fff;
           border-radius: 20px;
-          box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.2);
           overflow: hidden;
           display: flex;
           flex-direction: column;
           min-height: 540px;
           position: relative;
+          z-index: 1;
         }
         @media (max-width: 480px) {
           .auth-container {

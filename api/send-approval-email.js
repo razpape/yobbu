@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer'
-
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com,http://localhost:5173').split(',')
+import { supabase, ALLOWED_ORIGINS, setCors, verifyAdminSession } from './admin-auth.js'
 
 function sanitize(str) {
   if (typeof str !== 'string') return ''
@@ -8,28 +7,27 @@ function sanitize(str) {
 }
 
 export default async function handler(req, res) {
-  const origin = req.headers.origin || ''
-  if (ALLOWED_ORIGINS.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin)
-  res.setHeader('Vary', 'Origin')
+  setCors(req, res)
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).end()
 
-  // Require admin secret — blocks anyone who isn't the admin panel
-  const adminSecret = req.headers['x-admin-secret']
-  if (!adminSecret || adminSecret !== process.env.ADMIN_API_SECRET) {
-    console.warn('[Email] Unauthorized approval email attempt')
+  // Verify admin authorization via bearer token (not exposed secret)
+  const auth = verifyAdminSession(req.headers.authorization)
+  if (!auth.valid) {
+    console.warn('[Email] Unauthorized approval email attempt from:', req.headers.origin)
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
   const { to, name, route, date } = req.body
+
   if (!to || typeof to !== 'string' || !to.includes('@')) {
     return res.status(400).json({ error: 'Valid email required' })
   }
 
-  const safeName  = sanitize(name  || 'Traveler')
+  const safeName = sanitize(name || 'Traveler')
   const safeRoute = sanitize(route || '—')
-  const safeDate  = sanitize(date  || '—')
+  const safeDate = sanitize(date || '—')
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

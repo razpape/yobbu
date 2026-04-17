@@ -9,11 +9,11 @@ export default function Footer({ lang, setView }) {
     ],
     company: [
       { label: isFr ? 'À propos' : 'About Yobbu', action: null },
-      { label: 'Blog', action: null },
+      { label: 'Blog', action: () => setView('blog') },
       { label: isFr ? 'Presse' : 'Press', action: null },
     ],
     support: [
-      { label: isFr ? 'Centre d\'aide' : 'Help center', action: null },
+      { label: isFr ? 'Centre d\'aide' : 'Help center', action: () => setView('docs') },
       { label: isFr ? 'Nous contacter' : 'Contact us', action: null },
       { label: isFr ? 'Confidentialité' : 'Privacy policy', action: () => setView('privacy') },
       { label: isFr ? 'Conditions' : 'Terms of service', action: () => setView('terms') },
@@ -87,13 +87,14 @@ export default function Footer({ lang, setView }) {
               {isFr ? 'Entreprise' : 'Company'}
             </div>
             {links.company.map((l) => (
-              <div key={l.label} className="text-sm mb-2.5 cursor-pointer transition-colors duration-150"
-                style={{ color: '#888' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.color = '#888'}
+              <button key={l.label} onClick={l.action} disabled={!l.action}
+                className="block text-sm mb-2.5 text-left w-full transition-colors duration-150"
+                style={{ color: '#888', background: 'none', border: 'none', cursor: l.action ? 'pointer' : 'default', fontFamily: 'inherit', opacity: l.action ? 1 : 0.5 }}
+                onMouseEnter={l.action ? (e => e.currentTarget.style.color = '#fff') : undefined}
+                onMouseLeave={l.action ? (e => e.currentTarget.style.color = '#888') : undefined}
               >
                 {l.label}
-              </div>
+              </button>
             ))}
           </div>
 
@@ -103,13 +104,14 @@ export default function Footer({ lang, setView }) {
               {isFr ? 'Support' : 'Support'}
             </div>
             {links.support.map((l) => (
-              <div key={l.label} className="text-sm mb-2.5 cursor-pointer transition-colors duration-150"
-                style={{ color: '#888' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.color = '#888'}
+              <button key={l.label} onClick={l.action} disabled={!l.action}
+                className="block text-sm mb-2.5 text-left w-full transition-colors duration-150"
+                style={{ color: '#888', background: 'none', border: 'none', cursor: l.action ? 'pointer' : 'default', fontFamily: 'inherit', opacity: l.action ? 1 : 0.5 }}
+                onMouseEnter={l.action ? (e => e.currentTarget.style.color = '#fff') : undefined}
+                onMouseLeave={l.action ? (e => e.currentTarget.style.color = '#888') : undefined}
               >
                 {l.label}
-              </div>
+              </button>
             ))}
           </div>
 

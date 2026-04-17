@@ -1,11 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+import { logBruteForceAttempt, logSecurityEvent } from './utils/security-logger.js'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com,http://localhost:5173').split(',')
+const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
+  ? (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com').split(',')
+  : (process.env.ALLOWED_ORIGINS || 'https://yobbu.vercel.app,https://yobbu.com,http://localhost:5173').split(',')
 const MAX_ATTEMPTS = 5
 
 function setCors(req, res) {
@@ -16,6 +19,10 @@ function setCors(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   res.setHeader('Vary', 'Origin')
+}
+
+function hashOtp(code) {
+  return crypto.createHash('sha256').update(code).digest('hex')
 }
 
 export default async function handler(req, res) {
@@ -31,11 +38,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Fetch OTP record (not yet checking code — need to track attempts first)
+    // Fetch OTP record
     const { data: otpRecord, error: otpError } = await supabase
       .from('otp_codes')
       .select('*')
       .eq('phone', phone)
+      .is('deleted_at', null)
       .gt('expires_at', new Date().toISOString())
       .maybeSingle()
 
@@ -43,32 +51,41 @@ export default async function handler(req, res) {
 
     if (!otpRecord) {
       console.log(`[OTP] No active code for ${phone}`)
-      return res.status(400).json({ error: 'Invalid or expired code' })
+      return res.status(400).json({ error: 'Code expired or not found. Please request a new code.' })
     }
 
-    // Brute force protection — lock after MAX_ATTEMPTS
+    // Brute force protection
     const attempts = (otpRecord.attempts || 0) + 1
     if (attempts > MAX_ATTEMPTS) {
-      await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
-      console.warn(`[OTP] Too many attempts for ${phone} — code invalidated`)
+      await supabase.from('otp_codes').update({ deleted_at: new Date().toISOString() }).eq('id', otpRecord.id)
+      await logBruteForceAttempt(phone, attempts)
       return res.status(429).json({ error: 'Too many attempts. Please request a new code.' })
     }
 
-    // Check code
-    if (String(otpRecord.code).trim() !== String(code).trim()) {
-      // Increment attempt counter
+    // Compare code hash (timing-safe)
+    const codeHash = hashOtp(String(code).trim())
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(codeHash),
+      Buffer.from(otpRecord.code_hash)
+    )
+
+    if (!isValid) {
       await supabase.from('otp_codes').update({ attempts }).eq('id', otpRecord.id)
       const remaining = MAX_ATTEMPTS - attempts
       console.log(`[OTP] Wrong code for ${phone} — attempt ${attempts}/${MAX_ATTEMPTS}`)
+
       if (remaining <= 0) {
-        await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
+        await supabase.from('otp_codes').update({ deleted_at: new Date().toISOString() }).eq('id', otpRecord.id)
         return res.status(429).json({ error: 'Too many attempts. Please request a new code.' })
       }
-      return res.status(400).json({ error: `Invalid code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.` })
+
+      return res.status(400).json({
+        error: `Invalid code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`
+      })
     }
 
-    // Valid — delete it so it can't be reused
-    await supabase.from('otp_codes').delete().eq('id', otpRecord.id)
+    // Mark code as used
+    await supabase.from('otp_codes').update({ deleted_at: new Date().toISOString() }).eq('id', otpRecord.id)
     console.log(`[OTP] Verified for ${phone}`)
 
     // Find or create user
@@ -84,10 +101,11 @@ export default async function handler(req, res) {
     if (!user) {
       isNewUser = true
       const email = `${phone.replace(/\D/g, '')}@phone.yobbu.app`
+      const securePassword = crypto.randomUUID()
 
       const { data: authData, error: createError } = await supabase.auth.admin.createUser({
         email,
-        password: crypto.randomUUID(),
+        password: securePassword,
         email_confirm: true,
       })
 
@@ -120,27 +138,21 @@ export default async function handler(req, res) {
 
       if (profileError) throw profileError
       user = newProfile
-
     } else {
+      // Mark phone as verified on existing user
       await supabase
         .from('profiles')
         .update({ phone_verified_at: new Date().toISOString() })
         .eq('id', user.id)
     }
 
-    // Create session
-    const deterministicPassword = crypto
-      .createHmac('sha256', process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback')
-      .update(phone)
-      .digest('hex')
-
-    await supabase.auth.admin.updateUserById(user.id, { password: deterministicPassword })
-
+    // Create session using secure password auth
+    // NOTE: User's password is already securely generated and stored
+    // Session is created via Supabase session tokens, not password reuse
     const email = `${phone.replace(/\D/g, '')}@phone.yobbu.app`
-    const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
-      email,
-      password: deterministicPassword,
-    })
+
+    // Use service role to create a session
+    const { data: sessionData, error: sessionError } = await supabase.auth.admin.createSession(user.id)
 
     if (sessionError) throw sessionError
 
@@ -165,6 +177,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('[OTP] Verify error:', err.message)
-    return res.status(500).json({ error: 'Verification failed: ' + err.message })
+    return res.status(500).json({ error: 'Verification failed. Please try again.' })
   }
 }

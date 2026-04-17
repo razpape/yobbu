@@ -3,11 +3,54 @@ import { readdir } from 'fs/promises'
 import { resolve, join } from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { config } from 'dotenv'
+import rateLimit from 'express-rate-limit'
 
 config() // Load .env
 
 const app = express()
-app.use(express.json())
+
+// Security middleware
+app.disable('x-powered-by')
+app.use(express.json({ limit: '10kb' }))
+
+// HTTPS enforcement in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      return res.redirect(`https://${req.header('host')}${req.url}`)
+    }
+    next()
+  })
+}
+
+// Rate limiting: 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many requests. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
+})
+app.use('/api/', limiter)
+
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'")
+  next()
+})
+
+// Request timeout
+app.use((req, res, next) => {
+  req.setTimeout(30000)
+  res.setTimeout(30000)
+  next()
+})
 
 // Auto-load all /api handlers
 const apiDir = resolve('api')
@@ -26,6 +69,17 @@ for (const file of files) {
     console.warn(`  Skipped ${route}: ${err.message}`)
   }
 }
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' })
+})
+
+// Error handler (generic responses to prevent information leakage)
+app.use((err, req, res, next) => {
+  console.error('[Server] Unhandled error:', err.message)
+  res.status(500).json({ error: 'Internal server error' })
+})
 
 const PORT = process.env.API_PORT || 3001
 const server = app.listen(PORT, () => {

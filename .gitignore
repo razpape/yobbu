@@ -2,3 +2,21 @@ node_modules
 dist
 .env
 .env.local
+.env*.local
+.DS_Store
+*.log
+logs/
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.cache
+.history
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.p8
+secrets.json
