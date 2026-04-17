@@ -23,7 +23,7 @@ export default function DismissibleBanner({ lang = 'en' }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #52B5D9 0%, #2563EB 100%)',
+      background: '#FF8A3D',
       color: '#fff',
       padding: '14px 24px',
       display: 'flex',

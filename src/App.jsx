@@ -117,9 +117,9 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+      <DismissibleBanner lang={lang} />
       <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
         <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
-        <DismissibleBanner lang={lang} />
 
         {view === 'home' && (
           <>
