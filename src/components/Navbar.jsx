@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 function LogOutIcon({ size = 16, color = 'currentColor' }) {
   return (
@@ -12,11 +13,21 @@ function LogOutIcon({ size = 16, color = 'currentColor' }) {
 
 export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState(null)
   const isFr = lang === 'fr'
 
   const meta = user?.user_metadata || {}
   const fullName = user?.first_name || meta.full_name || user?.phone || 'Me'
   const initials = (fullName.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2)) || 'ME'
+
+  useEffect(() => {
+    if (!user?.id) return
+    supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle()
+      .then(({ data }) => {
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url)
+      })
+      .catch(err => console.error('Error fetching avatar:', err))
+  }, [user?.id])
 
   return (
     <>
@@ -67,8 +78,12 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                   {isFr ? '+ Poster' : '+ Post a trip'}
                 </button>
                 <div className="avatar-btn" onClick={() => setView('profile')}
-                  style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s' }}>
-                  {initials}
+                  style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden' }}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    initials
+                  )}
                 </div>
               </>
             ) : (
@@ -89,8 +104,12 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
           <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 10 }}>
             {user && (
               <div onClick={() => setView('profile')}
-                style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0 }}>
-                {initials}
+                style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden' }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  initials
+                )}
               </div>
             )}
             <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 20, overflow: 'hidden' }}>
