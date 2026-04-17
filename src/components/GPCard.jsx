@@ -22,6 +22,12 @@ function formatDate(str, locale) {
   return isNaN(d) ? str : d.toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 }
 
+function formatPostDate(str, locale) {
+  if (!str) return null
+  const d = new Date(str)
+  return isNaN(d) ? str : d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 function daysUntil(str) {
   if (!str) return null
   const diff = Math.ceil((new Date(str) - new Date().setHours(0,0,0,0)) / 86400000)
@@ -290,9 +296,9 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           )}
 
           {/* Date posted — bottom */}
-          {departDate && (
+          {(gp.created_at || gp.approved_at) && (
             <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center', marginTop: 'auto', paddingTop: 8 }}>
-              Posted on: <span style={{ color: urgency.c }}>{urgency.label}</span>
+              Posted on: <span style={{ color: '#1A1710' }}>{formatPostDate(gp.approved_at || gp.created_at, locale)}</span>
             </div>
           )}
         </div>
