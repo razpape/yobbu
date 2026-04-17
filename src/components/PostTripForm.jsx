@@ -112,7 +112,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   const defaultPhone = user?.whatsapp_number || meta.whatsapp_phone || user?.phone || ''
   const [form, setForm]       = useState({
     service_type: 'baggage',
-    from_city: '', to_city: '', date: '', space: '', price: '', phone: defaultPhone, note: '', flight_number: '',
+    from_city: '', to_city: '', date: '', price: '', phone: defaultPhone, note: '', flight_number: '',
     pickup_area: '', dropoff_area: '',
   })
   const [loading, setLoading] = useState(false)
@@ -173,7 +173,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
 
   const handleSubmit = async () => {
     setError(null)
-    if (!form.from_city || !form.to_city || !form.date || !form.space || !form.price) {
+    if (!form.from_city || !form.to_city || !form.date || !form.price) {
       setError(isFr ? 'Remplissez tous les champs obligatoires.' : 'Please fill in all required fields.')
       return
     }
@@ -193,7 +193,6 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         from_city:     form.from_city,
         to_city:       form.to_city,
         date:          form.date,
-        space:         form.space,
         price:         form.price,
         note:          form.note,
         service_type:  form.service_type  || null,
@@ -305,16 +304,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         <label style={lbl}>{isFr ? 'Date de départ *' : 'Departure date *'}</label>
         <input style={inp} type="date" value={form.date} onChange={e => set('date', e.target.value)} min={new Date().toISOString().split('T')[0]} />
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-          <div>
-            <label style={lbl}>{isFr ? 'Espace disponible (kg) *' : 'Available space (kg) *'}</label>
-            <input style={inp} type="number" placeholder="10" value={form.space} onChange={e => set('space', e.target.value)} />
-          </div>
-          <div>
-            <label style={lbl}>{isFr ? 'Prix par kg *' : 'Price per kg *'}</label>
-            <input style={inp} placeholder="5€/kg" value={form.price} onChange={e => set('price', e.target.value)} />
-          </div>
-        </div>
+        <label style={lbl}>{isFr ? 'Prix par kg *' : 'Price per kg *'}</label>
+        <input style={inp} placeholder="5€/kg" value={form.price} onChange={e => set('price', e.target.value)} />
 
         <label style={lbl}>{isFr ? 'Numéro de téléphone (WhatsApp)' : 'Phone number (WhatsApp)'}</label>
         <input style={inp} type="tel" placeholder="+1 (212) 555-0100" value={form.phone} onChange={e => set('phone', e.target.value)} />
