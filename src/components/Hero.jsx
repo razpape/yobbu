@@ -105,25 +105,26 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
           <div className="mobile-search-block">
 
             {/* Tab switcher */}
-            <div style={{ display:'flex', background:'#F0EDE8', borderRadius:14, padding:4, marginBottom:24 }}>
+            <div style={{ display:'flex', gap:10, marginBottom:32 }}>
               {[
-                { id:'send',   label: isFr ? 'Envoyer'  : 'Send',   emoji: '📦' },
-                { id:'travel', label: isFr ? 'GP'  : 'GP', emoji: '✈️' },
+                { id:'send', label: isFr ? 'Envoyer' : 'Send', icon: '📍' },
+                { id:'travel', label: isFr ? 'GP' : 'GP', icon: '☎️' },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setMobileTab(tab.id)}
                   style={{
-                    flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
-                    background: mobileTab === tab.id ? '#fff' : 'transparent',
-                    color: mobileTab === tab.id ? '#1F2937' : '#6B7280',
-                    fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                    flex: 1, padding: '12px 16px', borderRadius: 24, border: 'none',
+                    background: mobileTab === tab.id ? '#fff' : '#f5f3f1',
+                    color: '#1F2937',
+                    fontSize: 14, fontWeight: 600, cursor: 'pointer',
                     fontFamily: "'DM Sans', sans-serif",
-                    boxShadow: mobileTab === tab.id ? '0 1px 6px rgba(0,0,0,.10)' : 'none',
+                    boxShadow: 'none',
                     transition: 'all .2s',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   }}
                 >
-                  {tab.emoji} {tab.label}
+                  <span>{tab.icon}</span> {tab.label}
                 </button>
               ))}
             </div>
@@ -131,66 +132,64 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             {/* ── SEND tab ── */}
             {mobileTab === 'send' && (
               <>
-                <h1 style={{ fontSize:26, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1F2937', textAlign:'center', marginBottom:8, lineHeight:1.2 }}>
+                <h1 style={{ fontSize:24, fontFamily:'DM Serif Display, serif', fontWeight:700, color:'#1F2937', textAlign:'left', marginBottom:12, lineHeight:1.3 }}>
                   {isFr
-                    ? <>Envoyez un colis <em style={{ fontStyle:'italic', color:'#10B981' }}>directement</em> chez votre famille.</>
-                    : <>Send a package <em style={{ fontStyle:'italic', color:'#10B981' }}>directly</em> to your family back home.</>}
+                    ? <>Envoyez un colis <span style={{ fontStyle:'italic', color:'#10B981' }}>directement</span> chez votre famille.</>
+                    : <>Send a package <span style={{ fontStyle:'italic', color:'#10B981' }}>directly</span> to your family back home.</>}
                 </h1>
-                <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5 }}>
+                <p style={{ fontSize:13, color:'#6B7280', textAlign:'left', marginBottom:24, lineHeight:1.6 }}>
                   {isFr
                     ? 'Trouvez un GP de confiance. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
                     : 'Find a trusted GP heading your way. Contact them on WhatsApp. Your family gets it in days.'}
                 </p>
 
                 {/* Origin / Destination card */}
-                <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,.10)', marginBottom:14 }}>
-                  <div style={{ display:'flex', alignItems:'center', padding:'20px', borderBottom:'1px solid #F0EBE3' }}>
+                <div style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:'1.5px solid #E5E0D8', marginBottom:18 }}>
+                  <div style={{ display:'flex', alignItems:'center', padding:'18px 16px', borderBottom:'1.5px solid #E5E0D8', gap:12 }}>
                     <div style={{ flex:1 }}>
-                      <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Je suis à' : 'I am in'}</div>
+                      <div style={{ fontSize:10, fontWeight:700, color:'#6B7280', marginBottom:4, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Je suis à' : 'I am at'}</div>
                       <select value={from} onChange={e => setFrom(e.target.value)}
-                        style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: from ? '#1F2937' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
-                        {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Ma ville...' : 'My city...') : (c[lang] || c.en)}</option>)}
+                        style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:16, fontWeight:600, color: from ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                        {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Votre ville...' : 'Your city...') : (c[lang] || c.en)}</option>)}
                       </select>
                     </div>
-                    <button className="swap-btn" onClick={handleSwap} aria-label="Swap">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B6860" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    <button className="swap-btn" onClick={handleSwap} style={{ width:32, height:32, background:'#fff', border:'1px solid #E5E0D8', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'all .15s' }} aria-label="Swap">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </button>
                   </div>
-                  <div style={{ padding:'20px' }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.07em' }}>{isFr ? 'Ma famille est à' : 'My family is in'}</div>
+                  <div style={{ padding:'16px' }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:'#6B7280', marginBottom:4, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Ma famille est à' : 'My family is at'}</div>
                     <select value={dest} onChange={e => setDest(e.target.value)}
-                      style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1F2937' : '#BBBBBB', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                      style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:16, fontWeight:600, color: dest ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
                       {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
                     </select>
                   </div>
                 </div>
 
-                <button className="mobile-btn-find" onClick={handleSearch}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <button className="mobile-btn-find" onClick={handleSearch} style={{ width:'100%', padding:'16px', borderRadius:16, border:'none', background:'#10B981', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:"'DM Sans', sans-serif", marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8, transition:'all .2s' }}>
+                  <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                     <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
                     <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
                   </svg>
-                  {isFr ? 'Voir les GPs disponibles' : 'Find available GPs'}
+                  {isFr ? 'Voir les GPs disponibles' : 'View available GPs'}
                 </button>
 
-                <div style={{ display:'flex', gap:10, marginTop:16, marginBottom:10 }}>
-                  <button
-                    onClick={() => setView('send')}
-                    style={{
-                      flex:1, padding:'12px 0', borderRadius:12, border:'1.5px solid #E5E1DB',
-                      background:'transparent', color:'#6B7280', fontSize:13, fontWeight:600,
-                      cursor:'pointer', fontFamily:"'DM Sans', sans-serif",
-                    }}
-                  >
-                    {isFr ? 'Poster une demande' : 'Post a request'}
-                  </button>
-                </div>
+                <button
+                  onClick={() => setView('send')}
+                  style={{
+                    width:'100%', padding:'14px', borderRadius:14, border:'1.5px solid #E5E0D8',
+                    background:'#fff', color:'#1F2937', fontSize:14, fontWeight:600,
+                    cursor:'pointer', fontFamily:"'DM Sans', sans-serif", transition:'all .2s'
+                  }}
+                >
+                  {isFr ? 'Poster une demande' : 'Post a request'}
+                </button>
 
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:10, fontSize:13, color:'#6B7280' }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  {isFr ? 'Tous les GPs sont vérifiés' : 'All GPs are phone verified'}
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:18, fontSize:12, color:'#6B7280' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  {isFr ? 'Tous les GPs sont vérifiés' : 'All GPs verified'}
                 </div>
               </>
             )}
