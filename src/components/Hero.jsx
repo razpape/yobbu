@@ -114,12 +114,12 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   key={tab.id}
                   onClick={() => setMobileTab(tab.id)}
                   style={{
-                    flex: 1, padding: '12px 16px', borderRadius: 24, border: 'none',
-                    background: mobileTab === tab.id ? '#fff' : '#f5f3f1',
-                    color: '#1F2937',
-                    fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    flex: 1, padding: '14px 20px', borderRadius: 28, border: 'none',
+                    background: mobileTab === tab.id ? '#fff' : 'rgba(245,243,241,.5)',
+                    color: mobileTab === tab.id ? '#1F2937' : '#9CA3AF',
+                    fontSize: 15, fontWeight: mobileTab === tab.id ? 700 : 500, cursor: 'pointer',
                     fontFamily: "'DM Sans', sans-serif",
-                    boxShadow: 'none',
+                    boxShadow: mobileTab === tab.id ? '0 2px 8px rgba(0,0,0,.08)' : 'none',
                     transition: 'all .2s',
                   }}
                 >
