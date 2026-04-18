@@ -61,9 +61,9 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
           {user?.role === 'sender' && (
             <button onClick={() => setView('packages')}
-              style={{ background: '#10B981', color: '#fff', border: 'none', padding: '9px 18px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'background .2s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#0D7A66'}
-              onMouseLeave={e => e.currentTarget.style.background = '#10B981'}
+              style={{ background: '#F59E0B', color: '#fff', border: 'none', padding: '9px 18px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'background .2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#D97706'}
+              onMouseLeave={e => e.currentTarget.style.background = '#F59E0B'}
             >
               + {isFr ? 'Demande' : 'New Request'}
             </button>
