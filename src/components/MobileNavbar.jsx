@@ -436,61 +436,87 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
         </>
       )}
 
-      {/* Bottom Tab Navigation - Sleek & Modern */}
+      {/* Bottom Tab Navigation - Two-Tab Switcher */}
       <div style={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        height: 72,
+        height: 80,
         background: '#fff',
         borderTop: '1px solid #F5F0EB',
         display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'flex-end',
+        justifyContent: 'center',
+        alignItems: 'center',
         zIndex: 100,
         boxShadow: '0 -1px 3px rgba(0,0,0,.04)',
+        padding: '12px 20px 20px',
+        boxSizing: 'border-box',
       }}>
-        {navTabs.map((tab) => {
-          const isActive = currentView === tab.view
-          const Icon = tab.icon
-
-          return (
-            <button
-              key={tab.view}
-              onClick={() => setView(tab.view)}
-              style={{
-                flex: 1,
-                height: '100%',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                transition: 'all .2s',
-                paddingBottom: 8,
-              }}
-            >
-              <Icon size={26} color={isActive ? '#10B981' : '#D0C7BD'} />
-              <span style={{
-                fontSize: 11,
-                fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#10B981' : '#6B7280',
-                transition: 'color .2s',
-                fontFamily: "'DM Sans', sans-serif",
-              }}>
-                {tab.label}
-              </span>
-            </button>
-          )
-        })}
+        <div style={{
+          display: 'flex',
+          gap: 12,
+          background: '#F5F3F1',
+          borderRadius: 24,
+          padding: 6,
+          width: '100%',
+          maxWidth: 340,
+        }}>
+          <button
+            onClick={() => setView('send')}
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              borderRadius: 20,
+              border: 'none',
+              background: currentView === 'send' ? '#fff' : 'transparent',
+              color: '#1F2937',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: "'DM Sans', sans-serif",
+              transition: 'all .2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {isFr ? 'Envoyer' : 'Send'}
+          </button>
+          <button
+            onClick={() => setView('browse')}
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              borderRadius: 20,
+              border: 'none',
+              background: currentView === 'browse' ? '#fff' : 'transparent',
+              color: '#1F2937',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: "'DM Sans', sans-serif",
+              transition: 'all .2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            {isFr ? 'GP' : 'GP'}
+          </button>
+        </div>
       </div>
 
       {/* Spacer for bottom nav */}
-      <div style={{ height: 72 }} />
+      <div style={{ height: 80 }} />
     </>
   )
 }
