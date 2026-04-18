@@ -162,8 +162,8 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
           gap: 4,
           fontSize: 12,
           fontWeight: 600,
-          color: '#52B5D9',
-          background: '#D4E8F4',
+          color: '#10B981',
+          background: '#D1F4E7',
           border: '1px solid #D4A574',
           borderRadius: 20,
           padding: '4px 12px'
@@ -180,7 +180,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
         gap: 4,
         fontSize: 12,
         fontWeight: 600,
-        color: '#8A8070',
+        color: '#6B7280',
         background: '#F7F5F0',
         border: '1px solid rgba(0,0,0,.1)',
         borderRadius: 20,
@@ -204,7 +204,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
         <div style={{
           fontFamily: 'DM Serif Display, serif',
           fontSize: 20,
-          color: '#1A1710',
+          color: '#1F2937',
           marginBottom: 8
         }}>
           {t.success}
@@ -231,7 +231,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
           <span style={{
             fontFamily: 'DM Serif Display, serif',
             fontSize: 18,
-            color: '#1A1710'
+            color: '#1F2937'
           }}>
             {t.title}
           </span>
@@ -263,7 +263,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
         <span style={{
           fontFamily: 'DM Serif Display, serif',
           fontSize: 18,
-          color: '#1A1710'
+          color: '#1F2937'
         }}>
           {t.title}
         </span>
@@ -273,7 +273,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
       {/* Subtitle */}
       <div style={{
         fontSize: 13,
-        color: '#8A8070',
+        color: '#6B7280',
         marginBottom: 20,
         lineHeight: 1.5
       }}>
@@ -298,14 +298,14 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
           <div style={{
             fontSize: 14,
             fontWeight: 600,
-            color: '#1A1710',
+            color: '#1F2937',
             marginBottom: 4
           }}>
             {uploading ? t.uploading : t.uploadBtn}
           </div>
           <div style={{
             fontSize: 11,
-            color: '#8A8070'
+            color: '#6B7280'
           }}>
             {t.requirements}
           </div>
@@ -331,7 +331,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
             <span style={{
               fontSize: 13,
               fontWeight: 600,
-              color: '#1A1710'
+              color: '#1F2937'
             }}>
               {isFr ? 'Document téléchargé' : 'Document uploaded'}
             </span>
@@ -343,7 +343,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
             }}
             style={{
               fontSize: 12,
-              color: '#8A8070',
+              color: '#6B7280',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -389,7 +389,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
             padding: 14,
             borderRadius: 12,
             border: 'none',
-            background: '#52B5D9',
+            background: '#10B981',
             color: '#fff',
             fontSize: 14,
             fontWeight: 600,
@@ -406,7 +406,7 @@ export default function IDVerificationUpload({ user, profile, lang = 'en', onVer
       {/* Privacy Note */}
       <div style={{
         fontSize: 11,
-        color: '#8A8070',
+        color: '#6B7280',
         marginTop: 16,
         textAlign: 'center',
         lineHeight: 1.5

@@ -5,13 +5,13 @@ export default function TermsPage({ lang, setView }) {
     page:    { minHeight: '100vh', background: '#FDFBF7', fontFamily: 'DM Sans, sans-serif' },
     nav:     { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 48px', borderBottom: '1px solid rgba(0,0,0,.06)', background: '#FDFBF7', position: 'sticky', top: 0, zIndex: 50 },
     body:    { maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px' },
-    h1:      { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(26px,4vw,40px)', color: '#1A1710', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
-    h2:      { fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 10, marginTop: 40 },
-    p:       { fontSize: 15, color: '#8A8070', lineHeight: 1.75, marginBottom: 14 },
-    li:      { fontSize: 15, color: '#8A8070', lineHeight: 1.75, marginBottom: 8 },
-    tag:     { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 20 },
+    h1:      { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(26px,4vw,40px)', color: '#1F2937', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
+    h2:      { fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1F2937', marginBottom: 10, marginTop: 40 },
+    p:       { fontSize: 15, color: '#6B7280', lineHeight: 1.75, marginBottom: 14 },
+    li:      { fontSize: 15, color: '#6B7280', lineHeight: 1.75, marginBottom: 8 },
+    tag:     { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', background: '#D1F4E7', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 20 },
     divider: { height: 1, background: 'rgba(0,0,0,.06)', margin: '8px 0' },
-    box:     { background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 14, padding: '18px 22px', marginBottom: 24 },
+    box:     { background: '#D1F4E7', border: '1px solid #D4A574', borderRadius: 14, padding: '18px 22px', marginBottom: 24 },
   }
 
   return (
@@ -26,7 +26,7 @@ export default function TermsPage({ lang, setView }) {
 
         {/* Key summary box */}
         <div style={s.box}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#52B5D9', marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#10B981', marginBottom: 10 }}>
             {isFr ? 'En bref' : 'Plain language summary'}
           </div>
           <ul style={{ margin: 0, padding: '0 0 0 18px' }}>
@@ -140,7 +140,7 @@ export default function TermsPage({ lang, setView }) {
           {isFr
             ? "Pour toute question relative à ces conditions, contactez-nous à : "
             : "For any questions about these terms, contact us at: "}
-          <strong style={{ color: '#1A1710' }}>support@yobbu.co</strong>
+          <strong style={{ color: '#1F2937' }}>support@yobbu.co</strong>
         </p>
 
       </div>

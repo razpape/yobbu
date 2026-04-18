@@ -34,12 +34,12 @@ export default function ContactModal({ gp, lang, onClose, onSend }) {
 
         {/* GP preview */}
         <div style={{ background:'#fff', borderBottom:'1px solid rgba(0,0,0,.06)', padding:'18px 22px', display:'flex', alignItems:'center', gap:14 }}>
-          <div style={{ width:50, height:50, borderRadius:'50%', background:gp.bg||'#D4E8F4', color:gp.color||'#52B5D9', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Serif Display, serif', fontSize:17, fontWeight:700, flexShrink:0 }}>
+          <div style={{ width:50, height:50, borderRadius:'50%', background:gp.bg||'#D1F4E7', color:gp.color||'#10B981', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'DM Serif Display, serif', fontSize:17, fontWeight:700, flexShrink:0 }}>
             {initials}
           </div>
           <div style={{ flex:1 }}>
-            <div style={{ fontFamily:'DM Serif Display, serif', fontSize:18, color:'#1A1710', marginBottom:2 }}>{gp.name}</div>
-            <div style={{ fontSize:12, color:'#8A8070' }}>
+            <div style={{ fontFamily:'DM Serif Display, serif', fontSize:18, color:'#1F2937', marginBottom:2 }}>{gp.name}</div>
+            <div style={{ fontSize:12, color:'#6B7280' }}>
               {fromCity} → {toCity}
               {gp.date && ` · ${gp.date}`}
               {gp.price && ` · ${gp.price}`}
@@ -52,13 +52,13 @@ export default function ContactModal({ gp, lang, onClose, onSend }) {
         <div style={{ padding:'20px 22px' }}>
 
           {/* Message box */}
-          <label style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em', display:'block', marginBottom:8 }}>
+          <label style={{ fontSize:11, fontWeight:700, color:'#6B7280', textTransform:'uppercase', letterSpacing:'.08em', display:'block', marginBottom:8 }}>
             {isFr ? 'Votre message' : 'Your message'}
           </label>
           <textarea
             value={message}
             onChange={e => setMessage(e.target.value)}
-            style={{ width:'100%', padding:'12px 14px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1A1710', fontSize:13, fontFamily:'DM Sans, sans-serif', outline:'none', resize:'none', lineHeight:1.65, minHeight:110, boxSizing:'border-box', marginBottom:16, transition:'border-color .15s' }}
+            style={{ width:'100%', padding:'12px 14px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1F2937', fontSize:13, fontFamily:'DM Sans, sans-serif', outline:'none', resize:'none', lineHeight:1.65, minHeight:110, boxSizing:'border-box', marginBottom:16, transition:'border-color .15s' }}
             onFocus={e => e.target.style.borderColor='#25D366'}
             onBlur={e => e.target.style.borderColor='rgba(0,0,0,.1)'}
           />
@@ -72,7 +72,7 @@ export default function ContactModal({ gp, lang, onClose, onSend }) {
             ].map(({ label, value }) => (
               <div key={label} style={{ flex:1, background:'#F7F3ED', borderRadius:10, padding:'10px 12px', textAlign:'center' }}>
                 <div style={{ fontSize:9, color:'#B0A090', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:3 }}>{label}</div>
-                <div style={{ fontSize:13, fontWeight:600, color:'#1A1710' }}>{value}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#1F2937' }}>{value}</div>
               </div>
             ))}
           </div>
@@ -88,7 +88,7 @@ export default function ContactModal({ gp, lang, onClose, onSend }) {
           </button>
 
           <button onClick={onClose}
-            style={{ width:'100%', padding:'11px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'transparent', color:'#8A8070', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'all .15s' }}>
+            style={{ width:'100%', padding:'11px', borderRadius:12, border:'1px solid rgba(0,0,0,.1)', background:'transparent', color:'#6B7280', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'all .15s' }}>
             {isFr ? 'Annuler' : 'Cancel'}
           </button>
 

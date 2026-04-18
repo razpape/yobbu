@@ -45,7 +45,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
   const to        = gp.to_city   || gp.to   || '—'
   const initials  = (gp.name || 'GP').split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || 'GP'
   const price     = formatPrice(gp.price)
-  const accent    = gp.color || '#52B5D9'
+  const accent    = gp.color || '#10B981'
   const verified  = gp.phone_verified || gp.verified?.phone
   const days      = daysUntil(gp.date)
   const isFull    = gp.availability_status === 'full'
@@ -56,7 +56,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
   const urgency = (() => {
     if (days === 0) return { label: isFr ? "Aujourd'hui" : 'Today',       c: '#059669' }
-    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#52B5D9' }
+    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#10B981' }
     if (days <= 6)  return { label: isFr ? 'Cette sem.'  : 'This week',   c: '#2563EB' }
     if (days <= 30) return { label: isFr ? 'Ce mois'     : 'This month',  c: '#7C3AED' }
     return { label: isFr ? 'Prochain mois' : 'Next month', c: '#6366F1' }
@@ -265,7 +265,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {/* Price */}
           {price && !disabled && (
             <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginTop: 8 }}>
-              <span style={{ color: '#52B5D9' }}>{price}</span><span style={{ color: '#4A9B5F' }}>/kg</span>
+              <span style={{ color: '#10B981' }}>{price}</span><span style={{ color: '#4A9B5F' }}>/kg</span>
             </div>
           )}
 
@@ -306,7 +306,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {/* Date posted — bottom */}
           {(gp.created_at || gp.approved_at) && (
             <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center', marginTop: 'auto', paddingTop: 8 }}>
-              Posted on: <span style={{ color: '#1A1710' }}>{formatPostDate(gp.approved_at || gp.created_at, locale)}</span>
+              Posted on: <span style={{ color: '#1F2937' }}>{formatPostDate(gp.approved_at || gp.created_at, locale)}</span>
             </div>
           )}
         </div>

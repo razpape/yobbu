@@ -102,21 +102,21 @@ export default function OTPInput({ length = 6, onComplete, onChange, lang = 'en'
               height: 54,
               border: `2px solid ${
                 focusedIndex === index
-                  ? '#52B5D9'
+                  ? '#10B981'
                   : digit
-                    ? '#52B5D980'
+                    ? '#10B98180'
                     : '#E0DAD0'
               }`,
               borderRadius: 12,
               fontSize: 22,
               fontWeight: 700,
               textAlign: 'center',
-              color: '#1A1710',
+              color: '#1F2937',
               background: focusedIndex === index ? '#FDF6ED' : digit ? '#FAFAF8' : '#fff',
               outline: 'none',
               transition: 'all 0.15s',
               fontFamily: "'DM Sans', sans-serif",
-              caretColor: '#52B5D9',
+              caretColor: '#10B981',
             }}
           />
         ))}

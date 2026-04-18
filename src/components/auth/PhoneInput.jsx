@@ -81,7 +81,7 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
             cursor: 'pointer',
             fontSize: 14,
             fontWeight: 600,
-            color: '#3D3829',
+            color: '#1F2937',
             fontFamily: "'DM Sans', sans-serif",
             whiteSpace: 'nowrap',
             flexShrink: 0,
@@ -102,10 +102,10 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
           }}>
             {selectedCountry.iso}
           </span>
-          <span style={{ color: '#8A8070', fontSize: 14 }}>{selectedCountry.code}</span>
+          <span style={{ color: '#6B7280', fontSize: 14 }}>{selectedCountry.code}</span>
           {showDropdown
-            ? <ChevronUp size={14} color="#8A8070" />
-            : <ChevronDown size={14} color="#8A8070" />
+            ? <ChevronUp size={14} color="#6B7280" />
+            : <ChevronDown size={14} color="#6B7280" />
           }
         </button>
 
@@ -125,7 +125,7 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
             fontFamily: "'DM Sans', sans-serif",
             letterSpacing: '0.3px',
             outline: 'none',
-            color: '#1A1710',
+            color: '#1F2937',
             minWidth: 0,
           }}
           autoFocus
@@ -187,15 +187,15 @@ export default function PhoneInput({ value, onChange, onValid, lang = 'en' }) {
                     width: 28,
                     height: 20,
                     borderRadius: 4,
-                    background: selectedCountry.code === country.code ? '#52B5D920' : '#E8E2D8',
+                    background: selectedCountry.code === country.code ? '#10B98120' : '#E8E2D8',
                     fontSize: 11,
                     fontWeight: 700,
-                    color: selectedCountry.code === country.code ? '#52B5D9' : '#5A5248',
+                    color: selectedCountry.code === country.code ? '#10B981' : '#5A5248',
                     letterSpacing: '.04em',
                   }}>
                     {country.iso}
                   </span>
-                  <span style={{ flex: 1, textAlign: 'left', color: '#1A1710', fontWeight: 500 }}>
+                  <span style={{ flex: 1, textAlign: 'left', color: '#1F2937', fontWeight: 500 }}>
                     {country.name}
                   </span>
                   <span style={{ color: '#A09080', fontSize: 13 }}>{country.code}</span>

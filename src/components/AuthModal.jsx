@@ -248,44 +248,44 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
       width: '100%', maxWidth: 420, border: '1px solid rgba(0,0,0,.06)',
       boxShadow: '0 20px 60px rgba(0,0,0,.15)', maxHeight: '90vh', overflowY: 'auto',
     },
-    title: { fontFamily: 'DM Serif Display, serif', fontSize: 24, fontWeight: 700, color: '#1A1710', marginBottom: 4 },
-    sub:   { fontSize: 13, color: '#8A8070', marginBottom: 24 },
+    title: { fontFamily: 'DM Serif Display, serif', fontSize: 24, fontWeight: 700, color: '#1F2937', marginBottom: 4 },
+    sub:   { fontSize: 13, color: '#6B7280', marginBottom: 24 },
     social: (disabled) => ({
       width: '100%', padding: '12px', borderRadius: 12, border: '1px solid rgba(0,0,0,.1)',
       background: '#fff', fontSize: 14, fontWeight: 500,
       cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif',
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-      color: '#1A1710', marginBottom: 10, transition: 'all .2s', opacity: disabled ? .6 : 1,
+      color: '#1F2937', marginBottom: 10, transition: 'all .2s', opacity: disabled ? .6 : 1,
     }),
     divider: { display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' },
     line:    { flex: 1, height: 1, background: 'rgba(0,0,0,.08)' },
-    lbl:     { fontSize: 11, fontWeight: 700, color: '#8A8070', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' },
-    inp:     { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1A1710', fontSize: 14, fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box', marginBottom: 14 },
+    lbl:     { fontSize: 11, fontWeight: 700, color: '#6B7280', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' },
+    inp:     { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1F2937', fontSize: 14, fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box', marginBottom: 14 },
     btn:     (bg, disabled) => ({
       width: '100%', padding: '13px', borderRadius: 12, border: 'none',
-      background: disabled ? '#E8DDD0' : (bg || '#52B5D9'),
+      background: disabled ? '#E8DDD0' : (bg || '#10B981'),
       color: '#fff', fontSize: 15, fontWeight: 600,
       cursor: disabled ? 'not-allowed' : 'pointer',
       fontFamily: 'DM Sans, sans-serif', transition: 'all .2s',
     }),
     tab: (active) => ({
       flex: 1, padding: '9px', borderRadius: 8, border: 'none',
-      background: active ? '#1A1710' : 'transparent',
-      color: active ? '#fff' : '#8A8070', fontSize: 13, fontWeight: 600,
+      background: active ? '#1F2937' : 'transparent',
+      color: active ? '#fff' : '#6B7280', fontSize: 13, fontWeight: 600,
       cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'all .2s',
     }),
     skip: {
       width: '100%', padding: '11px', borderRadius: 12,
       border: '1px solid rgba(0,0,0,.1)', background: 'transparent',
-      color: '#8A8070', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+      color: '#6B7280', fontSize: 14, fontWeight: 500, cursor: 'pointer',
       fontFamily: 'DM Sans, sans-serif', marginTop: 10, textAlign: 'center',
     },
-    toggle: { textAlign: 'center', marginTop: 16, fontSize: 13, color: '#8A8070' },
+    toggle: { textAlign: 'center', marginTop: 16, fontSize: 13, color: '#6B7280' },
     phoneRow: { display: 'flex', gap: 8, marginBottom: 14 },
     countrySelect: {
       flexShrink: 0, padding: '12px 10px', border: '1px solid rgba(0,0,0,.1)',
       borderRadius: 10, background: '#fff', fontSize: 13, fontWeight: 500,
-      fontFamily: 'DM Sans, sans-serif', color: '#1A1710', cursor: 'pointer',
+      fontFamily: 'DM Sans, sans-serif', color: '#1F2937', cursor: 'pointer',
       outline: 'none', appearance: 'none', minWidth: 80,
     },
   }
@@ -329,7 +329,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
             )}
           </div>
           {step === 'entry' && (
-            <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#8A8070', lineHeight: 1, padding: 4 }}>✕</button>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#6B7280', lineHeight: 1, padding: 4 }}>✕</button>
           )}
           {step !== 'entry' && (
             <div style={{ width: 28 }} /> // Spacer to maintain layout
@@ -370,18 +370,18 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
 
             <div style={s.divider}>
               <div style={s.line} />
-              <span style={{ fontSize: 12, color: '#8A8070', fontWeight: 500 }}>{isFr ? 'ou' : 'or'}</span>
+              <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 500 }}>{isFr ? 'ou' : 'or'}</span>
               <div style={s.line} />
             </div>
 
             {/* Phone / Email tabs */}
             <div style={{ display: 'flex', gap: 6, background: '#F0EBE3', borderRadius: 10, padding: 5, marginBottom: 18 }}>
               <button style={{ ...s.tab(method === 'phone'), display:'flex', alignItems:'center', justifyContent:'center', gap:6 }} onClick={() => { setMethod('phone'); setError(null) }}>
-                <PhoneIcon size={13} color={method === 'phone' ? '#fff' : '#8A8070'} />
+                <PhoneIcon size={13} color={method === 'phone' ? '#fff' : '#6B7280'} />
                 {isFr ? 'Téléphone' : 'Phone'}
               </button>
               <button style={{ ...s.tab(method === 'email'), display:'flex', alignItems:'center', justifyContent:'center', gap:6 }} onClick={() => { setMethod('email'); setError(null) }}>
-                <MailIcon size={13} color={method === 'email' ? '#fff' : '#8A8070'} />
+                <MailIcon size={13} color={method === 'email' ? '#fff' : '#6B7280'} />
                 Email
               </button>
             </div>
@@ -434,7 +434,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               {mode === 'login' ? (isFr ? 'Pas de compte ? ' : 'No account? ') : (isFr ? 'Déjà un compte ? ' : 'Already have one? ')}
               <button
                 onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(null) }}
-                style={{ background: 'none', border: 'none', color: '#52B5D9', fontWeight: 700, cursor: 'pointer', fontSize: 13, fontFamily: 'DM Sans, sans-serif' }}
+                style={{ background: 'none', border: 'none', color: '#10B981', fontWeight: 700, cursor: 'pointer', fontSize: 13, fontFamily: 'DM Sans, sans-serif' }}
               >
                 {mode === 'login' ? (isFr ? "S'inscrire" : 'Sign up') : (isFr ? 'Se connecter' : 'Log in')}
               </button>
@@ -466,7 +466,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'phone-verify' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D1F4E7', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#10B981', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
             </div>
@@ -519,7 +519,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'whatsapp' && waMethod === 'choice' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D1F4E7', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#10B981', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Vérification WhatsApp requise' : 'WhatsApp verification required'}
             </div>
@@ -547,10 +547,10 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
                     {isFr ? '🚀 Envoyer un message' : '🚀 Send us a message'}
                   </div>
-                  <div style={{ fontSize: 12, color: '#8A8070' }}>
+                  <div style={{ fontSize: 12, color: '#6B7280' }}>
                     {isFr ? 'Plus rapide • 30 secondes' : 'Faster • 30 seconds'}
                   </div>
                 </div>
@@ -567,14 +567,14 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#52B5D9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <PhoneIcon size={22} color="white" />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
                     {isFr ? 'Recevoir un code SMS' : 'Receive SMS code'}
                   </div>
-                  <div style={{ fontSize: 12, color: '#8A8070' }}>
+                  <div style={{ fontSize: 12, color: '#6B7280' }}>
                     {isFr ? 'Nous vous envoyons le code' : 'We send you the code'}
                   </div>
                 </div>
@@ -587,7 +587,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'whatsapp' && waMethod === 'inbound' && inboundCode && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1710' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1F2937' }}>
                 {isFr ? 'Envoyez ce code par WhatsApp' : 'Send this code via WhatsApp'}
               </div>
             </div>
@@ -619,7 +619,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
             </div>
 
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <span style={{ fontSize: 12, color: waCountdown < 60 ? '#DC2626' : '#8A8070' }}>
+              <span style={{ fontSize: 12, color: waCountdown < 60 ? '#DC2626' : '#6B7280' }}>
                 ⏱ {isFr ? `Expire dans ${Math.floor(waCountdown/60)}:${String(waCountdown%60).padStart(2,'0')}` : `Expires in ${Math.floor(waCountdown/60)}:${String(waCountdown%60).padStart(2,'0')}`}
               </span>
             </div>
@@ -646,7 +646,7 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
         {step === 'whatsapp' && waMethod === 'outbound' && (
           <>
             {/* Required banner */}
-            <div style={{ background: '#D4E8F4', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#52B5D9', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: '#D1F4E7', border: '1px solid #F5D0A9', borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 13, color: '#10B981', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span>⚡</span>
               {isFr ? 'Numéro WhatsApp requis' : 'WhatsApp number required'}
             </div>
@@ -658,10 +658,10 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
                 </svg>
               </div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1710' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>
                   {isFr ? 'Votre numéro WhatsApp' : 'Your WhatsApp number'}
                 </div>
-                <div style={{ fontSize: 11, color: '#8A8070', marginTop: 1 }}>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>
                   {isFr ? 'Les expéditeurs vous contacteront ici' : 'Senders will contact you here'}
                 </div>
               </div>
@@ -703,8 +703,8 @@ export default function AuthModal({ onClose, onSuccess, lang }) {
 
         {step === 'entry' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 16, padding: '8px 12px', background: '#F7F3ED', borderRadius: 8 }}>
-            <LockIcon size={12} color="#8A8070" />
-            <span style={{ fontSize: 11, color: '#8A8070' }}>{isFr ? 'Vos données sont sécurisées.' : 'Your data is secured and encrypted.'}</span>
+            <LockIcon size={12} color="#6B7280" />
+            <span style={{ fontSize: 11, color: '#6B7280' }}>{isFr ? 'Vos données sont sécurisées.' : 'Your data is secured and encrypted.'}</span>
           </div>
         )}
 

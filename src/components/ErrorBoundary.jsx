@@ -21,17 +21,17 @@ export default class ErrorBoundary extends Component {
       <div style={{ minHeight: '100vh', background: '#FDFBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Sans', sans-serif", padding: 24 }}>
         <div style={{ textAlign: 'center', maxWidth: 400 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 8 }}>Something went wrong</h2>
-          <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.6, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', marginBottom: 8 }}>Something went wrong</h2>
+          <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.6, marginBottom: 24 }}>
             An unexpected error occurred. Please refresh the page and try again.
           </p>
           <button
             onClick={() => window.location.href = '/'}
-            style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+            style={{ background: '#10B981', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
           >
             Go back home
           </button>

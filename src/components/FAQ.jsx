@@ -29,7 +29,7 @@ export default function FAQ({ lang }) {
       <style>{`
         .faq-item { border-bottom: 1px solid rgba(0,0,0,.06); }
         .faq-btn { transition: color .2s; }
-        .faq-btn:hover { color: #52B5D9 !important; }
+        .faq-btn:hover { color: #10B981 !important; }
         .faq-answer { overflow: hidden; transition: max-height .3s ease, opacity .3s ease; }
         @media (max-width: 768px) {
           .faq-section { padding: 60px 24px !important; }
@@ -40,11 +40,11 @@ export default function FAQ({ lang }) {
 
           {/* Header */}
           <div style={{ marginBottom: 48 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', marginBottom: 14, background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', marginBottom: 14, background: '#D1F4E7', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px' }}>
               FAQ
             </div>
-            <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px, 3vw, 42px)', color: '#1A1710', lineHeight: 1.12, letterSpacing: '-.5px', marginTop: 12 }}>
-              {isFr ? <>Questions <em style={{ fontStyle: 'italic', color: '#52B5D9' }}>fréquentes</em></> : <>Common <em style={{ fontStyle: 'italic', color: '#52B5D9' }}>questions</em></>}
+            <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px, 3vw, 42px)', color: '#1F2937', lineHeight: 1.12, letterSpacing: '-.5px', marginTop: 12 }}>
+              {isFr ? <>Questions <em style={{ fontStyle: 'italic', color: '#10B981' }}>fréquentes</em></> : <>Common <em style={{ fontStyle: 'italic', color: '#10B981' }}>questions</em></>}
             </h2>
           </div>
 
@@ -53,10 +53,10 @@ export default function FAQ({ lang }) {
             {faqs.map((faq, i) => (
               <div key={i} className="faq-item" style={{ borderBottom: i < faqs.length - 1 ? '1px solid rgba(0,0,0,.06)' : 'none' }}>
                 <button className="faq-btn" onClick={() => setOpen(open === i ? null : i)}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', color: open === i ? '#52B5D9' : '#1A1710', fontFamily: 'DM Sans, sans-serif' }}>
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 28px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', color: open === i ? '#10B981' : '#1F2937', fontFamily: 'DM Sans, sans-serif' }}>
                   <span style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.4, paddingRight: 24 }}>{faq.q}</span>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: open === i ? '#52B5D9' : '#F7F3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all .2s' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={open === i ? '#fff' : '#8A8070'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: open === i ? '#10B981' : '#F7F3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all .2s' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={open === i ? '#fff' : '#6B7280'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       {open === i
                         ? <line x1="5" y1="12" x2="19" y2="12"/>
                         : <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>}
@@ -64,7 +64,7 @@ export default function FAQ({ lang }) {
                   </div>
                 </button>
                 {open === i && (
-                  <div style={{ padding: '0 28px 22px', fontSize: 15, color: '#8A8070', lineHeight: 1.75 }}>
+                  <div style={{ padding: '0 28px 22px', fontSize: 15, color: '#6B7280', lineHeight: 1.75 }}>
                     {faq.a}
                   </div>
                 )}

@@ -249,17 +249,17 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const tripStatus = (trip) => {
     if (trip.suspended) return { label: t.suspended,  desc: t.suspendedDesc, bg: '#FEF2F2', color: '#DC2626', dot: '#DC2626' }
     if (trip.approved)  return { label: t.active,     desc: t.liveDesc,      bg: '#F0FAF4', color: '#2D8B4E', dot: '#22c55e' }
-    return                     { label: t.pending,    desc: t.pendingDesc,   bg: '#D4E8F4', color: '#52B5D9', dot: '#f59e0b' }
+    return                     { label: t.pending,    desc: t.pendingDesc,   bg: '#D1F4E7', color: '#10B981', dot: '#f59e0b' }
   }
 
-  const inp = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: '#FDFBF7', color: '#1A1710', fontSize: 13, fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box', marginBottom: 10 }
-  const lbl = { fontSize: 10, fontWeight: 700, color: '#8A8070', display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }
+  const inp = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: '#FDFBF7', color: '#1F2937', fontSize: 13, fontFamily: 'DM Sans, sans-serif', outline: 'none', boxSizing: 'border-box', marginBottom: 10 }
+  const lbl = { fontSize: 10, fontWeight: 700, color: '#6B7280', display: 'block', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }
 
   // ─── Shared section content (used by both desktop and mobile) ────────────
 
   const tripsContent = (
     <div>
-      {loading && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
+      {loading && <div style={{ textAlign: 'center', padding: 24, color: '#6B7280', fontSize: 13 }}>Loading...</div>}
 
 
       {!loading && trips.length === 0 && (
@@ -267,16 +267,16 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <PlaneIcon size={40} color="#E8DDD0" />
           </div>
-          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{isSender ? (isFr ? 'Parcourez les voyageurs disponibles' : 'Browse available travelers') : t.noTrips}</div>
+          <div style={{ fontSize: 14, color: '#6B7280', marginBottom: 16 }}>{isSender ? (isFr ? 'Parcourez les voyageurs disponibles' : 'Browse available travelers') : t.noTrips}</div>
           {!isSender && (
             <button onClick={() => setView('post')}
-              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              style={{ background: '#10B981', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {t.postNew}
             </button>
           )}
           {isSender && (
             <button onClick={() => setView('browse')}
-              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              style={{ background: '#10B981', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {isFr ? 'Parcourir' : 'Browse'}
             </button>
           )}
@@ -289,7 +289,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div key={trip.id} style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 14, padding: '16px', marginBottom: 10 }}>
             {/* Route + status */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1710' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1F2937' }}>
                 {trip.from_city} → {trip.to_city}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: st.bg, borderRadius: 20, padding: '4px 10px' }}>
@@ -298,7 +298,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
               </div>
             </div>
             {/* Status description */}
-            <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 10 }}>{st.desc}</div>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 10 }}>{st.desc}</div>
             {/* Details */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
               {[
@@ -308,8 +308,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 { Icon: MapPinIcon,   val: trip.pickup_area ? `Pickup: ${trip.pickup_area}` : null },
                 { Icon: MapPinIcon,   val: trip.dropoff_area ? `Dropoff: ${trip.dropoff_area}` : null },
               ].filter(x => x.val).map(({ Icon: Ic, val }) => (
-                <span key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 20, padding: '5px 10px', color: '#3D3829' }}>
-                  <Ic size={11} color="#8A8070" /> {val}
+                <span key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 20, padding: '5px 10px', color: '#1F2937' }}>
+                  <Ic size={11} color="#6B7280" /> {val}
                 </span>
               ))}
             </div>
@@ -318,12 +318,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
               const av = trip.availability_status || 'open'
               const opts = [
                 { key: 'open',        label: isFr ? 'Disponible' : 'Open',        dot: '#22c55e', bg: '#F0FAF4', border: '#C8E6D4', color: '#059669' },
-                { key: 'full',        label: isFr ? 'Complet' : 'Full',           dot: '#f59e0b', bg: '#D4E8F4', border: '#D4A574', color: '#7C4E0A' },
+                { key: 'full',        label: isFr ? 'Complet' : 'Full',           dot: '#f59e0b', bg: '#D1F4E7', border: '#D4A574', color: '#7C4E0A' },
                 { key: 'unavailable', label: isFr ? 'Indisponible' : 'Unavailable', dot: '#DC2626', bg: '#FEF2F2', border: '#FECACA', color: '#991B1B' },
               ]
               return (
                 <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
                     {isFr ? 'Statut de disponibilité' : 'Availability status'}
                   </div>
                   <div style={{ display: 'flex', gap: 6 }}>
@@ -335,7 +335,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                           fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 700,
                           background: av === o.key ? o.bg : '#F5F3EF',
                           border: `1.5px solid ${av === o.key ? o.border : '#E5E1DB'}`,
-                          color: av === o.key ? o.color : '#8A8070',
+                          color: av === o.key ? o.color : '#6B7280',
                           transition: 'all .15s',
                         }}>
                         <span style={{ width: 6, height: 6, borderRadius: '50%', background: av === o.key ? o.dot : '#C0B8B0', flexShrink: 0 }} />
@@ -350,8 +350,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setEditingTrip(trip)}
-                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1A1710', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                <EditIcon size={12} color="#1A1710" /> {t.edit}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1F2937', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                <EditIcon size={12} color="#1F2937" /> {t.edit}
               </button>
               <button onClick={() => deleteTrip(trip.id)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 14px', borderRadius: 9, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
@@ -364,8 +364,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
       {!isSender && !loading && trips.length > 0 && (
         <button onClick={() => setView('post')}
-          style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-          <PlusIcon size={13} color="#8A8070" /> {t.postNew}
+          style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+          <PlusIcon size={13} color="#6B7280" /> {t.postNew}
         </button>
       )}
     </div>
@@ -374,22 +374,22 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   const reqStatus = (req) => {
     const s = req.status || 'open'
     if (s === 'matched') return { label: t.reqMatched, bg: '#F0FAF4', color: '#2D8B4E', dot: '#22c55e' }
-    if (s === 'closed')  return { label: t.reqClosed,  bg: '#F5F3EF', color: '#8A8070', dot: '#C0B8B0' }
-    return                     { label: t.reqOpen,     bg: '#D4E8F4', color: '#52B5D9', dot: '#f59e0b' }
+    if (s === 'closed')  return { label: t.reqClosed,  bg: '#F5F3EF', color: '#6B7280', dot: '#C0B8B0' }
+    return                     { label: t.reqOpen,     bg: '#D1F4E7', color: '#10B981', dot: '#f59e0b' }
   }
 
   const requestsContent = (
     <div>
-      {loadingReqs && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
+      {loadingReqs && <div style={{ textAlign: 'center', padding: 24, color: '#6B7280', fontSize: 13 }}>Loading...</div>}
 
       {!loadingReqs && requests.length === 0 && (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <PackageIcon size={40} color="#E8DDD0" />
           </div>
-          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{t.noRequests}</div>
+          <div style={{ fontSize: 14, color: '#6B7280', marginBottom: 16 }}>{t.noRequests}</div>
           <button onClick={() => setView('send')}
-            style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            style={{ background: '#10B981', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             {t.postRequest}
           </button>
         </div>
@@ -401,7 +401,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div key={req.id} style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 14, padding: '16px', marginBottom: 10 }}>
             {/* Route + status */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1710' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1F2937' }}>
                 {req.from_city} → {req.to_city}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: st.bg, borderRadius: 20, padding: '4px 10px' }}>
@@ -417,15 +417,15 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 { Icon: DollarIcon,   val: req.budget ? `Max ${req.budget}$/kg` : null },
                 { Icon: CalendarIcon, val: req.deadline ? `${isFr ? 'Avant' : 'By'} ${req.deadline}` : null },
               ].filter(x => x.val).map(({ Icon: Ic, val }) => (
-                <span key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 20, padding: '5px 10px', color: '#3D3829' }}>
-                  <Ic size={11} color="#8A8070" /> {val}
+                <span key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 20, padding: '5px 10px', color: '#1F2937' }}>
+                  <Ic size={11} color="#6B7280" /> {val}
                 </span>
               ))}
             </div>
 
             {/* Description */}
             {req.description && (
-              <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.5, marginBottom: 12, padding: '8px 10px', background: '#fff', borderRadius: 8, border: '1px solid rgba(0,0,0,.06)' }}>
+              <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5, marginBottom: 12, padding: '8px 10px', background: '#fff', borderRadius: 8, border: '1px solid rgba(0,0,0,.06)' }}>
                 {req.description}
               </div>
             )}
@@ -433,8 +433,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setEditingReq(req)}
-                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1A1710', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                <EditIcon size={12} color="#1A1710" /> {t.edit}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, border: '1px solid rgba(0,0,0,.1)', background: '#fff', color: '#1F2937', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                <EditIcon size={12} color="#1F2937" /> {t.edit}
               </button>
               <button onClick={() => deleteRequest(req.id)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 14px', borderRadius: 9, border: '1px solid #FECACA', background: '#FEF2F2', color: '#DC2626', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
@@ -447,8 +447,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
       {!loadingReqs && requests.length > 0 && (
         <button onClick={() => setView('send')}
-          style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-          <PlusIcon size={13} color="#8A8070" /> {t.postRequest}
+          style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+          <PlusIcon size={13} color="#6B7280" /> {t.postRequest}
         </button>
       )}
     </div>
@@ -458,7 +458,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
     <div>
       {/* Verification Steps */}
       <div style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>
           {isFr ? 'Étapes de vérification' : 'Verification Steps'}
         </div>
         {/* Progress bar */}
@@ -471,7 +471,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 <div style={{ height: '100%', background: '#22c55e', width: `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0)) / 3 * 100}%`, transition: 'width .3s' }} />
               )}
             </div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#8A8070', minWidth: 40 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', minWidth: 40 }}>
               {isSender ? '1/2' : `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0))}/3`}
             </div>
           </div>
@@ -495,18 +495,18 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           ]).map(({ step, label, desc, completed, status, badge, action }) => (
             <div key={step} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: completed ? '#F0FAF4' : '#F5F3EF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 700, color: completed ? '#22c55e' : '#8A8070' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: completed ? '#F0FAF4' : '#F5F3EF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 700, color: completed ? '#22c55e' : '#6B7280' }}>
                   {completed ? '✓' : step}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1F2937', marginBottom: 2 }}>
                     {label}
                   </div>
-                  <div style={{ fontSize: 11, color: '#8A8070', marginBottom: 4 }}>
+                  <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>
                     {desc}
                   </div>
                   {status && (
-                    <div style={{ fontSize: 10, fontWeight: 700, color: completed ? '#22c55e' : '#52B5D9', display: 'inline-block', padding: '2px 8px', background: completed ? '#F0FAF4' : '#D4E8F4', borderRadius: 12 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: completed ? '#22c55e' : '#10B981', display: 'inline-block', padding: '2px 8px', background: completed ? '#F0FAF4' : '#D1F4E7', borderRadius: 12 }}>
                       {status}
                     </div>
                   )}
@@ -519,7 +519,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
               </div>
               {action && (
                 <button onClick={() => (isSender && step === 2) ? null : (step === 2 ? setShowAvatarUpload(true) : null)}
-                  style={{ alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                  style={{ alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8, border: 'none', background: '#10B981', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                   {action}
                 </button>
               )}
@@ -530,7 +530,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
       {/* Your Badges */}
       <div style={{ background: '#FDFBF7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#8A8070', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '.06em' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '.06em' }}>
           {isFr ? 'Vos badges' : 'Your badges'}
         </div>
         <TrustBadges profile={user} lang={lang} size="md" />
@@ -559,22 +559,22 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const notificationsContent = (
     <div>
-      {loading && <div style={{ textAlign: 'center', padding: 24, color: '#8A8070', fontSize: 13 }}>Loading...</div>}
+      {loading && <div style={{ textAlign: 'center', padding: 24, color: '#6B7280', fontSize: 13 }}>Loading...</div>}
       {!loading && visibleNotifications.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <BellIcon size={40} color="#E8DDD0" />
           </div>
-          <div style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7 }}>{t.notifEmpty}</div>
+          <div style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.7 }}>{t.notifEmpty}</div>
         </div>
       )}
       {!loading && visibleNotifications.map(({ type, trip, id }) => {
         const styles = {
           approved:      { bg: '#F0FAF4', border: '#C8E6D4', color: '#059669' },
           suspended:     { bg: '#FEF2F2', border: '#FECACA', color: '#DC2626' },
-          pending:       { bg: '#D4E8F4', border: '#D4A574', color: '#92650A' },
+          pending:       { bg: '#D1F4E7', border: '#D4A574', color: '#92650A' },
           photo_approved:{ bg: '#F0FAF4', border: '#C8E6D4', color: '#059669' },
-          photo_pending: { bg: '#D4E8F4', border: '#D4A574', color: '#92650A' },
+          photo_pending: { bg: '#D1F4E7', border: '#D4A574', color: '#92650A' },
         }[type] || {}
         return (
           <div key={id} style={{
@@ -590,7 +590,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
               {type === 'photo_pending'  && <span style={{ fontSize: 22 }}>⏳</span>}
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 3 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937', marginBottom: 3 }}>
                 {type === 'approved'       && (isFr ? 'Annonce approuvée !' : 'Listing approved!')}
                 {type === 'suspended'      && (isFr ? 'Annonce suspendue' : 'Listing suspended')}
                 {type === 'pending'        && (isFr ? 'Annonce en cours de révision' : 'Listing under review')}
@@ -602,7 +602,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                   {trip.from_city || trip.from} → {trip.to_city || trip.to} · {trip.date}
                 </div>
               )}
-              <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.6 }}>
                 {type === 'approved'       && (isFr ? 'Votre annonce est maintenant visible par les expéditeurs.' : 'Your listing is now visible to senders.')}
                 {type === 'suspended'      && (isFr ? "Contactez-nous si vous pensez qu'il s'agit d'une erreur." : 'Contact us at hello@yobbu.co if you think this is a mistake.')}
                 {type === 'pending'        && (isFr ? 'Nous révisons votre annonce. Cela prend généralement moins de 24h.' : 'We\'re reviewing your listing. This usually takes less than 24h.')}
@@ -631,26 +631,26 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
 
   const settingsContent = (
     <div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1710', marginBottom: 10 }}>{t.accInfo}</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#1F2937', marginBottom: 10 }}>{t.accInfo}</div>
       {[
         { Icon: UserIcon,     label: t.fullName,    value: fullName || '—' },
         { Icon: CalendarIcon, label: t.since,       value: joinDate },
         ...(baseCountry ? [{ Icon: GlobeIcon, label: t.baseCountry, value: baseCountry }] : []),
       ].map(({ Icon: Ic, label, value }) => (
         <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#FDFBF7', borderRadius: 10, border: '1px solid rgba(0,0,0,.05)', marginBottom: 8 }}>
-          <Ic size={15} color="#8A8070" />
-          <span style={{ fontSize: 13, color: '#8A8070', minWidth: 90 }}>{label}</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#1A1710' }}>{value}</span>
+          <Ic size={15} color="#6B7280" />
+          <span style={{ fontSize: 13, color: '#6B7280', minWidth: 90 }}>{label}</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#1F2937' }}>{value}</span>
         </div>
       ))}
       {/* Language */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#FDFBF7', borderRadius: 10, border: '1px solid rgba(0,0,0,.05)', marginBottom: 8 }}>
-        <GlobeIcon size={15} color="#8A8070" />
-        <span style={{ fontSize: 13, color: '#8A8070', minWidth: 90 }}>{t.langLabel}</span>
+        <GlobeIcon size={15} color="#6B7280" />
+        <span style={{ fontSize: 13, color: '#6B7280', minWidth: 90 }}>{t.langLabel}</span>
         <div style={{ display: 'flex', background: '#F0EDE8', borderRadius: 8, padding: 2 }}>
           {['en', 'fr'].map(l => (
             <button key={l} onClick={() => setLang(l)}
-              style={{ padding: '4px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', background: lang === l ? '#52B5D9' : 'transparent', color: lang === l ? '#fff' : '#8A8070' }}>
+              style={{ padding: '4px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', background: lang === l ? '#10B981' : 'transparent', color: lang === l ? '#fff' : '#6B7280' }}>
               {l.toUpperCase()}
             </button>
           ))}
@@ -687,13 +687,13 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         },
       ].map(({ Icon: Ic, title, desc, href, linkLabel }) => (
         <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '16px', background: '#FDFBF7', borderRadius: 12, border: '1px solid rgba(0,0,0,.06)', marginBottom: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#D4E8F4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Ic size={16} color="#52B5D9" />
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#D1F4E7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Ic size={16} color="#10B981" />
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 3 }}>{title}</div>
-            <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 6, lineHeight: 1.5 }}>{desc}</div>
-            <a href={href} style={{ fontSize: 13, fontWeight: 700, color: '#52B5D9', textDecoration: 'none' }}>{linkLabel} →</a>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937', marginBottom: 3 }}>{title}</div>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, lineHeight: 1.5 }}>{desc}</div>
+            <a href={href} style={{ fontSize: 13, fontWeight: 700, color: '#10B981', textDecoration: 'none' }}>{linkLabel} →</a>
           </div>
         </div>
       ))}
@@ -748,7 +748,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 999, padding: 0 }}>
           <div style={{ background: '#FDFBF7', borderRadius: '20px 20px 0 0', padding: '28px 24px 40px', width: '100%', maxWidth: 520, boxShadow: '0 -8px 40px rgba(0,0,0,.15)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ width: 40, height: 4, background: '#E0D8CE', borderRadius: 2, margin: '0 auto 24px' }} />
-            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1F2937', marginBottom: 20 }}>
               {isFr ? "Modifier l'annonce" : 'Edit listing'}
             </div>
             {[
@@ -767,11 +767,11 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             ))}
             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
               <button onClick={saveEdit} disabled={saving}
-                style={{ flex: 1, padding: '13px', borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? .6 : 1 }}>
+                style={{ flex: 1, padding: '13px', borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? .6 : 1 }}>
                 {saving ? '...' : isFr ? 'Sauvegarder' : 'Save changes'}
               </button>
               <button onClick={() => setEditingTrip(null)}
-                style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                 {isFr ? 'Annuler' : 'Cancel'}
               </button>
             </div>
@@ -784,7 +784,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 999, padding: 0 }}>
           <div style={{ background: '#FDFBF7', borderRadius: '20px 20px 0 0', padding: '28px 24px 40px', width: '100%', maxWidth: 520, boxShadow: '0 -8px 40px rgba(0,0,0,.15)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ width: 40, height: 4, background: '#E0D8CE', borderRadius: 2, margin: '0 auto 24px' }} />
-            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1F2937', marginBottom: 20 }}>
               {isFr ? 'Modifier la demande' : 'Edit request'}
             </div>
             {[
@@ -806,11 +806,11 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             </div>
             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
               <button onClick={saveEditReq} disabled={savingReq}
-                style={{ flex: 1, padding: '13px', borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: savingReq ? .6 : 1 }}>
+                style={{ flex: 1, padding: '13px', borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: savingReq ? .6 : 1 }}>
                 {savingReq ? '...' : isFr ? 'Sauvegarder' : 'Save changes'}
               </button>
               <button onClick={() => setEditingReq(null)}
-                style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+                style={{ padding: '13px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                 {isFr ? 'Annuler' : 'Cancel'}
               </button>
             </div>
@@ -823,15 +823,15 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={handleAvatarUpload} />
         </div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 8, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#1F2937', marginBottom: 8, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
         {user?.role && (
-          <div style={{ display: 'inline-block', padding: '4px 12px', background: '#D4E8F4', color: '#52B5D9', fontSize: 11, fontWeight: 700, borderRadius: 12, marginBottom: 16 }}>
+          <div style={{ display: 'inline-block', padding: '4px 12px', background: '#D1F4E7', color: '#10B981', fontSize: 11, fontWeight: 700, borderRadius: 12, marginBottom: 16 }}>
             {user.role === 'traveler' ? (isFr ? 'Voyageur' : 'Traveler') : user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Les deux' : 'Both')}
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#F7F4EF', borderRadius: 20, padding: '6px 12px' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             <span style={{ fontSize: 12, color: '#5A5248', fontWeight: 600 }}>{isFr ? `Membre depuis ${joinDate}` : `Member since ${joinDate}`}</span>
           </div>
           {photoVerified && (
@@ -847,9 +847,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       <div className="pf-mobile-tabs" style={{ overflowX: 'auto', borderBottom: '1px solid rgba(0,0,0,.06)', background: '#fff', padding: '0 16px', gap: 0, display: 'none' }}>
         {menuItems.map(({ key, Icon, label, badge }) => (
           <button key={key} onClick={() => handleSetSection(key)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, color: section === key ? '#52B5D9' : '#8A8070', borderBottom: section === key ? '2px solid #52B5D9' : '2px solid transparent', whiteSpace: 'nowrap', flexShrink: 0, position: 'relative' }}>
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, color: section === key ? '#10B981' : '#6B7280', borderBottom: section === key ? '2px solid #10B981' : '2px solid transparent', whiteSpace: 'nowrap', flexShrink: 0, position: 'relative' }}>
             <span style={{ position: 'relative', display: 'flex' }}>
-              <Icon size={16} color={section === key ? '#52B5D9' : '#8A8070'} />
+              <Icon size={16} color={section === key ? '#10B981' : '#6B7280'} />
               {badge > 0 && (
                 <span style={{ position: 'absolute', top: -4, right: -6, fontSize: 8, fontWeight: 700, background: '#DC2626', color: '#fff', borderRadius: 20, padding: '1px 4px', minWidth: 14, textAlign: 'center', lineHeight: '14px' }}>{badge}</span>
               )}
@@ -869,22 +869,22 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
               <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={60} onUpload={handleAvatarUpload} />
             </div>
-            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1A1710', marginBottom: 6 }}>{fullName}</div>
+            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1F2937', marginBottom: 6 }}>{fullName}</div>
             {user?.role && (
-              <div style={{ display: 'inline-block', padding: '3px 10px', background: '#D4E8F4', color: '#52B5D9', fontSize: 9, fontWeight: 700, borderRadius: 10, marginBottom: 8 }}>
+              <div style={{ display: 'inline-block', padding: '3px 10px', background: '#D1F4E7', color: '#10B981', fontSize: 9, fontWeight: 700, borderRadius: 10, marginBottom: 8 }}>
                 {user.role === 'traveler' ? (isFr ? 'Voyageur' : 'Traveler') : user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Les deux' : 'Both')}
               </div>
             )}
-            <div style={{ fontSize: 11, color: '#8A8070' }}>{baseCountry || contact}</div>
+            <div style={{ fontSize: 11, color: '#6B7280' }}>{baseCountry || contact}</div>
           </div>
 
           {/* Language toggle */}
           <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>{t.langLabel}</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>{t.langLabel}</div>
             <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 8, padding: 2 }}>
               {['en', 'fr'].map(l => (
                 <button key={l} onClick={() => setLang(l)}
-                  style={{ flex: 1, padding: '5px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', background: lang === l ? '#52B5D9' : 'transparent', color: lang === l ? '#fff' : '#8A8070', transition: 'all .15s' }}>
+                  style={{ flex: 1, padding: '5px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', background: lang === l ? '#10B981' : 'transparent', color: lang === l ? '#fff' : '#6B7280', transition: 'all .15s' }}>
                   {l.toUpperCase()}
                 </button>
               ))}
@@ -895,9 +895,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 16, overflow: 'hidden' }}>
             {menuItems.map(({ key, Icon, label, badge }) => (
               <div key={key} onClick={() => handleSetSection(key)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontSize: 13, fontWeight: 500, transition: 'background .15s', background: section === key ? '#D4E8F4' : 'transparent', color: section === key ? '#52B5D9' : '#3D3829', borderRight: section === key ? '3px solid #52B5D9' : '3px solid transparent' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: section === key ? '#D4E8F4' : '#F7F3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Icon size={14} color={section === key ? '#52B5D9' : '#3D3829'} />
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontSize: 13, fontWeight: 500, transition: 'background .15s', background: section === key ? '#D1F4E7' : 'transparent', color: section === key ? '#10B981' : '#1F2937', borderRight: section === key ? '3px solid #10B981' : '3px solid transparent' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: section === key ? '#D1F4E7' : '#F7F3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Icon size={14} color={section === key ? '#10B981' : '#1F2937'} />
                 </div>
                 <span style={{ flex: 1 }}>{label}</span>
                 {badge > 0 && (
@@ -914,16 +914,16 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div className="pf-desktop-header" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, margin: '12px 0' }}>
             {(isSender ? [
               { n: requests.length,                           l: isFr ? 'Total' : 'Total' },
-              { n: requests.filter(r => r.status === 'open').length, l: isFr ? 'Ouvertes' : 'Open', color: '#52B5D9' },
-              { n: requests.filter(r => r.status === 'closed').length, l: isFr ? 'Fermées' : 'Closed', color: '#8A8070' },
+              { n: requests.filter(r => r.status === 'open').length, l: isFr ? 'Ouvertes' : 'Open', color: '#10B981' },
+              { n: requests.filter(r => r.status === 'closed').length, l: isFr ? 'Fermées' : 'Closed', color: '#6B7280' },
             ] : [
               { n: trips.length,                             l: t.st1 },
               { n: trips.filter(tr => tr.approved).length,  l: t.st2, color: '#2D8B4E' },
               { n: trips.filter(tr => tr.suspended).length, l: t.st3, color: '#DC2626' },
             ]).map(({ n, l, color }) => (
               <div key={l} style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 14, padding: '14px 18px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: color || '#52B5D9', lineHeight: 1 }}>{n}</div>
-                <div style={{ fontSize: 11, color: '#8A8070', marginTop: 4 }}>{l}</div>
+                <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: color || '#10B981', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 4 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -931,7 +931,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div className="pf-section">
             {/* Desktop section title */}
             <div className="pf-desktop-header">
-              <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', marginBottom: 16 }}>
+              <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1F2937', marginBottom: 16 }}>
                 {sectionTitle[section]}
               </div>
             </div>
@@ -950,9 +950,9 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       }}>
         {menuItems.map(({ key, Icon, label, badge }) => (
           <button key={key} onClick={() => handleSetSection(key)}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: section === key ? '#52B5D9' : '#8A8070' }}>
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: section === key ? '#10B981' : '#6B7280' }}>
             <div style={{ position: 'relative' }}>
-              <Icon size={22} color={section === key ? '#52B5D9' : '#8A8070'} />
+              <Icon size={22} color={section === key ? '#10B981' : '#6B7280'} />
               {badge > 0 && (
                 <span style={{ position: 'absolute', top: -4, right: -6, fontSize: 8, fontWeight: 700, background: '#DC2626', color: '#fff', borderRadius: 20, padding: '1px 4px', minWidth: 14, textAlign: 'center', lineHeight: '14px' }}>{badge}</span>
               )}
@@ -961,16 +961,16 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           </button>
         ))}
         <button onClick={() => setView('post')}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: '#1A1710' }}>
-          <div style={{ width: 24, height: 24, borderRadius: 7, background: '#1A1710', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: '#1F2937' }}>
+          <div style={{ width: 24, height: 24, borderRadius: 7, background: '#1F2937', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <PlusIcon size={14} color="#fff" />
           </div>
           {isFr ? 'Poster' : 'Post'}
         </button>
         <button onClick={() => setView('send')}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: '#52B5D9' }}>
-          <div style={{ width: 24, height: 24, borderRadius: 7, background: '#D4E8F4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <PackageIcon size={14} color="#52B5D9" />
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 4px', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', fontSize: 10, fontWeight: 700, color: '#10B981' }}>
+          <div style={{ width: 24, height: 24, borderRadius: 7, background: '#D1F4E7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <PackageIcon size={14} color="#10B981" />
           </div>
           {isFr ? 'Envoyer' : 'Send'}
         </button>
@@ -980,7 +980,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
       {showAvatarUpload && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', borderRadius: 16, padding: 32, maxWidth: 400, width: '90%' }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1710', marginBottom: 20 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#1F2937', marginBottom: 20 }}>
               {isFr ? 'Ajouter une photo de profil' : 'Add a profile photo'}
             </div>
             <div style={{ marginBottom: 24 }}>
@@ -998,11 +998,11 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 }}
               />
             </div>
-            <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 16, textAlign: 'center' }}>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 16, textAlign: 'center' }}>
               {isFr ? 'Une photo claire de vous-même. Sera examinée par nos modérateurs.' : 'A clear photo of yourself. Will be reviewed by our team.'}
             </div>
             <button onClick={() => setShowAvatarUpload(false)}
-              style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+              style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
               {isFr ? 'Fermer' : 'Close'}
             </button>
           </div>

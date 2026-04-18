@@ -128,7 +128,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
         @keyframes wa-fade-in { from { opacity:0; transform:scale(.97); } to { opacity:1; transform:scale(1); } }
         .wa-modal-box { animation: wa-fade-in .22s ease-out both; }
         .wa-otp-input { width:44px; height:54px; text-align:center; font-size:22px; font-weight:700;
-          font-family:'DM Sans',sans-serif; color:#1A1710; background:#F7F5F0;
+          font-family:'DM Sans',sans-serif; color:#1F2937; background:#F7F5F0;
           border:2px solid #E8DDD0; border-radius:12px; outline:none; transition:border-color .15s;
           -moz-appearance:textfield; }
         .wa-otp-input::-webkit-outer-spin-button,
@@ -167,7 +167,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
             style={{
               position: 'absolute', top: 16, right: 16, width: 30, height: 30,
               border: 'none', background: '#F0EBE3', borderRadius: '50%',
-              cursor: 'pointer', fontSize: 14, color: '#8A8070', display: 'flex',
+              cursor: 'pointer', fontSize: 14, color: '#6B7280', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -188,10 +188,10 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', letterSpacing: '-.3px' }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: '#1F2937', letterSpacing: '-.3px' }}>
                     {isFr ? 'Vérification WhatsApp' : 'WhatsApp Verification'}
                   </div>
-                  <div style={{ fontSize: 12, color: '#8A8070', marginTop: 1 }}>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>
                     {isFr ? 'Un numéro = un compte' : 'One number = one account'}
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
 
               {/* Phone input */}
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#8A8070', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.08em' }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.08em' }}>
                   {isFr ? 'Numéro WhatsApp' : 'WhatsApp Number'}
                 </label>
                 <div style={{ display: 'flex', gap: 8 }}>
@@ -215,7 +215,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                     style={{
                       flexShrink: 0, padding: '12px 10px', border: '1.5px solid #E8DDD0',
                       borderRadius: 12, background: '#F7F5F0', fontSize: 13, fontWeight: 500,
-                      fontFamily: "'DM Sans',sans-serif", color: '#1A1710', cursor: 'pointer',
+                      fontFamily: "'DM Sans',sans-serif", color: '#1F2937', cursor: 'pointer',
                       outline: 'none', appearance: 'none', minWidth: 100,
                     }}
                   >
@@ -233,7 +233,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                     style={{
                       flex: 1, padding: '12px 16px', border: '1.5px solid #E8DDD0',
                       borderRadius: 12, fontSize: 15, fontWeight: 500,
-                      fontFamily: "'DM Sans',sans-serif", color: '#1A1710',
+                      fontFamily: "'DM Sans',sans-serif", color: '#1F2937',
                       outline: 'none', background: '#fff',
                     }}
                   />
@@ -250,7 +250,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                 onClick={sendOtp}
                 disabled={loading || cooldown > 0}
                 style={{
-                  width: '100%', padding: '14px', background: loading || cooldown > 0 ? '#E8DDD0' : '#52B5D9',
+                  width: '100%', padding: '14px', background: loading || cooldown > 0 ? '#E8DDD0' : '#10B981',
                   color: '#fff', border: 'none', borderRadius: 12,
                   fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 600,
                   cursor: loading || cooldown > 0 ? 'not-allowed' : 'pointer',
@@ -269,7 +269,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                 style={{
                   width: '100%', marginTop: 10, padding: '11px', borderRadius: 12,
                   border: '1px solid rgba(0,0,0,.1)', background: 'transparent',
-                  color: '#8A8070', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  color: '#6B7280', fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   fontFamily: "'DM Sans',sans-serif", textAlign: 'center',
                 }}
               >
@@ -289,13 +289,13 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
             <>
               <div style={{ textAlign: 'center', marginBottom: 20 }}>
                 <div style={{ display:'flex', justifyContent:'center', marginBottom: 8 }}><PhoneIcon size={36} color="#25D366" /></div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', letterSpacing: '-.3px', marginBottom: 6 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#1F2937', letterSpacing: '-.3px', marginBottom: 6 }}>
                   {isFr ? 'Code envoyé !' : 'Code sent!'}
                 </div>
                 <p style={{ fontSize: 13, color: '#6B6860', lineHeight: 1.6, margin: 0 }}>
                   {isFr
-                    ? <>Vérifiez WhatsApp sur <strong style={{ color: '#1A1710' }}>{fullPhone}</strong><br />et entrez le code à 6 chiffres ci-dessous.</>
-                    : <>Check WhatsApp on <strong style={{ color: '#1A1710' }}>{fullPhone}</strong><br />and enter the 6-digit code below.</>}
+                    ? <>Vérifiez WhatsApp sur <strong style={{ color: '#1F2937' }}>{fullPhone}</strong><br />et entrez le code à 6 chiffres ci-dessous.</>
+                    : <>Check WhatsApp on <strong style={{ color: '#1F2937' }}>{fullPhone}</strong><br />and enter the 6-digit code below.</>}
                 </p>
               </div>
 
@@ -320,7 +320,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
               {/* Expiry timer */}
               <div style={{ textAlign: 'center', marginBottom: 14 }}>
                 {timeLeft > 0
-                  ? <span style={{ fontSize: 12, color: timeLeft < 60 ? '#DC2626' : '#8A8070' }}>
+                  ? <span style={{ fontSize: 12, color: timeLeft < 60 ? '#DC2626' : '#6B7280' }}>
                       {isFr ? `Code valide encore ${fmtTime(timeLeft)}` : `Code expires in ${fmtTime(timeLeft)}`}
                     </span>
                   : <span style={{ fontSize: 12, color: '#DC2626', fontWeight: 600 }}>
@@ -352,7 +352,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
               <div style={{ textAlign: 'center' }}>
                 <button
                   onClick={() => { setStep('phone'); setOtp(['','','','','','']); setError('') }}
-                  style={{ fontSize: 13, color: '#52B5D9', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}
+                  style={{ fontSize: 13, color: '#10B981', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}
                 >
                   {isFr ? '← Changer de numéro' : '← Change number'}
                 </button>
@@ -362,7 +362,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
                     <button
                       onClick={() => { setOtp(['','','','','','']); setError(''); sendOtp() }}
                       disabled={loading}
-                      style={{ fontSize: 13, color: '#8A8070', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+                      style={{ fontSize: 13, color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
                     >
                       {isFr ? 'Renvoyer le code' : 'Resend code'}
                     </button>
@@ -378,7 +378,7 @@ export default function WhatsAppVerificationModal({ user, lang, onClose, onVerif
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
                 <VerifiedBadge size="lg" showLabel />
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 8, letterSpacing: '-.4px' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', marginBottom: 8, letterSpacing: '-.4px' }}>
                 {isFr ? 'Compte vérifié !' : 'Account verified!'}
               </div>
               <p style={{ fontSize: 14, color: '#6B6860', lineHeight: 1.6, margin: 0 }}>

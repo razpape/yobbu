@@ -23,7 +23,7 @@ export default function LoadingSpinner({ lang = 'en' }) {
           width: 56px;
           height: 56px;
           border: 4px solid #E8E4DE;
-          border-top-color: #52B5D9;
+          border-top-color: #10B981;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }

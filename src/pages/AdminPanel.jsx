@@ -61,7 +61,7 @@ export default function AdminPanel({ onSignOut }) {
   const [blogPosts, setBlogPosts] = useState([])
   const [blogLoading, setBlogLoading] = useState(false)
   const [editingPost, setEditingPost] = useState(null)
-  const [newPost, setNewPost] = useState({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#52B5D9', featured: false })
+  const [newPost, setNewPost] = useState({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#10B981', featured: false })
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
 
@@ -173,7 +173,7 @@ export default function AdminPanel({ onSignOut }) {
         showToast('Post created!')
       }
       setEditingPost(null)
-      setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#52B5D9', featured: false })
+      setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#10B981', featured: false })
     } catch (err) {
       showToast(`⚠️ Error: ${err.message}`)
     } finally {
@@ -606,7 +606,7 @@ export default function AdminPanel({ onSignOut }) {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                   <p style={{ color: '#666', fontSize: 12 }}>{blogPosts.length} posts</p>
-                  <Btn type="approve" onClick={() => { setEditingPost(null); setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#52B5D9', featured: false }) }}>
+                  <Btn type="approve" onClick={() => { setEditingPost(null); setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#10B981', featured: false }) }}>
                     {editingPost ? 'Cancel' : 'New Post'}
                   </Btn>
                 </div>
@@ -684,7 +684,7 @@ export default function AdminPanel({ onSignOut }) {
                     </div>
                     <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
                       <Btn type="approve" onClick={saveBlogPost} disabled={operationInProgress.blog}>Save Post</Btn>
-                      <Btn type="edit" onClick={() => { setEditingPost(null); setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#52B5D9', featured: false }) }}>Cancel</Btn>
+                      <Btn type="edit" onClick={() => { setEditingPost(null); setNewPost({ title_en: '', title_fr: '', excerpt_en: '', excerpt_fr: '', author_en: '', author_fr: '', image_color: '#10B981', featured: false }) }}>Cancel</Btn>
                     </div>
                   </div>
                 ) : null}

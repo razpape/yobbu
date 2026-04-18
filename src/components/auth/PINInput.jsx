@@ -128,21 +128,21 @@ export default function PINInput({
                   showError
                     ? '#DC2626'
                     : focusedIndex === index
-                      ? '#52B5D9'
+                      ? '#10B981'
                       : digit
-                        ? '#52B5D980'
+                        ? '#10B98180'
                         : '#E0DAD0'
                 }`,
                 borderRadius: 14,
                 fontSize: 26,
                 fontWeight: 700,
                 textAlign: 'center',
-                color: '#1A1710',
+                color: '#1F2937',
                 background: showError ? '#FEF2F2' : focusedIndex === index ? '#FDF6ED' : digit ? '#FAFAF8' : '#fff',
                 outline: 'none',
                 transition: 'all 0.15s',
                 fontFamily: "'DM Sans', sans-serif",
-                caretColor: '#52B5D9',
+                caretColor: '#10B981',
               }}
             />
             {/* Filled indicator dot */}
@@ -155,7 +155,7 @@ export default function PINInput({
                 width: 5,
                 height: 5,
                 borderRadius: '50%',
-                background: '#52B5D9',
+                background: '#10B981',
               }} />
             )}
           </div>

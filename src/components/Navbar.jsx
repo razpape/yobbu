@@ -53,17 +53,17 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
       <div style={{ width: '100%', maxWidth: 1400, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
         {/* Left: Logo */}
-        <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px' }}>
-          Yob<span style={{ color: '#52B5D9' }}>bu</span>
+        <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1F2937', cursor: 'pointer', letterSpacing: '-.5px' }}>
+          Yob<span style={{ color: '#10B981' }}>bu</span>
         </div>
 
         {/* Right: Language + Bell + Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
           {user?.role === 'sender' && (
             <button onClick={() => setView('packages')}
-              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '9px 18px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'background .2s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#3D9FBD'}
-              onMouseLeave={e => e.currentTarget.style.background = '#52B5D9'}
+              style={{ background: '#10B981', color: '#fff', border: 'none', padding: '9px 18px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'background .2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#0D7A66'}
+              onMouseLeave={e => e.currentTarget.style.background = '#10B981'}
             >
               + {isFr ? 'Demande' : 'New Request'}
             </button>
@@ -73,7 +73,7 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
           <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 16, overflow: 'hidden', padding: 2 }}>
             {['EN', 'FR'].map(l => (
               <button key={l} onClick={() => setLang(l.toLowerCase())}
-                style={{ padding: '5px 10px', border: 'none', background: lang === l.toLowerCase() ? '#52B5D9' : 'transparent', color: lang === l.toLowerCase() ? '#fff' : '#8A8070', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all .2s' }}>
+                style={{ padding: '5px 10px', border: 'none', background: lang === l.toLowerCase() ? '#10B981' : 'transparent', color: lang === l.toLowerCase() ? '#fff' : '#6B7280', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all .2s' }}>
                 {l}
               </button>
             ))}
@@ -81,9 +81,9 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
 
           {/* Bell */}
           {user && (
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#8A8070', transition: 'color .2s', display: 'flex', alignItems: 'center' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#52B5D9'}
-              onMouseLeave={e => e.currentTarget.style.color = '#8A8070'}
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#6B7280', transition: 'color .2s', display: 'flex', alignItems: 'center' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#10B981'}
+              onMouseLeave={e => e.currentTarget.style.color = '#6B7280'}
             >
               <BellIcon size={20} color="currentColor" />
             </button>
@@ -93,7 +93,7 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
           {user ? (
             <div style={{ position: 'relative' }} data-avatar-menu>
               <button onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', overflow: 'hidden', padding: 0, transition: 'all .2s' }}
+                style={{ width: 38, height: 38, borderRadius: '50%', background: '#D1F4E7', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#10B981', cursor: 'pointer', overflow: 'hidden', padding: 0, transition: 'all .2s' }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.1)'}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
               >
@@ -107,14 +107,14 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
               {avatarMenuOpen && (
                 <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 160 }} data-avatar-menu>
                   <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
-                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1F2937', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     {isFr ? 'Mon profil' : 'My profile'}
                   </button>
                   <button onClick={() => { setView('sender-profile'); setAvatarMenuOpen(false) }}
-                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1F2937', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
                     onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -133,7 +133,7 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
             </div>
           ) : (
             <button onClick={onLoginClick}
-              style={{ background: 'transparent', color: '#3D3829', border: '1px solid #E5E1DB', padding: '8px 16px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all .2s' }}
+              style={{ background: 'transparent', color: '#1F2937', border: '1px solid #E5E1DB', padding: '8px 16px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all .2s' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#F7F3ED'; e.currentTarget.style.borderColor = '#D4C8BC' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#E5E1DB' }}
             >

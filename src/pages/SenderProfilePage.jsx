@@ -60,7 +60,7 @@ function PackageRequestCard({ request, lang }) {
   const t = isFr ? T.fr : T.en
 
   const statusColor = {
-    open: '#52B5D9',
+    open: '#10B981',
     matched: '#F59E0B',
     closed: '#22C55E',
   }
@@ -82,10 +82,10 @@ function PackageRequestCard({ request, lang }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
             {request.from_city} → {request.to_city}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#1A1710' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#1F2937' }}>
             {request.weight}kg {request.description && `• ${request.description.slice(0, 20)}...`}
           </div>
         </div>
@@ -109,7 +109,7 @@ function PackageRequestCard({ request, lang }) {
         display: 'flex',
         gap: 16,
         fontSize: 12,
-        color: '#8A8070',
+        color: '#6B7280',
       }}>
         <span>📅 {new Date(request.created_at).toLocaleDateString(isFr ? 'fr-FR' : 'en-US')}</span>
         {request.deadline && <span>⏳ {new Date(request.deadline).toLocaleDateString(isFr ? 'fr-FR' : 'en-US')}</span>}
@@ -173,11 +173,11 @@ export default function SenderProfilePage({ user, lang, setView }) {
         <h1 style={{
           fontFamily: "'DM Serif Display', serif",
           fontSize: 28,
-          color: '#1A1710',
+          color: '#1F2937',
           marginBottom: 24,
           letterSpacing: '-.5px',
         }}>
-          {t.greeting}<span style={{ color: '#52B5D9' }}>{firstName}</span> 📦
+          {t.greeting}<span style={{ color: '#10B981' }}>{firstName}</span> 📦
         </h1>
 
         <button
@@ -236,10 +236,10 @@ export default function SenderProfilePage({ user, lang, setView }) {
               padding: '12px',
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#52B5D9', marginBottom: 4 }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#10B981', marginBottom: 4 }}>
                 {value}
               </div>
-              <div style={{ fontSize: 11, color: '#8A8070', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em' }}>
+              <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em' }}>
                 {label}
               </div>
             </div>
@@ -264,8 +264,8 @@ export default function SenderProfilePage({ user, lang, setView }) {
                 padding: '8px 16px',
                 borderRadius: 20,
                 border: 'none',
-                background: filter === f ? '#52B5D9' : '#fff',
-                color: filter === f ? '#fff' : '#8A8070',
+                background: filter === f ? '#10B981' : '#fff',
+                color: filter === f ? '#fff' : '#6B7280',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -283,7 +283,7 @@ export default function SenderProfilePage({ user, lang, setView }) {
       <div style={{ padding: '16px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <div style={{ fontSize: 14, color: '#8A8070' }}>Loading...</div>
+            <div style={{ fontSize: 14, color: '#6B7280' }}>Loading...</div>
           </div>
         ) : filteredRequests.length === 0 ? (
           <div style={{
@@ -308,7 +308,7 @@ export default function SenderProfilePage({ user, lang, setView }) {
             <h2 style={{
               fontFamily: "'DM Serif Display', serif",
               fontSize: 20,
-              color: '#1A1710',
+              color: '#1F2937',
               marginBottom: 8,
               letterSpacing: '-.5px',
             }}>
@@ -316,7 +316,7 @@ export default function SenderProfilePage({ user, lang, setView }) {
             </h2>
             <p style={{
               fontSize: 14,
-              color: '#8A8070',
+              color: '#6B7280',
               lineHeight: 1.6,
             }}>
               {t.noRequestsDesc}

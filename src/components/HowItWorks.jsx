@@ -3,7 +3,7 @@ import { useState } from 'react'
 const SENDER_STEPS = {
   en: [
     {
-      num: '1', color: '#52B5D9', bg: '#D4E8F4',
+      num: '1', color: '#10B981', bg: '#D1F4E7',
       title: 'Search your route',
       desc: 'Enter where you are and where your family is. Yobbu shows you all verified GPs traveling that route — with their dates, capacity, and price per kg.',
       bullets: ['Filter by date & space', 'See full GP profile', 'Phone-verified only'],
@@ -23,7 +23,7 @@ const SENDER_STEPS = {
   ],
   fr: [
     {
-      num: '1', color: '#52B5D9', bg: '#D4E8F4',
+      num: '1', color: '#10B981', bg: '#D1F4E7',
       title: 'Cherchez votre route',
       desc: 'Entrez votre ville de départ et la destination. Yobbu vous montre tous les GPs vérifiés sur cette route — avec leurs dates, capacité et prix au kilo.',
       bullets: ['Filtrer par date & espace', 'Voir le profil complet', 'GPs vérifiés uniquement'],
@@ -46,7 +46,7 @@ const SENDER_STEPS = {
 const GP_STEPS = {
   en: [
     {
-      num: '1', color: '#52B5D9', bg: '#D4E8F4',
+      num: '1', color: '#10B981', bg: '#D1F4E7',
       title: 'Post your trip',
       desc: 'You\'re already traveling. Tell Yobbu your route, date, how many kg you can carry, and your price. Takes 2 minutes.',
       bullets: ['Flying with extra space', 'Set your own price', 'Takes 2 minutes'],
@@ -66,7 +66,7 @@ const GP_STEPS = {
   ],
   fr: [
     {
-      num: '1', color: '#52B5D9', bg: '#D4E8F4',
+      num: '1', color: '#10B981', bg: '#D1F4E7',
       title: 'Publiez votre voyage',
       desc: 'Vous voyagez déjà. Indiquez votre route, la date, combien de kg vous pouvez transporter et votre prix. Ça prend 2 minutes.',
       bullets: ['Vous voyagez en avion', 'Fixez votre propre prix', 'Prend 2 minutes'],
@@ -97,7 +97,7 @@ const WHY = {
   ],
 }
 
-const colors = { '#52B5D9': '#52B5D9', '#2D8B4E': '#2D8B4E', '#534AB7': '#534AB7' }
+const colors = { '#10B981': '#10B981', '#2D8B4E': '#2D8B4E', '#534AB7': '#534AB7' }
 
 export default function HowItWorks({ lang }) {
   const isFr = lang === 'fr'
@@ -123,13 +123,13 @@ export default function HowItWorks({ lang }) {
 
           {/* Header */}
           <div style={{ marginBottom: 40 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', background: '#D4E8F4', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', background: '#D1F4E7', border: '1px solid #D4A574', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 16 }}>
               {isFr ? 'Comment ça marche' : 'How it works'}
             </div>
-            <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(26px, 3vw, 40px)', color: '#1A1710', lineHeight: 1.12, letterSpacing: '-.5px', marginBottom: 12, marginTop: 0 }}>
-              {isFr ? <>Simple pour tout le monde,<br /><em style={{ color: '#52B5D9' }}>des deux côtés</em></> : <>Simple for everyone,<br /><em style={{ color: '#52B5D9' }}>on both sides</em></>}
+            <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(26px, 3vw, 40px)', color: '#1F2937', lineHeight: 1.12, letterSpacing: '-.5px', marginBottom: 12, marginTop: 0 }}>
+              {isFr ? <>Simple pour tout le monde,<br /><em style={{ color: '#10B981' }}>des deux côtés</em></> : <>Simple for everyone,<br /><em style={{ color: '#10B981' }}>on both sides</em></>}
             </h2>
-            <p style={{ fontSize: 15, color: '#8A8070', lineHeight: 1.65, maxWidth: 500, margin: 0 }}>
+            <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.65, maxWidth: 500, margin: 0 }}>
               {isFr
                 ? "Que vous envoyiez un colis ou que vous voyagiez avec de l'espace, Yobbu vous met en relation directement."
                 : "Whether you're sending a package or traveling with space to spare, Yobbu connects you directly."}
@@ -147,7 +147,7 @@ export default function HowItWorks({ lang }) {
                 style={{
                   padding: '10px 20px', borderRadius: 9, fontSize: 13, fontWeight: 700,
                   background: side === opt.key ? '#fff' : 'transparent',
-                  color: side === opt.key ? '#1A1710' : '#8A8070',
+                  color: side === opt.key ? '#1F2937' : '#6B7280',
                   boxShadow: side === opt.key ? '0 1px 4px rgba(0,0,0,.1)' : 'none',
                 }}>
                 {isFr ? opt.fr : opt.en}
@@ -168,15 +168,15 @@ export default function HowItWorks({ lang }) {
                   )}
                 </div>
                 <div style={{ paddingLeft: 24, paddingBottom: i < steps.length - 1 ? 44 : 0 }}>
-                  <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 21, color: '#1A1710', lineHeight: 1.2, marginBottom: 10 }}>
+                  <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 21, color: '#1F2937', lineHeight: 1.2, marginBottom: 10 }}>
                     {step.title}
                   </div>
-                  <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.75, marginBottom: 14, maxWidth: 540 }}>
+                  <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.75, marginBottom: 14, maxWidth: 540 }}>
                     {step.desc}
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {step.bullets.map((b, j) => (
-                      <span key={b} className="hiw-bullet" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, borderRadius: 6, padding: '5px 12px', background: '#FDFBF7', border: '1px solid rgba(0,0,0,.08)', color: '#3D3829' }}>
+                      <span key={b} className="hiw-bullet" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, borderRadius: 6, padding: '5px 12px', background: '#FDFBF7', border: '1px solid rgba(0,0,0,.08)', color: '#1F2937' }}>
                         <span style={{ width: 5, height: 5, borderRadius: '50%', background: step.color, display: 'inline-block', flexShrink: 0 }} />
                         {b}
                       </span>
@@ -189,30 +189,30 @@ export default function HowItWorks({ lang }) {
 
           {/* Why not Facebook */}
           <div style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid rgba(0,0,0,.06)' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', marginBottom: 12 }}>
               {isFr ? 'Pourquoi pas un groupe Facebook ?' : 'Why not just a Facebook group?'}
             </div>
-            <h3 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: '#1A1710', marginBottom: 28, marginTop: 0 }}>
+            <h3 style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: '#1F2937', marginBottom: 28, marginTop: 0 }}>
               {isFr ? 'Facebook, c\'est du bruit. Yobbu, c\'est de la clarté.' : 'Facebook is noise. Yobbu is clarity.'}
             </h3>
             <div className="hiw-why-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {why.map(col => (
                 <div key={col.label} style={{
                   borderRadius: 16, padding: '20px 22px',
-                  background: col.highlight ? '#D4E8F4' : '#F5F3EF',
+                  background: col.highlight ? '#D1F4E7' : '#F5F3EF',
                   border: `1.5px solid ${col.highlight ? '#D4A574' : 'rgba(0,0,0,.06)'}`,
                 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: col.highlight ? '#52B5D9' : '#8A8070', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {col.highlight && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#52B5D9', display: 'inline-block' }} />}
+                  <div style={{ fontSize: 13, fontWeight: 800, color: col.highlight ? '#10B981' : '#6B7280', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {col.highlight && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />}
                     {col.label}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {col.items.map(item => (
                       <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                        <span style={{ fontSize: 13, color: col.highlight ? '#52B5D9' : '#B0A090', flexShrink: 0, marginTop: 1 }}>
+                        <span style={{ fontSize: 13, color: col.highlight ? '#10B981' : '#B0A090', flexShrink: 0, marginTop: 1 }}>
                           {col.highlight ? '✓' : '✕'}
                         </span>
-                        <span style={{ fontSize: 13, color: col.highlight ? '#3D3829' : '#A09080', lineHeight: 1.5 }}>{item}</span>
+                        <span style={{ fontSize: 13, color: col.highlight ? '#1F2937' : '#A09080', lineHeight: 1.5 }}>{item}</span>
                       </div>
                     ))}
                   </div>

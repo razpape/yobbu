@@ -80,7 +80,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
           }}
         >
           <div style={{ width: 40, height: 4, background: '#E0D8CE', borderRadius: 2, margin: '0 auto 24px' }} />
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#1A1710', marginBottom: 12 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#1F2937', marginBottom: 12 }}>
             {isFr ? 'Avis déjà donné' : 'Already Reviewed'}
           </div>
           <div style={{ fontSize: 14, color: '#6B6860', marginBottom: 24, lineHeight: 1.6 }}>
@@ -91,7 +91,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
             style={{
               width: '100%',
               padding: '13px',
-              background: '#52B5D9',
+              background: '#10B981',
               color: '#fff',
               border: 'none',
               borderRadius: 12,
@@ -136,7 +136,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
       >
         <div style={{ width: 40, height: 4, background: '#E0D8CE', borderRadius: 2, margin: '0 auto 24px' }} />
 
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#1A1710', marginBottom: 2 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#1F2937', marginBottom: 2 }}>
           {copy.title}
         </div>
         <div style={{ fontSize: 13, color: '#6B6860', marginBottom: 24 }}>
@@ -168,7 +168,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
 
         {/* Comment */}
         <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#3D3829', marginBottom: 8 }}>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F2937', marginBottom: 8 }}>
             {copy.commentLabel}
           </label>
           <textarea
@@ -188,7 +188,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
               minHeight: 100,
               transition: 'border-color .2s',
             }}
-            onFocus={e => (e.target.style.borderColor = '#52B5D9')}
+            onFocus={e => (e.target.style.borderColor = '#10B981')}
             onBlur={e => (e.target.style.borderColor = '#E0DAD0')}
           />
         </div>
@@ -215,7 +215,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
               flex: 1,
               padding: '13px',
               background: 'transparent',
-              color: '#3D3829',
+              color: '#1F2937',
               border: '1.5px solid #E0DAD0',
               borderRadius: 12,
               fontSize: 14,
@@ -235,7 +235,7 @@ export default function ReviewModal({ gpId, gpName, user, lang, onClose, onSubmi
             style={{
               flex: 1,
               padding: '13px',
-              background: submitting ? '#E0DAD0' : '#52B5D9',
+              background: submitting ? '#E0DAD0' : '#10B981',
               color: submitting ? '#A09080' : '#fff',
               border: 'none',
               borderRadius: 12,

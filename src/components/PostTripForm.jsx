@@ -55,8 +55,8 @@ function AreaInput({ value, onChange, placeholder, city, style: extraStyle }) {
           {suggestions.slice(0, 8).map(s => (
             <div key={s}
               onMouseDown={() => { onChange(s); setFocused(false) }}
-              style={{ padding: '10px 14px', fontSize: 14, color: '#1A1710', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontFamily: 'DM Sans, sans-serif' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#D4E8F4'}
+              style={{ padding: '10px 14px', fontSize: 14, color: '#1F2937', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,.04)', fontFamily: 'DM Sans, sans-serif' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#D1F4E7'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {s}
@@ -127,19 +127,19 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
   // Shared nav bar (shown on all states when not inline)
   const navBar = !inline && (
     <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 24px', borderBottom:'1px solid rgba(0,0,0,.06)', background:'#FDFBF7', position:'sticky', top:0, zIndex:50, fontFamily:'DM Sans, sans-serif' }}>
-      <div onClick={() => setView('home')} style={{ fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1A1710', cursor:'pointer', letterSpacing:'-.5px' }}>
-        Yob<span style={{ color:'#52B5D9' }}>bu</span>
+      <div onClick={() => setView('home')} style={{ fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1F2937', cursor:'pointer', letterSpacing:'-.5px' }}>
+        Yob<span style={{ color:'#10B981' }}>bu</span>
       </div>
       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
         {user && (
           <button onClick={() => setView('profile')}
-            style={{ display:'flex', alignItems:'center', gap:8, background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
-            <div style={{ width:26, height:26, borderRadius:'50%', background:'#52B5D9', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
+            style={{ display:'flex', alignItems:'center', gap:8, background:'#D1F4E7', border:'1px solid #D4A574', borderRadius:20, padding:'6px 14px 6px 6px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>
+            <div style={{ width:26, height:26, borderRadius:'50%', background:'#10B981', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#fff', flexShrink:0 }}>
               {avatarUrl && !avatarErr
                 ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
                 : initials}
             </div>
-            <span style={{ fontSize:12, fontWeight:600, color:'#52B5D9' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
+            <span style={{ fontSize:12, fontWeight:600, color:'#10B981' }}>{isFr ? 'Mon profil' : 'My profile'}</span>
           </button>
         )}
       </div>
@@ -154,18 +154,18 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:24, minHeight:'calc(100vh - 57px)' }}>
           <div style={{ textAlign:'center', maxWidth:400 }}>
             <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><LockIcon size={48} color="#C8DDD0" /></div>
-            <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1A1710', marginBottom:12 }}>
+            <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1F2937', marginBottom:12 }}>
               {isFr ? 'Connexion requise' : 'Sign in required'}
             </h2>
-            <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
+            <p style={{ fontSize:15, color:'#6B7280', marginBottom:24, lineHeight:1.65 }}>
               {isFr ? 'Vous devez être connecté pour poster un voyage.' : 'You need to be signed in to post a trip.'}
             </p>
             <button onClick={onLoginRequired}
-              style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
+              style={{ background:'#10B981', color:'#fff', border:'none', padding:'13px 32px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer', marginRight:10 }}>
               {isFr ? 'Se connecter' : 'Sign in'}
             </button>
             <button onClick={() => setView('browse')}
-              style={{ background:'transparent', color:'#8A8070', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
+              style={{ background:'transparent', color:'#6B7280', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
               {isFr ? 'Parcourir' : 'Browse trips'}
             </button>
           </div>
@@ -185,8 +185,8 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
     setLoading(true)
     try {
       const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP'
-      const colors   = ['#52B5D9','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
-      const bgs      = ['#D4E8F4','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
+      const colors   = ['#10B981','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
+      const bgs      = ['#D1F4E7','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
       const idx      = Math.floor(Math.random() * colors.length)
 
       const { error } = await supabase.from('trips').insert({
@@ -214,27 +214,27 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
     finally { setLoading(false) }
   }
 
-  const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1A1710', fontSize:14, fontFamily:'DM Sans, sans-serif', outline:'none', boxSizing:'border-box', marginBottom:16 }
-  const lbl = { fontSize:11, fontWeight:700, color:'#8A8070', display:'block', marginBottom:6, textTransform:'uppercase', letterSpacing:'.06em' }
+  const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid rgba(0,0,0,.1)', background:'#fff', color:'#1F2937', fontSize:14, fontFamily:'DM Sans, sans-serif', outline:'none', boxSizing:'border-box', marginBottom:16 }
+  const lbl = { fontSize:11, fontWeight:700, color:'#6B7280', display:'block', marginBottom:6, textTransform:'uppercase', letterSpacing:'.06em' }
   const sel = { ...inp, cursor:'pointer', appearance:'none' }
 
   if (success) {
     const successContent = (
       <div style={{ textAlign:'center', maxWidth:400, margin:'0 auto', padding:'40px 24px' }}>
         <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}><CheckCircleIcon size={56} color="#2D8B4E" /></div>
-        <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1A1710', marginBottom:12 }}>
+        <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:28, color:'#1F2937', marginBottom:12 }}>
           {isFr ? 'Voyage soumis !' : 'Trip submitted!'}
         </h2>
-        <p style={{ fontSize:15, color:'#8A8070', marginBottom:24, lineHeight:1.65 }}>
+        <p style={{ fontSize:15, color:'#6B7280', marginBottom:24, lineHeight:1.65 }}>
           {isFr ? 'Votre annonce a été envoyée à l\'équipe admin pour approbation. Elle sera publiée dès qu\'elle sera approuvée (généralement < 24h).' : 'Your listing has been sent to the admin team for approval. It will be published once approved (usually < 24h).'}
         </p>
         <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
           <button onClick={() => setView('profile')}
-            style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'13px 28px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
+            style={{ background:'#10B981', color:'#fff', border:'none', padding:'13px 28px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, fontWeight:600, cursor:'pointer' }}>
             {isFr ? 'Voir mes voyages' : 'View my trips'}
           </button>
           <button onClick={() => setView('browse')}
-            style={{ background:'transparent', color:'#3D3829', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
+            style={{ background:'transparent', color:'#1F2937', border:'1px solid rgba(0,0,0,.1)', padding:'13px 24px', borderRadius:12, fontFamily:'DM Sans, sans-serif', fontSize:15, cursor:'pointer' }}>
             {isFr ? 'Voir les GPs' : 'Browse GPs'}
           </button>
         </div>
@@ -257,30 +257,30 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
       {!inline && (
         <div style={{ marginBottom:28 }}>
           <button onClick={() => setView('profile')}
-            style={{ background:'none', border:'none', color:'#8A8070', cursor:'pointer', fontSize:13, fontFamily:'DM Sans, sans-serif', marginBottom:16, padding:0, display:'flex', alignItems:'center', gap:6 }}>
+            style={{ background:'none', border:'none', color:'#6B7280', cursor:'pointer', fontSize:13, fontFamily:'DM Sans, sans-serif', marginBottom:16, padding:0, display:'flex', alignItems:'center', gap:6 }}>
             ← {isFr ? 'Mes voyages' : 'My trips'}
           </button>
-          <h1 style={{ fontFamily:'DM Serif Display, serif', fontSize:30, color:'#1A1710', marginBottom:6 }}>
+          <h1 style={{ fontFamily:'DM Serif Display, serif', fontSize:30, color:'#1F2937', marginBottom:6 }}>
             {isFr ? 'Poster un voyage' : 'Post a trip'}
           </h1>
-          <p style={{ fontSize:14, color:'#8A8070' }}>
+          <p style={{ fontSize:14, color:'#6B7280' }}>
             {isFr ? 'Votre annonce sera examinée avant publication.' : 'Your listing will be reviewed before going live.'}
           </p>
         </div>
       )}
 
       {/* Traveler info */}
-      <div style={{ background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
-        <div style={{ width:44, height:44, borderRadius:'50%', background:'#52B5D9', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
+      <div style={{ background:'#D1F4E7', border:'1px solid #D4A574', borderRadius:14, padding:'16px 20px', marginBottom:24, display:'flex', alignItems:'center', gap:12 }}>
+        <div style={{ width:44, height:44, borderRadius:'50%', background:'#10B981', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:700, color:'#fff', flexShrink:0 }}>
           {avatarUrl && !avatarErr
             ? <img src={avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setAvatarErr(true)} />
             : (fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GP')
           }
         </div>
         <div>
-          <div style={{ fontSize:15, fontWeight:600, color:'#1A1710' }}>{fullName || (isFr ? 'Chargement...' : 'Loading...')}</div>
+          <div style={{ fontSize:15, fontWeight:600, color:'#1F2937' }}>{fullName || (isFr ? 'Chargement...' : 'Loading...')}</div>
         </div>
-        <div style={{ marginLeft:'auto', fontSize:11, color:'#52B5D9', fontWeight:600, background:'#fff', border:'1px solid #D4A574', borderRadius:20, padding:'3px 10px' }}>
+        <div style={{ marginLeft:'auto', fontSize:11, color:'#10B981', fontWeight:600, background:'#fff', border:'1px solid #D4A574', borderRadius:20, padding:'3px 10px' }}>
           {isFr ? 'Vous' : 'You'}
         </div>
       </div>
@@ -318,14 +318,14 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         {/* Pickup area */}
         <label style={lbl}>{isFr ? 'Zone de ramassage' : 'Pickup area'}</label>
         <AreaInput value={form.pickup_area} onChange={v => set('pickup_area', v)} placeholder={isFr ? 'Ex: Bronx, Médina...' : 'Ex: Bronx, Queens...'} city={form.from_city} style={inp} />
-        <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+        <div style={{ fontSize:11, color:'#6B7280', marginTop:-6, marginBottom:10 }}>
           {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
         </div>
 
         {/* Dropoff area */}
         <label style={lbl}>{isFr ? 'Zone de livraison' : 'Dropoff area'}</label>
         <AreaInput value={form.dropoff_area} onChange={v => set('dropoff_area', v)} placeholder={isFr ? 'Ex: Médina, Plateau...' : 'Ex: Médina, Plateau...'} city={form.to_city} style={inp} />
-        <div style={{ fontSize:11, color:'#8A8070', marginTop:-6, marginBottom:10 }}>
+        <div style={{ fontSize:11, color:'#6B7280', marginTop:-6, marginBottom:10 }}>
           {isFr ? 'Quartier ou ville — pas d\'adresse exacte' : 'Neighborhood or city — no exact address needed'}
         </div>
 
@@ -337,7 +337,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
           <>
             <div style={{ background:'#F0FAF4', border:'1px solid rgba(45,139,78,.25)', borderRadius:10, padding:'12px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:10 }}>
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:13, fontWeight:600, color:'#1A1710' }}>
+                <div style={{ fontSize:13, fontWeight:600, color:'#1F2937' }}>
                   {isFr ? 'Numéro de vol (recommandé)' : 'Flight number (recommended)'}
                 </div>
                 <div style={{ fontSize:11, color:'#2D8B4E', marginTop:2 }}>
@@ -356,7 +356,7 @@ export default function PostTripForm({ lang, setView, user, onLoginRequired, inl
         )}
 
         <button onClick={handleSubmit} disabled={loading}
-          style={{ width:'100%', padding:'14px', borderRadius:12, border:'none', background:'#52B5D9', color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif', opacity: loading ? .6 : 1 }}>
+          style={{ width:'100%', padding:'14px', borderRadius:12, border:'none', background:'#10B981', color:'#fff', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif', opacity: loading ? .6 : 1 }}>
           {loading ? '...' : isFr ? 'Soumettre mon annonce' : 'Submit my listing'}
         </button>
       </div>

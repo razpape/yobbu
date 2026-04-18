@@ -6,19 +6,19 @@ export default function RequestCard({ req, lang }) {
   return (
     <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 12, padding: 18, display: 'flex', gap: 16, justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1710', marginBottom: 6 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', marginBottom: 6 }}>
           {req.from_city} → {req.to_city}
         </div>
-        <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 8, lineHeight: 1.5 }}>
-          <span style={{ fontWeight: 600, color: '#1A1710' }}>{req.sender_name}</span>
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 8, lineHeight: 1.5 }}>
+          <span style={{ fontWeight: 600, color: '#1F2937' }}>{req.sender_name}</span>
           {req.weight && (
             <div>{isFr ? 'Poids' : 'Weight'}: {req.weight} kg</div>
           )}
           {req.description && (
-            <div style={{ marginTop: 6, color: '#8A8070' }}>{req.description}</div>
+            <div style={{ marginTop: 6, color: '#6B7280' }}>{req.description}</div>
           )}
           {req.deadline && (
-            <div style={{ marginTop: 6, color: '#52B5D9', fontWeight: 500 }}>
+            <div style={{ marginTop: 6, color: '#10B981', fontWeight: 500 }}>
               {isFr ? 'Avant le' : 'Needed by'}: {formatDate(req.deadline, lang)}
             </div>
           )}

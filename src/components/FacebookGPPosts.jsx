@@ -75,7 +75,7 @@ const btn = {
   approve: { background:'#22c55e', color:'#fff', borderColor:'#16a34a' },
   edit:    { background:'#404040', color:'#fff', borderColor:'#555' },
   reject:  { background:'#ef4444', color:'#fff', borderColor:'#dc2626' },
-  import:  { background:'#52B5D9', color:'#fff', borderColor:'#b07008' },
+  import:  { background:'#10B981', color:'#fff', borderColor:'#b07008' },
   ghost:   { background:'transparent', color:'#555', borderColor:'#333' },
 }
 
@@ -151,8 +151,8 @@ export default function FacebookGPPosts({ showToast }) {
 
   async function importAsTrip(post) {
     setImporting(post.id)
-    const colors = ['#52B5D9','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
-    const bgs    = ['#D4E8F4','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
+    const colors = ['#10B981','#2D8B4E','#185FA5','#7A3B1E','#534AB7']
+    const bgs    = ['#D1F4E7','#F0FAF4','#E6F1FB','#FDF0E8','#F0EBF8']
     const idx    = Math.floor(Math.random() * colors.length)
     const name   = post.name || 'Unknown GP'
     const { error } = await supabase.from('trips').insert({
@@ -206,7 +206,7 @@ export default function FacebookGPPosts({ showToast }) {
 
             {/* Name & Phone — primary */}
             <label style={lbl}>Name</label>
-            <input style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #52B5D9', marginBottom:14 }}
+            <input style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #10B981', marginBottom:14 }}
               value={editingPost.name || ''} onChange={e => setE('name', e.target.value)} placeholder="Traveler name..." />
             <label style={lbl}>Phone / WhatsApp</label>
             <input style={{ ...inp, marginBottom:20 }}
@@ -261,16 +261,16 @@ export default function FacebookGPPosts({ showToast }) {
         <div style={{ background:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:14, padding:24, marginBottom:24, textAlign:'center' }}>
           {draftImg && <img src={draftImg} alt="preview" style={{ maxHeight:120, borderRadius:8, marginBottom:14, opacity:.5 }} />}
           <div style={{ background:'#111', borderRadius:8, height:8, overflow:'hidden', marginBottom:8, maxWidth:300, margin:'0 auto 8px' }}>
-            <div style={{ height:'100%', background:'#52B5D9', width:`${ocrProgress}%`, transition:'width .3s' }} />
+            <div style={{ height:'100%', background:'#10B981', width:`${ocrProgress}%`, transition:'width .3s' }} />
           </div>
-          <div style={{ fontSize:13, color:'#52B5D9', fontWeight:600, marginTop:8 }}>Reading text... {ocrProgress}%</div>
+          <div style={{ fontSize:13, color:'#10B981', fontWeight:600, marginTop:8 }}>Reading text... {ocrProgress}%</div>
         </div>
       )}
 
       {/* ── Review panel ────────────────────────────────────────────────── */}
       {ocrState === 'review' && draft && (
-        <div style={{ background:'#1a1a1a', border:'1px solid #52B5D9', borderRadius:14, padding:24, marginBottom:24 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:'#52B5D9', marginBottom:16 }}>✅ Review & confirm</div>
+        <div style={{ background:'#1a1a1a', border:'1px solid #10B981', borderRadius:14, padding:24, marginBottom:24 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:'#10B981', marginBottom:16 }}>✅ Review & confirm</div>
 
           <div style={{ display:'grid', gridTemplateColumns:'160px 1fr', gap:20, alignItems:'start' }}>
             {/* Screenshot thumbnail */}
@@ -287,7 +287,7 @@ export default function FacebookGPPosts({ showToast }) {
                 value={draft.name || ''}
                 onChange={e => setD('name', e.target.value)}
                 placeholder="Traveler name..."
-                style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #52B5D9', marginBottom:12 }}
+                style={{ ...inp, fontSize:15, fontWeight:700, border:'2px solid #10B981', marginBottom:12 }}
               />
               <label style={lbl}>Phone / WhatsApp</label>
               <input
@@ -370,7 +370,7 @@ export default function FacebookGPPosts({ showToast }) {
                 {/* Secondary info — only if present */}
                 {(post.from_city || post.to_city || post.date) && (
                   <div style={{ display:'flex', gap:10, marginTop:6, flexWrap:'wrap' }}>
-                    {post.from_city && post.to_city && <span style={{ fontSize:11, color:'#52B5D9' }}>✈ {post.from_city} → {post.to_city}</span>}
+                    {post.from_city && post.to_city && <span style={{ fontSize:11, color:'#10B981' }}>✈ {post.from_city} → {post.to_city}</span>}
                     {post.date  && <span style={{ fontSize:11, color:'#666' }}>📅 {post.date}</span>}
                     {post.price && <span style={{ fontSize:11, color:'#666' }}>💰 {post.price}</span>}
                   </div>

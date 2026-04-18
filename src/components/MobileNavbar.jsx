@@ -60,12 +60,12 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
             fontFamily: "'DM Serif Display', serif",
             fontSize: 22,
             fontWeight: 700,
-            color: '#1A1710',
+            color: '#1F2937',
             cursor: 'pointer',
             letterSpacing: '-.5px',
           }}
         >
-          Yob<span style={{ color: '#52B5D9' }}>bu</span>
+          Yob<span style={{ color: '#10B981' }}>bu</span>
         </div>
 
         {/* Right: Icons & Avatar */}
@@ -77,7 +77,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                 border: 'none',
                 cursor: 'pointer',
                 padding: 8,
-                color: '#8A8070',
+                color: '#6B7280',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -118,7 +118,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
             <button
               onClick={onLoginClick}
               style={{
-                background: '#52B5D9',
+                background: '#10B981',
                 color: '#fff',
                 border: 'none',
                 padding: '8px 16px',
@@ -181,9 +181,9 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                 fontFamily: "'DM Serif Display', serif",
                 fontSize: 20,
                 fontWeight: 700,
-                color: '#1A1710',
+                color: '#1F2937',
               }}>
-                Yob<span style={{ color: '#52B5D9' }}>bu</span>
+                Yob<span style={{ color: '#10B981' }}>bu</span>
               </div>
               <button
                 onClick={handleMenuClose}
@@ -192,7 +192,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                   border: 'none',
                   cursor: 'pointer',
                   padding: 4,
-                  color: '#8A8070',
+                  color: '#6B7280',
                 }}
               >
                 <XIcon size={24} color="currentColor" />
@@ -235,7 +235,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                   <div style={{
                     fontSize: 14,
                     fontWeight: 600,
-                    color: '#1A1710',
+                    color: '#1F2937',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -244,7 +244,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                   </div>
                   <div style={{
                     fontSize: 12,
-                    color: '#8A8070',
+                    color: '#6B7280',
                     marginTop: 2,
                   }}>
                     {user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Voyageur' : 'Traveler')}
@@ -275,7 +275,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     textAlign: 'left',
                     fontSize: 15,
                     fontWeight: 500,
-                    color: '#1A1710',
+                    color: '#1F2937',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -286,11 +286,11 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = '#F0EDE8'
-                    e.currentTarget.style.color = '#52B5D9'
+                    e.currentTarget.style.color = '#10B981'
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.color = '#1A1710'
+                    e.currentTarget.style.color = '#1F2937'
                   }}
                 >
                   <span style={{ fontSize: 18 }}>{item.icon}</span>
@@ -316,9 +316,9 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     style={{
                       flex: 1,
                       padding: '8px 12px',
-                      border: lang === l.toLowerCase() ? '1.5px solid #52B5D9' : '1.5px solid #E5E1DB',
+                      border: lang === l.toLowerCase() ? '1.5px solid #10B981' : '1.5px solid #E5E1DB',
                       background: lang === l.toLowerCase() ? '#F0FAF4' : '#fff',
-                      color: lang === l.toLowerCase() ? '#52B5D9' : '#8A8070',
+                      color: lang === l.toLowerCase() ? '#10B981' : '#6B7280',
                       fontSize: 12,
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -382,7 +382,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     padding: '8px 12px',
                     border: 'none',
                     background: 'none',
-                    color: '#8A8070',
+                    color: '#6B7280',
                     fontSize: 12,
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -391,11 +391,11 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     fontFamily: "'DM Sans', sans-serif",
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.color = '#52B5D9'
+                    e.currentTarget.style.color = '#10B981'
                     e.currentTarget.style.background = '#F0EDE8'
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.color = '#8A8070'
+                    e.currentTarget.style.color = '#6B7280'
                     e.currentTarget.style.background = 'none'
                   }}
                 >
@@ -411,7 +411,7 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     padding: '8px 12px',
                     border: 'none',
                     background: 'none',
-                    color: '#8A8070',
+                    color: '#6B7280',
                     fontSize: 12,
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -420,11 +420,11 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                     fontFamily: "'DM Sans', sans-serif",
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.color = '#52B5D9'
+                    e.currentTarget.style.color = '#10B981'
                     e.currentTarget.style.background = '#F0EDE8'
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.color = '#8A8070'
+                    e.currentTarget.style.color = '#6B7280'
                     e.currentTarget.style.background = 'none'
                   }}
                 >
@@ -474,11 +474,11 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
                 paddingBottom: 8,
               }}
             >
-              <Icon size={26} color={isActive ? '#52B5D9' : '#D0C7BD'} />
+              <Icon size={26} color={isActive ? '#10B981' : '#D0C7BD'} />
               <span style={{
                 fontSize: 11,
                 fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#52B5D9' : '#8A8070',
+                color: isActive ? '#10B981' : '#6B7280',
                 transition: 'color .2s',
                 fontFamily: "'DM Sans', sans-serif",
               }}>

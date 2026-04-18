@@ -49,10 +49,10 @@ function PackageCard({ pkg, lang, user, onLoginRequired }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <div style={{ fontSize: 28, fontWeight: 900, color: '#111', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{from}</div>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 40 }}>
-            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, #D4C9BA, #52B5D9)' }} />
+            <div style={{ flex: 1, height: '1.5px', background: 'linear-gradient(90deg, #D4C9BA, #10B981)' }} />
             <div style={{ fontSize: 16, margin: '0 4px' }}>📦</div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 900, color: '#52B5D9', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
+          <div style={{ fontSize: 28, fontWeight: 900, color: '#10B981', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
         </div>
         {pkg.deadline && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -160,7 +160,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
     <div style={{ minHeight: '100vh', background: '#FDFBF7', fontFamily: "'DM Sans', sans-serif" }}>
 
       {/* Trust bar */}
-      <div style={{ background: '#D4E8F4', borderBottom: '1px solid #F0D898', padding: '10px 48px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ background: '#D1F4E7', borderBottom: '1px solid #F0D898', padding: '10px 48px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 15 }}>📦</span>
         <span style={{ fontSize: 12, fontWeight: 500, color: '#7C4E0A' }}>
           {isFr
@@ -175,10 +175,10 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
         {/* Page title + filters */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: '#1A1710', letterSpacing: '-.5px', lineHeight: 1.15, margin: 0 }}>
+            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: '#1F2937', letterSpacing: '-.5px', lineHeight: 1.15, margin: 0 }}>
               {isFr ? 'Colis à envoyer' : 'Packages to deliver'}
             </h1>
-            <p style={{ fontSize: 13, color: '#8A8070', marginTop: 6, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: '#6B7280', marginTop: 6, lineHeight: 1.5 }}>
               {isFr
                 ? 'Ces personnes cherchent un voyageur pour transporter leur colis.'
                 : 'These people are looking for a traveler to carry their package.'}
@@ -192,10 +192,10 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
               placeholder={isFr ? 'Depuis...' : 'From...'}
               style={{
                 padding: '9px 14px', border: '1.5px solid #E8E4DE', borderRadius: 10,
-                fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1A1710',
+                fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1F2937',
                 background: '#fff', outline: 'none', width: 130,
               }}
-              onFocus={e => e.target.style.borderColor = '#52B5D9'}
+              onFocus={e => e.target.style.borderColor = '#10B981'}
               onBlur={e => e.target.style.borderColor = '#E8E4DE'}
             />
             <input
@@ -204,10 +204,10 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
               placeholder={isFr ? 'Vers...' : 'To...'}
               style={{
                 padding: '9px 14px', border: '1.5px solid #E8E4DE', borderRadius: 10,
-                fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1A1710',
+                fontSize: 13, fontFamily: "'DM Sans', sans-serif", color: '#1F2937',
                 background: '#fff', outline: 'none', width: 130,
               }}
-              onFocus={e => e.target.style.borderColor = '#52B5D9'}
+              onFocus={e => e.target.style.borderColor = '#10B981'}
               onBlur={e => e.target.style.borderColor = '#E8E4DE'}
             />
           </div>
@@ -249,17 +249,17 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
         {!loading && !error && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 24px' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>📦</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: '#1A1710', marginBottom: 8 }}>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: '#1F2937', marginBottom: 8 }}>
               {isFr ? 'Aucun colis pour le moment' : 'No packages yet'}
             </div>
-            <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7, maxWidth: 320, margin: '0 auto 24px' }}>
+            <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.7, maxWidth: 320, margin: '0 auto 24px' }}>
               {isFr
                 ? 'Soyez le premier à poster votre demande de livraison.'
                 : 'Be the first to post a delivery request.'}
             </p>
             <button
               onClick={onSendPackage}
-              style={{ padding: '12px 28px', borderRadius: 20, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+              style={{ padding: '12px 28px', borderRadius: 20, border: 'none', background: '#10B981', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
             >
               {isFr ? 'Poster un colis' : 'Post a package'}
             </button>
@@ -269,7 +269,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
         {/* Package cards */}
         {!loading && !error && filtered.length > 0 && (
           <>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#8A8070', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 14 }}>
               {isFr ? `${filtered.length} demande${filtered.length > 1 ? 's' : ''}` : `${filtered.length} request${filtered.length > 1 ? 's' : ''}`}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -284,10 +284,10 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
         {!loading && filtered.length > 0 && (
           <div style={{ marginTop: 40, background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 16, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, color: '#1A1710', marginBottom: 4 }}>
+              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, color: '#1F2937', marginBottom: 4 }}>
                 {isFr ? 'Vous êtes voyageur ?' : 'Are you a traveler?'}
               </div>
-              <p style={{ fontSize: 13, color: '#8A8070', margin: 0 }}>
+              <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>
                 {isFr
                   ? 'Postez votre trajet et ces expéditeurs vous contacteront.'
                   : 'Post your trip and these senders will reach out to you.'}
@@ -295,7 +295,7 @@ export default function PackagesPage({ lang, user, onLoginRequired, onSendPackag
             </div>
             <button
               onClick={onBrowseTravelers}
-              style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #1A1710', background: '#1A1710', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}
+              style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #1F2937', background: '#1F2937', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap' }}
             >
               {isFr ? 'Voir les voyageurs' : 'Browse travelers'}
             </button>

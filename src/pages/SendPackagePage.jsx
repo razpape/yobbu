@@ -64,12 +64,12 @@ export default function SendPackagePage({ lang, setView }) {
     width: '100%', padding: '12px 14px',
     border: '1.5px solid #E5E1DB', borderRadius: 10,
     fontSize: 14, fontFamily: "'DM Sans', sans-serif",
-    color: '#1A1710', outline: 'none', boxSizing: 'border-box',
+    color: '#1F2937', outline: 'none', boxSizing: 'border-box',
     background: '#fff', transition: 'border-color .15s',
   }
   const labelStyle = {
     display: 'block', fontSize: 11, fontWeight: 700,
-    color: '#8A8070', textTransform: 'uppercase',
+    color: '#6B7280', textTransform: 'uppercase',
     letterSpacing: '.08em', marginBottom: 6,
   }
 
@@ -82,10 +82,10 @@ export default function SendPackagePage({ lang, setView }) {
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: '#1A1710', marginBottom: 10 }}>
+          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: '#1F2937', marginBottom: 10 }}>
             {isFr ? 'Demande envoyée !' : 'Request posted!'}
           </div>
-          <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7, marginBottom: 28 }}>
+          <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.7, marginBottom: 28 }}>
             {isFr
               ? `Votre demande pour ${form.from_city} → ${form.to_city} est en ligne. Les GPs vérifiés vous contacteront bientôt sur WhatsApp.`
               : `Your request for ${form.from_city} → ${form.to_city} is live. Verified GPs will reach out to you on WhatsApp.`}
@@ -93,13 +93,13 @@ export default function SendPackagePage({ lang, setView }) {
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
             <button
               onClick={() => { setStep(1); setForm({ sender_name:'', sender_phone:'', from_city:'', to_city:'', weight:'', description:'', deadline:'' }) }}
-              style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #E5E1DB', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1A1710' }}
+              style={{ padding: '11px 24px', borderRadius: 10, border: '1.5px solid #E5E1DB', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1F2937' }}
             >
               {isFr ? 'Nouvelle demande' : 'Post another'}
             </button>
             <button
               onClick={() => setView('home')}
-              style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+              style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
             >
               {isFr ? 'Accueil' : 'Home'}
             </button>
@@ -112,14 +112,14 @@ export default function SendPackagePage({ lang, setView }) {
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: '40px 24px 80px' }}>
       <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#D4E8F4', border: '1px solid #F0D898', borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600, color: '#7C4E0A', marginBottom: 16 }}>
-          <PackageIcon size={13} color="#52B5D9" />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#D1F4E7', border: '1px solid #F0D898', borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600, color: '#7C4E0A', marginBottom: 16 }}>
+          <PackageIcon size={13} color="#10B981" />
           {isFr ? 'Envoyer un colis' : 'Send a package'}
         </div>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: '#1A1710', letterSpacing: '-.5px', lineHeight: 1.15, marginBottom: 10 }}>
+        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: '#1F2937', letterSpacing: '-.5px', lineHeight: 1.15, marginBottom: 10 }}>
           {isFr ? 'Décrivez votre colis' : 'Describe your package'}
         </h1>
-        <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65 }}>
+        <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.65 }}>
           {isFr
             ? 'Postez votre demande et les GPs sur votre route vous contacteront directement sur WhatsApp.'
             : 'Post your request and GPs on your route will contact you directly on WhatsApp.'}
@@ -134,7 +134,7 @@ export default function SendPackagePage({ lang, setView }) {
 
       <form onSubmit={handleSubmit}>
         <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', marginBottom: 16 }}>
             {isFr ? 'Vos informations' : 'Your information'}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -176,8 +176,8 @@ export default function SendPackagePage({ lang, setView }) {
         </div>
 
         <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <PlaneIcon size={14} color="#52B5D9" />
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <PlaneIcon size={14} color="#10B981" />
             {isFr ? 'Route' : 'Route'}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -188,7 +188,7 @@ export default function SendPackagePage({ lang, setView }) {
                   <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
                   {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
-                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070', fontSize: 11 }}>▾</span>
+                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#6B7280', fontSize: 11 }}>▾</span>
               </div>
             </div>
             <div>
@@ -198,15 +198,15 @@ export default function SendPackagePage({ lang, setView }) {
                   <option value="">{isFr ? 'Choisir...' : 'Select...'}</option>
                   {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
-                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8A8070', fontSize: 11 }}>▾</span>
+                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#6B7280', fontSize: 11 }}>▾</span>
               </div>
             </div>
           </div>
         </div>
 
         <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <PackageIcon size={14} color="#52B5D9" />
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <PackageIcon size={14} color="#10B981" />
             {isFr ? 'Détails du colis' : 'Package details'}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -249,7 +249,7 @@ export default function SendPackagePage({ lang, setView }) {
         </div>
 
         <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 20 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', marginBottom: 16 }}>
             {isFr ? 'Avant le (optionnel)' : 'Needed by (optional)'}
           </div>
           <div>
@@ -274,7 +274,7 @@ export default function SendPackagePage({ lang, setView }) {
         <button
           type="submit"
           disabled={loading}
-          style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#52B5D9', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background .15s' }}
+          style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? '#E5D5B0' : '#10B981', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'background .15s' }}
         >
           {loading ? (isFr ? 'Envoi...' : 'Posting...') : (isFr ? 'Publier ma demande' : 'Post my request')}
         </button>

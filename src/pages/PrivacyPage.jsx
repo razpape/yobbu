@@ -5,11 +5,11 @@ export default function PrivacyPage({ lang, setView }) {
     page:    { minHeight:'100vh', background:'#FDFBF7', fontFamily:'DM Sans, sans-serif' },
     nav:     { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 48px', borderBottom:'1px solid rgba(0,0,0,.06)', background:'#FDFBF7', position:'sticky', top:0, zIndex:50 },
     body:    { maxWidth:720, margin:'0 auto', padding:'48px 24px 80px' },
-    h1:      { fontFamily:'DM Serif Display, serif', fontSize:'clamp(28px,4vw,42px)', color:'#1A1710', letterSpacing:'-.5px', marginBottom:8, lineHeight:1.1 },
-    h2:      { fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1A1710', marginBottom:12, marginTop:40 },
-    p:       { fontSize:15, color:'#8A8070', lineHeight:1.75, marginBottom:16 },
-    tag:     { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'#52B5D9', background:'#D4E8F4', border:'1px solid #D4A574', borderRadius:20, display:'inline-block', padding:'4px 14px', marginBottom:20 },
-    li:      { fontSize:15, color:'#8A8070', lineHeight:1.75, marginBottom:8, paddingLeft:16 },
+    h1:      { fontFamily:'DM Serif Display, serif', fontSize:'clamp(28px,4vw,42px)', color:'#1F2937', letterSpacing:'-.5px', marginBottom:8, lineHeight:1.1 },
+    h2:      { fontFamily:'DM Serif Display, serif', fontSize:22, color:'#1F2937', marginBottom:12, marginTop:40 },
+    p:       { fontSize:15, color:'#6B7280', lineHeight:1.75, marginBottom:16 },
+    tag:     { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'#10B981', background:'#D1F4E7', border:'1px solid #D4A574', borderRadius:20, display:'inline-block', padding:'4px 14px', marginBottom:20 },
+    li:      { fontSize:15, color:'#6B7280', lineHeight:1.75, marginBottom:8, paddingLeft:16 },
     divider: { height:1, background:'rgba(0,0,0,.06)', margin:'8px 0' },
   }
 
@@ -43,7 +43,7 @@ export default function PrivacyPage({ lang, setView }) {
           isFr ? 'Adresse IP et données d\'utilisation — pour la sécurité et les analyses' : 'IP address and usage data — for security and analytics',
         ].map((item, i) => (
           <div key={i} style={{ display:'flex', gap:10, marginBottom:10 }}>
-            <span style={{ color:'#52B5D9', flexShrink:0, marginTop:2 }}>→</span>
+            <span style={{ color:'#10B981', flexShrink:0, marginTop:2 }}>→</span>
             <p style={{ ...s.p, margin:0 }}>{item}</p>
           </div>
         ))}
@@ -73,7 +73,7 @@ export default function PrivacyPage({ lang, setView }) {
           { name: 'Vercel', desc: isFr ? 'Hébergement de la plateforme' : 'Platform hosting' },
         ].map(({ name, desc }) => (
           <div key={name} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:'14px 16px', marginBottom:10, display:'flex', gap:14, alignItems:'flex-start' }}>
-            <div style={{ fontSize:12, fontWeight:700, color:'#1A1710', width:100, flexShrink:0, paddingTop:2 }}>{name}</div>
+            <div style={{ fontSize:12, fontWeight:700, color:'#1F2937', width:100, flexShrink:0, paddingTop:2 }}>{name}</div>
             <div style={{ ...s.p, margin:0, fontSize:14 }}>{desc}</div>
           </div>
         ))}
@@ -104,7 +104,7 @@ export default function PrivacyPage({ lang, setView }) {
 
         {/* Contact */}
         <h2 style={s.h2}>{isFr ? '8. Contact' : '8. Contact'}</h2>
-        <div style={{ background:'#1A1710', borderRadius:16, padding:'24px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+        <div style={{ background:'#1F2937', borderRadius:16, padding:'24px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
           <div>
             <div style={{ fontFamily:'DM Serif Display, serif', fontSize:18, color:'#fff', marginBottom:4 }}>
               {isFr ? 'Des questions ?' : 'Questions?'}
@@ -114,7 +114,7 @@ export default function PrivacyPage({ lang, setView }) {
             </div>
           </div>
           <a href="mailto:hello@yobbu.co"
-            style={{ background:'#52B5D9', color:'#fff', textDecoration:'none', padding:'11px 22px', borderRadius:12, fontSize:14, fontWeight:600, fontFamily:'DM Sans, sans-serif' }}>
+            style={{ background:'#10B981', color:'#fff', textDecoration:'none', padding:'11px 22px', borderRadius:12, fontSize:14, fontWeight:600, fontFamily:'DM Sans, sans-serif' }}>
             hello@yobbu.co
           </a>
         </div>

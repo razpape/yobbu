@@ -54,9 +54,9 @@ function ReviewCard({ review, lang }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         <div style={{
           width: 32, height: 32, borderRadius: '50%',
-          background: '#D4E8F4', border: '1px solid #C8E6D4',
+          background: '#D1F4E7', border: '1px solid #C8E6D4',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: '#52B5D9',
+          fontSize: 11, fontWeight: 700, color: '#10B981',
           overflow: 'hidden', flexShrink: 0,
         }}>
           {reviewer?.avatar_url ? (
@@ -66,7 +66,7 @@ function ReviewCard({ review, lang }) {
           )}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937' }}>
             {reviewer?.full_name || (isFr ? 'Utilisateur' : 'User')}
           </div>
           <div style={{ fontSize: 11, color: '#A09080', marginTop: 2 }}>
@@ -77,7 +77,7 @@ function ReviewCard({ review, lang }) {
         </div>
       </div>
       {review.comment && (
-        <div style={{ fontSize: 13, color: '#3D3829', lineHeight: 1.6, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: '#1F2937', lineHeight: 1.6, fontStyle: 'italic' }}>
           "{review.comment}"
         </div>
       )}
@@ -129,8 +129,8 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
               {isFr ? 'Bateau — groupage' : 'Boat — groupage'}
             </span>
           ) : (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#D4E8F4', color: '#52B5D9', border: '1px solid #D4A574' }}>
-              <PlaneIcon size={13} color="#52B5D9" />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#D1F4E7', color: '#10B981', border: '1px solid #D4A574' }}>
+              <PlaneIcon size={13} color="#10B981" />
               {isFr ? 'Transport avion — bagage cabine' : 'Air transport — carry-on luggage'}
             </span>
           )}
@@ -140,7 +140,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div>
-              <div style={{ fontSize: 30, fontWeight: 900, color: '#1A1710', lineHeight: 1, fontFamily: 'DM Serif Display, serif' }}>
+              <div style={{ fontSize: 30, fontWeight: 900, color: '#1F2937', lineHeight: 1, fontFamily: 'DM Serif Display, serif' }}>
                 {fromCity}
               </div>
               <div style={{ fontSize: 11, color: '#A09080', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.06em' }}>
@@ -166,8 +166,8 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         {/* Key info grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #F0EDE8' }}>
           {[
-            { Icon: CalendarIcon, label: isFr ? 'Date de départ' : 'Departure date', value: formatDate(trip.date) || '—',  color: '#1A1710' },
-            { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#52B5D9' },
+            { Icon: CalendarIcon, label: isFr ? 'Date de départ' : 'Departure date', value: formatDate(trip.date) || '—',  color: '#1F2937' },
+            { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#10B981' },
           ].map(({ Icon, label, value, color }, i) => (
             <div key={label} style={{ padding: '16px 12px', borderRight: i < 1 ? '1px solid #F0EDE8' : 'none', textAlign: 'center' }}>
               <Icon size={16} color="#A09080" />
@@ -183,23 +183,23 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
             {trip.pickup_area && (
               <div style={{ flex: 1, padding: '14px 20px', borderRight: trip.dropoff_area ? '1px solid #F0EDE8' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#52B5D9" />
+                  <MapPinIcon size={13} color="#10B981" />
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
                     {isFr ? 'Récupère à' : 'Picks up in'}
                   </span>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710' }}>{trip.pickup_area}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937' }}>{trip.pickup_area}</div>
               </div>
             )}
             {trip.dropoff_area && (
               <div style={{ flex: 1, padding: '14px 20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#52B5D9" />
+                  <MapPinIcon size={13} color="#10B981" />
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
                     {isFr ? 'Livre à' : 'Drops off in'}
                   </span>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#1A1710' }}>{trip.dropoff_area}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937' }}>{trip.dropoff_area}</div>
               </div>
             )}
           </div>
@@ -211,7 +211,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
             <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
               {isFr ? 'Numéro de vol' : 'Flight number'}
             </span>
-            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 700, color: '#1A1710', fontFamily: 'monospace' }}>
+            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 700, color: '#1F2937', fontFamily: 'monospace' }}>
               {trip.flight_number}
             </span>
           </div>
@@ -223,7 +223,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
             <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
               {isFr ? 'Note du GP' : 'Note'}
             </div>
-            <div style={{ fontSize: 14, color: '#3D3829', lineHeight: 1.7, fontStyle: 'italic' }}>"{trip.note}"</div>
+            <div style={{ fontSize: 14, color: '#1F2937', lineHeight: 1.7, fontStyle: 'italic' }}>"{trip.note}"</div>
           </div>
         )}
 
@@ -232,16 +232,16 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
           {!phone ? (
             <div style={{ textAlign: 'center', padding: '12px 0' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}><LockIcon size={24} color="#C0B8B0" /></div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1710', marginBottom: 3 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', marginBottom: 3 }}>
                 {isFr ? 'Contact non disponible' : 'Contact unavailable'}
               </div>
             </div>
           ) : (
             <>
               {!user && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#D4E8F4', borderRadius: 10, padding: '10px 14px', marginBottom: 12, border: '1px solid #D4A574' }}>
-                  <LockIcon size={13} color="#52B5D9" />
-                  <span style={{ fontSize: 13, color: '#52B5D9', fontWeight: 500 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#D1F4E7', borderRadius: 10, padding: '10px 14px', marginBottom: 12, border: '1px solid #D4A574' }}>
+                  <LockIcon size={13} color="#10B981" />
+                  <span style={{ fontSize: 13, color: '#10B981', fontWeight: 500 }}>
                     {isFr ? 'Connectez-vous pour voir les coordonnées' : 'Sign in to see contact details'}
                   </span>
                 </div>
@@ -267,7 +267,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
 // ── Main GPProfile ────────────────────────────────────────────────────────────
 export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const isFr   = lang === 'fr'
-  const accent = gp.color || '#52B5D9'
+  const accent = gp.color || '#10B981'
 
   const [profile,   setProfile]   = useState(null)
   const [allTrips,  setAllTrips]  = useState(null)   // null = still loading
@@ -398,11 +398,11 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
         position: 'sticky', top: 0, zIndex: 50,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1A1710', letterSpacing: '-.5px' }}>
-            Yob<span style={{ color: '#52B5D9' }}>bu</span>
+          <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1F2937', letterSpacing: '-.5px' }}>
+            Yob<span style={{ color: '#10B981' }}>bu</span>
           </div>
           <button onClick={onBack} style={{
-            fontSize: 13, color: '#8A8070', cursor: 'pointer',
+            fontSize: 13, color: '#6B7280', cursor: 'pointer',
             background: 'none', border: 'none', fontFamily: 'DM Sans, sans-serif',
             display: 'flex', alignItems: 'center', gap: 4,
           }}>
@@ -413,7 +413,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
           <button onClick={onLoginRequired} style={{
             fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 20,
             border: '1px solid rgba(0,0,0,.12)', background: 'transparent',
-            color: '#3D3829', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+            color: '#1F2937', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
           }}>
             {isFr ? 'Se connecter' : 'Sign in'}
           </button>
@@ -432,7 +432,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
               <div style={{ position: 'relative', flexShrink: 0 }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%',
-                  background: gp.bg || '#D4E8F4',
+                  background: gp.bg || '#D1F4E7',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'DM Serif Display, serif', fontSize: 28, fontWeight: 700, color: accent,
                   border: `2px solid ${accent}33`, overflow: 'hidden',
@@ -455,11 +455,11 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
 
               {/* Name + member since + badges */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#1A1710', letterSpacing: '-.4px', marginBottom: 4 }}>
+                <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#1F2937', letterSpacing: '-.4px', marginBottom: 4 }}>
                   {displayName}
                 </div>
                 {joinDate && (
-                  <div style={{ fontSize: 12, color: '#8A8070', marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 10 }}>
                     {isFr ? `Membre depuis ${joinDate}` : `Member since ${joinDate}`}
                   </div>
                 )}
@@ -471,13 +471,13 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                     </Pill>
                   )}
                   {mergedProfile.id_verified && (
-                    <Pill bg="#D4E8F4" color="#7A5200" border="#EABD6A">
-                      <ShieldCheckIcon size={10} color="#52B5D9" />
+                    <Pill bg="#D1F4E7" color="#7A5200" border="#EABD6A">
+                      <ShieldCheckIcon size={10} color="#10B981" />
                       {isFr ? 'ID vérifié' : 'ID verified'}
                     </Pill>
                   )}
                   {mergedProfile.photo_verified && (
-                    <Pill bg="#D4E8F4" color="#7A5200" border="#EABD6A">
+                    <Pill bg="#D1F4E7" color="#7A5200" border="#EABD6A">
                       {isFr ? 'Photo vérifiée' : 'Photo verified'}
                     </Pill>
                   )}
@@ -523,14 +523,14 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
 
         {/* Loading */}
         {loading && (
-          <div style={{ textAlign: 'center', padding: 40, color: '#8A8070', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: 40, color: '#6B7280', fontSize: 13 }}>
             {isFr ? 'Chargement...' : 'Loading...'}
           </div>
         )}
 
         {/* No trips */}
         {!loading && allTrips.length === 0 && (
-          <div style={{ textAlign: 'center', padding: 32, color: '#8A8070', fontSize: 13, background: '#fff', borderRadius: 16, border: '1px solid #EDEAE4' }}>
+          <div style={{ textAlign: 'center', padding: 32, color: '#6B7280', fontSize: 13, background: '#fff', borderRadius: 16, border: '1px solid #EDEAE4' }}>
             {isFr ? 'Aucun voyage disponible pour le moment.' : 'No trips available right now.'}
           </div>
         )}

@@ -197,7 +197,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
             style={{
               position: 'absolute', top: 16, right: 16, width: 30, height: 30,
               border: 'none', background: '#F0EBE3', borderRadius: '50%',
-              cursor: 'pointer', fontSize: 14, color: '#8A8070', display: 'flex',
+              cursor: 'pointer', fontSize: 14, color: '#6B7280', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -217,10 +217,10 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', letterSpacing: '-.3px' }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: '#1F2937', letterSpacing: '-.3px' }}>
                     {isFr ? 'Vérification WhatsApp' : 'WhatsApp Verification'}
                   </div>
-                  <div style={{ fontSize: 12, color: '#8A8070', marginTop: 1 }}>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>
                     {isFr ? 'Choisissez une méthode' : 'Choose a method'}
                   </div>
                 </div>
@@ -255,10 +255,10 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                     </svg>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
                       {isFr ? 'Envoyer un message' : 'Send us a message'}
                     </div>
-                    <div style={{ fontSize: 12, color: '#8A8070', marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
                       {isFr ? 'Plus rapide • Vous envoyez le code' : 'Faster • You send the code'}
                     </div>
                   </div>
@@ -276,16 +276,16 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                   }}
                 >
                   <div style={{
-                    width: 44, height: 44, borderRadius: 10, background: '#52B5D9',
+                    width: 44, height: 44, borderRadius: 10, background: '#10B981',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}>
                     <PhoneIcon size={22} color="white" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
                       {isFr ? 'Recevoir par SMS' : 'Receive via SMS'}
                     </div>
-                    <div style={{ fontSize: 12, color: '#8A8070', marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
                       {isFr ? 'Nous vous envoyons le code' : 'We send you the code'}
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                     <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.35C8.5 21.52 10.21 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/>
                   </svg>
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#1F2937' }}>
                   {isFr ? 'Générez votre code' : 'Generate your code'}
                 </div>
               </div>
@@ -346,7 +346,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                 style={{
                   width: '100%', marginTop: 10, padding: '11px', borderRadius: 12,
                   border: '1px solid rgba(0,0,0,.1)', background: 'transparent',
-                  color: '#8A8070', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  color: '#6B7280', fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   fontFamily: "'DM Sans',sans-serif", textAlign: 'center',
                 }}
               >
@@ -359,10 +359,10 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
           {step === 'waiting' && (
             <>
               <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1710', marginBottom: 4 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#1F2937', marginBottom: 4 }}>
                   {isFr ? 'Envoyez ce code' : 'Send this code'}
                 </div>
-                <div style={{ fontSize: 13, color: '#8A8070' }}>
+                <div style={{ fontSize: 13, color: '#6B7280' }}>
                   {isFr
                     ? <>À notre WhatsApp <strong style={{ color: '#25D366' }}>{businessNumber}</strong></>
                     : <>To our WhatsApp <strong style={{ color: '#25D366' }}>{businessNumber}</strong></>}
@@ -395,7 +395,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
 
               {/* Countdown */}
               <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                <span style={{ fontSize: 12, color: countdown < 60 ? '#DC2626' : '#8A8070' }}>
+                <span style={{ fontSize: 12, color: countdown < 60 ? '#DC2626' : '#6B7280' }}>
                   ⏱ {isFr ? `Expire dans ${fmtTime(countdown)}` : `Expires in ${fmtTime(countdown)}`}
                 </span>
               </div>
@@ -440,7 +440,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
                 style={{
                   width: '100%', padding: '11px', borderRadius: 12,
                   border: '1px solid rgba(0,0,0,.1)', background: 'transparent',
-                  color: '#8A8070', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  color: '#6B7280', fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   fontFamily: "'DM Sans',sans-serif", textAlign: 'center',
                 }}
               >
@@ -455,7 +455,7 @@ export default function WhatsAppInboundVerification({ user, lang, onClose, onVer
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
                 <VerifiedBadge size="lg" showLabel />
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#1A1710', marginBottom: 8, letterSpacing: '-.4px' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#1F2937', marginBottom: 8, letterSpacing: '-.4px' }}>
                 {isFr ? 'Compte vérifié !' : 'Account verified!'}
               </div>
               <p style={{ fontSize: 14, color: '#6B6860', lineHeight: 1.6, margin: 0 }}>

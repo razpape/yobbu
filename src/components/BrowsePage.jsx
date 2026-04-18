@@ -82,7 +82,7 @@ function Select({ value, onChange, children }) {
           borderRadius: 10,
           fontSize: 13,
           fontFamily: 'DM Sans, sans-serif',
-          color: '#1A1710',
+          color: '#1F2937',
           background: '#fff',
           outline: 'none',
           appearance: 'none',
@@ -90,7 +90,7 @@ function Select({ value, onChange, children }) {
           boxSizing: 'border-box',
           transition: 'border-color .15s',
         }}
-        onFocus={e => e.target.style.borderColor = '#52B5D9'}
+        onFocus={e => e.target.style.borderColor = '#10B981'}
         onBlur={e => e.target.style.borderColor = '#E8E4DE'}
       >
         {children}
@@ -112,7 +112,7 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
     <div>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: '#1A1710', marginBottom: 2 }}>
+        <div style={{ fontSize: 16, fontWeight: 800, color: '#1F2937', marginBottom: 2 }}>
           {isFr ? 'Filtres' : 'Filters'}
         </div>
         <div style={{ fontSize: 12, color: '#A09080' }}>
@@ -168,9 +168,9 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
                 flex: 1,
                 padding: '9px 0',
                 borderRadius: 10,
-                border: `1.5px solid ${verifyFilter === opt.value ? '#52B5D9' : '#E8E4DE'}`,
+                border: `1.5px solid ${verifyFilter === opt.value ? '#10B981' : '#E8E4DE'}`,
                 background: verifyFilter === opt.value ? '#FFF7ED' : '#fff',
-                color: verifyFilter === opt.value ? '#52B5D9' : '#6B6860',
+                color: verifyFilter === opt.value ? '#10B981' : '#6B6860',
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -194,7 +194,7 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
         style={{
           width: '100%',
           padding: '13px',
-          background: '#52B5D9',
+          background: '#10B981',
           color: '#fff',
           border: 'none',
           borderRadius: 10,
@@ -206,7 +206,7 @@ function SidebarContent({ lang, fromFilter, setFromFilter, toFilter, setToFilter
           transition: 'background .15s',
         }}
         onMouseEnter={e => e.currentTarget.style.background = '#A8710C'}
-        onMouseLeave={e => e.currentTarget.style.background = '#52B5D9'}
+        onMouseLeave={e => e.currentTarget.style.background = '#10B981'}
       >
         {isFr ? 'Appliquer' : 'Apply filters'}
       </button>
@@ -263,7 +263,7 @@ function RightSidebar({ lang, trips }) {
       {/* Popular routes */}
       <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid #F0EDE8' }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#1A1710', letterSpacing: '-.1px' }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1F2937', letterSpacing: '-.1px' }}>
             {isFr ? 'Routes populaires' : 'Popular routes'}
           </div>
           <div style={{ fontSize: 11, color: '#A09080', marginTop: 2 }}>
@@ -275,15 +275,15 @@ function RightSidebar({ lang, trips }) {
             <div key={i}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {r.from}
                   </span>
                   <span style={{ color: '#C8C0B4', fontSize: 10, flexShrink: 0 }}>→</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {r.to}
                   </span>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#52B5D9', flexShrink: 0, marginLeft: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981', flexShrink: 0, marginLeft: 8 }}>
                   {r.count} {isFr ? (r.count > 1 ? 'voyages' : 'voyage') : (r.count > 1 ? 'trips' : 'trip')}
                 </span>
               </div>
@@ -291,7 +291,7 @@ function RightSidebar({ lang, trips }) {
                 <div style={{
                   height: '100%',
                   width: `${Math.round((r.count / maxCount) * 100)}%`,
-                  background: i === 0 ? 'linear-gradient(90deg, #52B5D9, #E6A832)' : '#D4C4A8',
+                  background: i === 0 ? 'linear-gradient(90deg, #10B981, #E6A832)' : '#D4C4A8',
                   borderRadius: 4,
                   transition: 'width .4s ease',
                 }} />
@@ -302,9 +302,9 @@ function RightSidebar({ lang, trips }) {
       </div>
 
       {/* Safety tips */}
-      <div style={{ background: 'linear-gradient(145deg, #1A1710 0%, #2A2318 100%)', borderRadius: 16, padding: '18px 18px' }}>
+      <div style={{ background: 'linear-gradient(145deg, #1F2937 0%, #2A2318 100%)', borderRadius: 16, padding: '18px 18px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <ShieldCheckIcon size={15} color="#52B5D9" />
+          <ShieldCheckIcon size={15} color="#10B981" />
           <span style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-.1px' }}>
             {isFr ? 'Conseils de sécurité' : 'Safety tips'}
           </span>
@@ -312,8 +312,8 @@ function RightSidebar({ lang, trips }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {tips.map((tip, i) => (
             <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#52B5D922', border: '1px solid #52B5D955', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                <span style={{ fontSize: 9, fontWeight: 900, color: '#52B5D9' }}>{i + 1}</span>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#10B98122', border: '1px solid #10B98155', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#10B981' }}>{i + 1}</span>
               </div>
               <span style={{ fontSize: 11.5, color: '#C8B898', lineHeight: 1.55 }}>{tip}</span>
             </div>
@@ -566,26 +566,26 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
       <div className="mobile-filter-btn" style={{ display:'none', padding:'12px 16px', background:'#fff', borderBottom:'1px solid rgba(0,0,0,.07)', gap:10 }}>
         <button
           onClick={() => setDrawerOpen(true)}
-          style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'11px', background:'#1A1710', color:'#fff', border:'none', borderRadius:10, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+          style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'11px', background:'#1F2937', color:'#fff', border:'none', borderRadius:10, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
           </svg>
           {isFr ? 'Filtres' : 'Filters'}
           {activeFilterCount > 0 && (
-            <span style={{ background:'#52B5D9', color:'#fff', borderRadius:'50%', width:18, height:18, fontSize:11, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
+            <span style={{ background:'#10B981', color:'#fff', borderRadius:'50%', width:18, height:18, fontSize:11, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
               {activeFilterCount}
             </span>
           )}
         </button>
         <div style={{ position:'relative' }}>
           <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
-            style={{ padding:'11px 28px 11px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:10, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', appearance:'none', background:'#fff', cursor:'pointer' }}>
+            style={{ padding:'11px 28px 11px 12px', border:'1px solid rgba(0,0,0,.12)', borderRadius:10, fontSize:13, fontFamily:'DM Sans, sans-serif', color:'#1F2937', outline:'none', appearance:'none', background:'#fff', cursor:'pointer' }}>
             <option value="date">{'Date'}</option>
             <option value="rating">{isFr?'Note':'Rating'}</option>
             <option value="price">{isFr?'Prix':'Price'}</option>
           </select>
-          <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:10 }}>▾</span>
+          <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#6B7280', fontSize:10 }}>▾</span>
         </div>
       </div>
 
@@ -608,10 +608,10 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
         boxShadow: drawerOpen ? '4px 0 32px rgba(0,0,0,.18)' : 'none',
       }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
-          <span style={{ fontFamily:'DM Serif Display, serif', fontSize:20, color:'#1A1710' }}>
+          <span style={{ fontFamily:'DM Serif Display, serif', fontSize:20, color:'#1F2937' }}>
             {isFr ? 'Filtres' : 'Filters'}
           </span>
-          <button onClick={() => setDrawerOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'#8A8070', fontSize:20, lineHeight:1, padding:4 }}>✕</button>
+          <button onClick={() => setDrawerOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'#6B7280', fontSize:20, lineHeight:1, padding:4 }}>✕</button>
         </div>
         <SidebarContent
           lang={lang} fromFilter={fromFilter} setFromFilter={setFromFilter} toFilter={toFilter} setToFilter={setToFilter}
@@ -649,7 +649,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
             <input
               value={searchText}
               onChange={e => { setSearchText(e.target.value); setShowSuggestions(true) }}
-              onFocus={e => { e.target.style.borderColor = '#52B5D9'; setShowSuggestions(true) }}
+              onFocus={e => { e.target.style.borderColor = '#10B981'; setShowSuggestions(true) }}
               onBlur={e => { e.target.style.borderColor = '#E8E4DE' }}
               onKeyDown={e => {
                 if (e.key === 'Enter') { saveRecentSearch(searchText); setShowSuggestions(false) }
@@ -663,7 +663,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                 borderRadius: 12,
                 fontSize: 14,
                 fontFamily: 'DM Sans, sans-serif',
-                color: '#1A1710',
+                color: '#1F2937',
                 background: '#fff',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -688,7 +688,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                       </span>
                       <button
                         onClick={clearRecentSearches}
-                        style={{ background: 'none', border: 'none', fontSize: 10, color: '#52B5D9', cursor: 'pointer', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', padding: 0 }}
+                        style={{ background: 'none', border: 'none', fontSize: 10, color: '#10B981', cursor: 'pointer', fontWeight: 600, fontFamily: 'DM Sans, sans-serif', padding: 0 }}
                       >
                         {isFr ? 'Effacer' : 'Clear'}
                       </button>
@@ -701,7 +701,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                         style={{
                           display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                           padding: '8px 6px', background: 'none', border: 'none', cursor: 'pointer',
-                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1A1710',
+                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1F2937',
                           borderRadius: 6, transition: 'background .1s', textAlign: 'left',
                         }}
                         onMouseEnter={e => e.currentTarget.style.background = '#F8F6F2'}
@@ -727,14 +727,14 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                         style={{
                           display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                           padding: '9px 8px', background: 'none', border: 'none', cursor: 'pointer',
-                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1A1710',
+                          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: '#1F2937',
                           borderRadius: 8, transition: 'background .1s', textAlign: 'left',
                         }}
                         onMouseEnter={e => e.currentTarget.style.background = '#F8F6F2'}
                         onMouseLeave={e => e.currentTarget.style.background = 'none'}
                       >
                         {s.icon === 'pin' && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                           </svg>
                         )}
@@ -744,7 +744,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
                           </svg>
                         )}
                         {s.icon === 'user' && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                           </svg>
                         )}
@@ -766,23 +766,23 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
           {/* Header + desktop sort */}
           <div className="browse-desktop-sort" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-            <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>
+            <span style={{ fontSize:11, fontWeight:700, color:'#6B7280', textTransform:'uppercase', letterSpacing:'.08em' }}>
               {loading ? '...' : isFr
                 ? `Affichage 1–${sorted.length} sur ${sorted.length} résultats`
                 : `Showing 1–${sorted.length} of ${sorted.length} results`}
             </span>
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <span style={{ fontSize:11, fontWeight:700, color:'#8A8070', textTransform:'uppercase', letterSpacing:'.08em' }}>
+              <span style={{ fontSize:11, fontWeight:700, color:'#6B7280', textTransform:'uppercase', letterSpacing:'.08em' }}>
                 {isFr ? 'Trier par' : 'Sort by'}
               </span>
               <div style={{ position:'relative' }}>
                 <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
-                  style={{ padding:'6px 28px 6px 10px', border:'1px solid rgba(0,0,0,.15)', borderRadius:6, fontSize:12, fontFamily:'DM Sans, sans-serif', color:'#1A1710', outline:'none', cursor:'pointer', appearance:'none', background:'#fff', fontWeight:600 }}>
+                  style={{ padding:'6px 28px 6px 10px', border:'1px solid rgba(0,0,0,.15)', borderRadius:6, fontSize:12, fontFamily:'DM Sans, sans-serif', color:'#1F2937', outline:'none', cursor:'pointer', appearance:'none', background:'#fff', fontWeight:600 }}>
                   <option value="date">{'Date'}</option>
                   <option value="rating">{isFr?'Note':'Rating'}</option>
                   <option value="price">{isFr?'Prix':'Price'}</option>
                 </select>
-                <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#8A8070', fontSize:10 }}>▾</span>
+                <span style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#6B7280', fontSize:10 }}>▾</span>
               </div>
             </div>
           </div>
@@ -830,15 +830,15 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           {/* Empty */}
           {!loading && !error && sorted.length === 0 && (
             <div style={{ textAlign:'center', padding:'80px 24px' }}>
-              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:26, color:'#1A1710', marginBottom:8 }}>
+              <div style={{ fontFamily:'DM Serif Display, serif', fontSize:26, color:'#1F2937', marginBottom:8 }}>
                 {isFr ? 'Aucun voyageur trouvé' : 'No travelers found'}
               </div>
-              <p style={{ fontSize:14, color:'#8A8070', lineHeight:1.7, maxWidth:320, margin:'0 auto 24px' }}>
+              <p style={{ fontSize:14, color:'#6B7280', lineHeight:1.7, maxWidth:320, margin:'0 auto 24px' }}>
                 {isFr ? 'Essayez une autre destination ou revenez bientôt.' : 'Try a different destination or check back soon.'}
               </p>
               <button
                 onClick={() => { setFromFilter(''); setToFilter(''); setAvailOption(''); setPriceFilter(''); setVerifyFilter('all'); setServiceFilter('all'); setSearchText(''); setApplied({ from:'', to:'', dateFrom:'', dateTo:'', price:'', verify:'all', service:'all' }) }}
-                style={{ background:'#52B5D9', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
+                style={{ background:'#10B981', color:'#fff', border:'none', padding:'12px 28px', borderRadius:20, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}
               >
                 {isFr ? 'Voir tous les voyageurs' : 'View all travelers'}
               </button>
@@ -857,7 +857,7 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
           {/* Package Requests Section */}
           {!loading && requests.length > 0 && (
             <div style={{ marginTop: 40 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16, paddingBottom: 12, borderBottom: '1.5px solid #E5E1DB' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#1F2937', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16, paddingBottom: 12, borderBottom: '1.5px solid #E5E1DB' }}>
                 {isFr ? 'Demandes de colis' : 'Package requests'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

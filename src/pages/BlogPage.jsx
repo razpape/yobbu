@@ -42,31 +42,31 @@ export default function BlogPage({ lang, setView }) {
     page: { minHeight: '100vh', background: '#FDFBF7', fontFamily: 'DM Sans, sans-serif' },
     container: { maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px' },
     header: { marginBottom: 48 },
-    tag: { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', background: '#D4E8F4', border: '1px solid rgba(0,0,0,.06)', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 12 },
-    h1: { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px,4vw,48px)', color: '#1A1710', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
+    tag: { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', background: '#D1F4E7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 12 },
+    h1: { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px,4vw,48px)', color: '#1F2937', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
     searchContainer: { marginBottom: 40 },
     searchInput: { width: '100%', padding: '12px 16px', fontSize: 15, border: '1px solid rgba(0,0,0,.1)', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', boxSizing: 'border-box' },
     mainContent: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32, marginBottom: 48 },
     featuredCard: { background: '#fff', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,0,0,.06)' },
-    featuredImage: { height: 300, background: featuredPost?.imageColor || '#52B5D9' },
+    featuredImage: { height: 300, background: featuredPost?.imageColor || '#10B981' },
     featuredBody: { padding: 28 },
-    featuredTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#1A1710', marginBottom: 12, lineHeight: 1.2 },
-    featuredMeta: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, color: '#8A8070', marginBottom: 16 },
-    featuredExcerpt: { fontSize: 15, color: '#8A8070', lineHeight: 1.6, marginBottom: 16 },
-    readMore: { display: 'inline-block', color: '#52B5D9', fontWeight: 600, textDecoration: 'none', fontSize: 14 },
+    featuredTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 24, color: '#1F2937', marginBottom: 12, lineHeight: 1.2 },
+    featuredMeta: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, color: '#6B7280', marginBottom: 16 },
+    featuredExcerpt: { fontSize: 15, color: '#6B7280', lineHeight: 1.6, marginBottom: 16 },
+    readMore: { display: 'inline-block', color: '#10B981', fontWeight: 600, textDecoration: 'none', fontSize: 14 },
     sidebar: { display: 'flex', flexDirection: 'column', gap: 16 },
-    sidebarTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1A1710', marginBottom: 8 },
+    sidebarTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1F2937', marginBottom: 8 },
     recentPost: { background: '#fff', padding: 16, borderRadius: 12, border: '1px solid rgba(0,0,0,.06)', cursor: 'pointer', transition: 'all 0.2s ease' },
-    recentPostTitle: { fontSize: 14, fontWeight: 600, color: '#1A1710', marginBottom: 8, lineHeight: 1.4 },
-    recentPostMeta: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#8A8070' },
+    recentPostTitle: { fontSize: 14, fontWeight: 600, color: '#1F2937', marginBottom: 8, lineHeight: 1.4 },
+    recentPostMeta: { display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6B7280' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24, marginBottom: 48 },
     postCard: { background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,0,0,.06)', transition: 'all 0.2s ease', cursor: 'pointer' },
-    postImage: { height: 180, background: '#52B5D9' },
+    postImage: { height: 180, background: '#10B981' },
     postBody: { padding: 20 },
-    postTitle: { fontSize: 16, fontWeight: 600, color: '#1A1710', marginBottom: 8, lineHeight: 1.4 },
-    postExcerpt: { fontSize: 13, color: '#8A8070', lineHeight: 1.6, marginBottom: 12 },
-    postMeta: { fontSize: 12, color: '#8A8070' },
-    noResults: { textAlign: 'center', padding: '48px 24px', fontSize: 14, color: '#8A8070' },
+    postTitle: { fontSize: 16, fontWeight: 600, color: '#1F2937', marginBottom: 8, lineHeight: 1.4 },
+    postExcerpt: { fontSize: 13, color: '#6B7280', lineHeight: 1.6, marginBottom: 12 },
+    postMeta: { fontSize: 12, color: '#6B7280' },
+    noResults: { textAlign: 'center', padding: '48px 24px', fontSize: 14, color: '#6B7280' },
   }
 
   return (
@@ -86,7 +86,7 @@ export default function BlogPage({ lang, setView }) {
         <div style={s.header}>
           <div style={s.tag}>{isFr ? 'Blog' : 'Blog'}</div>
           <h1 style={s.h1}>{isFr ? 'Actualités et conseils' : 'News & Tips'}</h1>
-          <p style={{ fontSize: 14, color: '#8A8070', margin: 0, marginTop: 8 }}>
+          <p style={{ fontSize: 14, color: '#6B7280', margin: 0, marginTop: 8 }}>
             {isFr ? 'Les dernières histoires et conseils de la communauté Yobbu' : 'Latest stories and tips from the Yobbu community'}
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function BlogPage({ lang, setView }) {
 
         {/* Loading */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 24px', color: '#8A8070' }}>
+          <div style={{ textAlign: 'center', padding: '60px 24px', color: '#6B7280' }}>
             {isFr ? 'Chargement...' : 'Loading...'}
           </div>
         ) : filteredPosts.length === 0 ? (
@@ -119,7 +119,7 @@ export default function BlogPage({ lang, setView }) {
             {/* Featured Post */}
             {featuredPost && (
               <div style={s.featuredCard}>
-                <div className="blog-featured-image" style={{ ...s.featuredImage, background: featuredPost.image_color || '#52B5D9' }} />
+                <div className="blog-featured-image" style={{ ...s.featuredImage, background: featuredPost.image_color || '#10B981' }} />
                 <div style={s.featuredBody}>
                   <h2 style={s.featuredTitle}>{isFr ? featuredPost.title_fr : featuredPost.title_en}</h2>
                   <div style={s.featuredMeta}>
@@ -163,7 +163,7 @@ export default function BlogPage({ lang, setView }) {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <div style={{ ...s.postImage, background: post.image_color || '#52B5D9' }} />
+                <div style={{ ...s.postImage, background: post.image_color || '#10B981' }} />
                 <div style={s.postBody}>
                   <h3 style={s.postTitle}>{isFr ? post.title_fr : post.title_en}</h3>
                   <p style={s.postExcerpt}>{isFr ? post.excerpt_fr : post.excerpt_en}</p>

@@ -30,7 +30,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #D4E8F4 0%, #FDF0E8 100%)',
+      background: 'linear-gradient(135deg, #D1F4E7 0%, #FDF0E8 100%)',
       border: '1px solid #F5D0A9',
       borderRadius: 12,
       padding: '14px 18px',
@@ -45,7 +45,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
         width: 40,
         height: 40,
         borderRadius: 10,
-        background: '#52B5D9',
+        background: '#10B981',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -58,10 +58,10 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
 
       {/* Text */}
       <div style={{ flex: 1, minWidth: 200 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1710', marginBottom: 2 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937', marginBottom: 2 }}>
           {isFr ? 'Vérifiez votre compte WhatsApp' : 'Verify your WhatsApp account'}
         </div>
-        <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>
           {isFr 
             ? 'Votre compte n\'est pas encore vérifié. Vérifiez votre WhatsApp pour débloquer toutes les fonctionnalités.' 
             : 'Your account is not yet verified. Verify your WhatsApp to unlock all features.'}
@@ -73,7 +73,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
         onClick={onVerifyClick}
         style={{
           padding: '10px 18px',
-          background: '#52B5D9',
+          background: '#10B981',
           color: '#fff',
           border: 'none',
           borderRadius: 10,
@@ -86,7 +86,7 @@ export default function WhatsAppVerificationReminder({ user, lang, onVerifyClick
           transition: 'background .2s',
         }}
         onMouseEnter={(e) => e.target.style.background = '#B0781A'}
-        onMouseLeave={(e) => e.target.style.background = '#52B5D9'}
+        onMouseLeave={(e) => e.target.style.background = '#10B981'}
       >
         {isFr ? 'Vérifier maintenant →' : 'Verify now →'}
       </button>

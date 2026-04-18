@@ -127,23 +127,23 @@ export default function DocumentationPage({ lang, setView }) {
     page: { minHeight: '100vh', background: '#FDFBF7', fontFamily: 'DM Sans, sans-serif' },
     container: { maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px' },
     header: { marginBottom: 48 },
-    tag: { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#52B5D9', background: '#D4E8F4', border: '1px solid rgba(0,0,0,.06)', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 12 },
-    h1: { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px,4vw,42px)', color: '#1A1710', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
+    tag: { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#10B981', background: '#D1F4E7', border: '1px solid rgba(0,0,0,.06)', borderRadius: 20, display: 'inline-block', padding: '4px 14px', marginBottom: 12 },
+    h1: { fontFamily: 'DM Serif Display, serif', fontSize: 'clamp(28px,4vw,42px)', color: '#1F2937', letterSpacing: '-.5px', marginBottom: 8, lineHeight: 1.1 },
     searchContainer: { marginBottom: 40 },
     searchInput: { width: '100%', padding: '12px 16px', fontSize: 15, border: '1px solid rgba(0,0,0,.1)', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', boxSizing: 'border-box' },
     section: { marginBottom: 48 },
-    sectionTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1A1710', marginBottom: 20, fontWeight: 500 },
+    sectionTitle: { fontFamily: 'DM Serif Display, serif', fontSize: 22, color: '#1F2937', marginBottom: 20, fontWeight: 500 },
     tutorialCard: { background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, padding: 16, marginBottom: 12, cursor: 'pointer', transition: 'all 0.2s ease' },
     tutorialTitle: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    cardTitle: { fontSize: 16, fontWeight: 600, color: '#1A1710', margin: 0 },
-    cardDesc: { fontSize: 14, color: '#8A8070', margin: 0, marginTop: 4 },
-    toggleIcon: { fontSize: 18, color: '#52B5D9', transition: 'transform 0.2s ease' },
+    cardTitle: { fontSize: 16, fontWeight: 600, color: '#1F2937', margin: 0 },
+    cardDesc: { fontSize: 14, color: '#6B7280', margin: 0, marginTop: 4 },
+    toggleIcon: { fontSize: 18, color: '#10B981', transition: 'transform 0.2s ease' },
     cardContent: { marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(0,0,0,.06)' },
-    contentItem: { fontSize: 14, color: '#8A8070', lineHeight: 1.6, marginBottom: 8 },
+    contentItem: { fontSize: 14, color: '#6B7280', lineHeight: 1.6, marginBottom: 8 },
     faqItem: { background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 12, marginBottom: 12, overflow: 'hidden' },
-    faqQuestion: { padding: 16, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 15, fontWeight: 600, color: '#1A1710' },
-    faqAnswer: { padding: '0 16px 16px 16px', fontSize: 14, color: '#8A8070', lineHeight: 1.7, borderTop: '1px solid rgba(0,0,0,.06)' },
-    noResults: { textAlign: 'center', padding: '32px 16px', fontSize: 14, color: '#8A8070' },
+    faqQuestion: { padding: 16, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 15, fontWeight: 600, color: '#1F2937' },
+    faqAnswer: { padding: '0 16px 16px 16px', fontSize: 14, color: '#6B7280', lineHeight: 1.7, borderTop: '1px solid rgba(0,0,0,.06)' },
+    noResults: { textAlign: 'center', padding: '32px 16px', fontSize: 14, color: '#6B7280' },
   }
 
   return (
@@ -159,7 +159,7 @@ export default function DocumentationPage({ lang, setView }) {
         <div style={s.header}>
           <div style={s.tag}>{isFr ? 'Aide' : 'Help'}</div>
           <h1 style={s.h1}>{isFr ? 'Centre d\'aide' : 'Help Center'}</h1>
-          <p style={{ fontSize: 14, color: '#8A8070', margin: 0, marginTop: 8 }}>
+          <p style={{ fontSize: 14, color: '#6B7280', margin: 0, marginTop: 8 }}>
             {isFr ? 'Trouvez les réponses aux questions courantes' : 'Find answers to common questions'}
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function DocumentationPage({ lang, setView }) {
         </div>
 
         {/* Contact CTA */}
-        <div style={{ background: '#1A1710', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ background: '#1F2937', borderRadius: 16, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#fff', marginBottom: 4 }}>
               {isFr ? 'Encore des questions ?' : 'Still have questions?'}
@@ -251,7 +251,7 @@ export default function DocumentationPage({ lang, setView }) {
               {isFr ? 'Contactez-nous directement' : 'Contact us directly'}
             </div>
           </div>
-          <a href="mailto:hello@yobbu.co" style={{ background: '#52B5D9', color: '#fff', textDecoration: 'none', padding: '11px 22px', borderRadius: 12, fontSize: 14, fontWeight: 600, fontFamily: 'DM Sans, sans-serif' }}>
+          <a href="mailto:hello@yobbu.co" style={{ background: '#10B981', color: '#fff', textDecoration: 'none', padding: '11px 22px', borderRadius: 12, fontSize: 14, fontWeight: 600, fontFamily: 'DM Sans, sans-serif' }}>
             hello@yobbu.co
           </a>
         </div>

@@ -111,7 +111,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
     borderRadius: 8,
     border: '1px solid rgba(0,0,0,.1)',
     background: '#FDFBF7',
-    color: '#1A1710',
+    color: '#1F2937',
     fontSize: 13,
     fontFamily: 'DM Sans, sans-serif',
     outline: 'none',
@@ -122,7 +122,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
     display: 'block',
     fontSize: 11,
     fontWeight: 700,
-    color: '#8A8070',
+    color: '#6B7280',
     textTransform: 'uppercase',
     letterSpacing: '.06em',
     marginBottom: 6,
@@ -138,7 +138,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
   if (editing) {
     return (
       <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.1)', borderRadius: 16, padding: 20 }}>
-        <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1A1710', marginBottom: 16 }}>
+        <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1F2937', marginBottom: 16 }}>
           {t.title}
         </div>
 
@@ -157,11 +157,11 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
 
         <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
           <button onClick={handleSave} disabled={saving}
-            style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 14, fontWeight: 600, cursor: saving ? 'default' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? 0.6 : 1 }}>
+            style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontSize: 14, fontWeight: 600, cursor: saving ? 'default' : 'pointer', fontFamily: 'DM Sans, sans-serif', opacity: saving ? 0.6 : 1 }}>
             {saving ? '...' : t.save}
           </button>
           <button onClick={() => setEditing(false)}
-            style={{ padding: '12px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
+            style={{ padding: '12px 20px', borderRadius: 10, border: '1px solid rgba(0,0,0,.1)', background: 'transparent', color: '#6B7280', fontSize: 14, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
             {t.cancel}
           </button>
         </div>
@@ -172,19 +172,19 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
   return (
     <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,.1)', borderRadius: 16, padding: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1A1710' }}>
+        <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: 18, color: '#1F2937' }}>
           {t.title}
         </span>
         <button onClick={() => setEditing(true)}
-          style={{ fontSize: 12, fontWeight: 600, color: '#52B5D9', background: 'none', border: 'none', cursor: 'pointer' }}>
+          style={{ fontSize: 12, fontWeight: 600, color: '#10B981', background: 'none', border: 'none', cursor: 'pointer' }}>
           {hasLinks ? t.edit : t.add}
         </button>
       </div>
 
       {!hasLinks && (
         <div style={{ background: '#FDFBF7', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1710', marginBottom: 8 }}>{t.why}</div>
-          <div style={{ fontSize: 12, color: '#8A8070', lineHeight: 1.6 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#1F2937', marginBottom: 8 }}>{t.why}</div>
+          <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.6 }}>
             {t.reason1}<br/>
             {t.reason2}<br/>
             {t.reason3}
@@ -207,7 +207,7 @@ export default function SocialProfileLinks({ profile, lang = 'en', onSave }) {
                       : profile?.linkedin_url
             return (
               <a key={label} href={url} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: bg, borderRadius: 10, textDecoration: 'none', color: '#1A1710', fontSize: 13 }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: bg, borderRadius: 10, textDecoration: 'none', color: '#1F2937', fontSize: 13 }}>
                 <span style={{ width: 28, height: 28, borderRadius: 8, background: color, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{icon}</span>
                 <span style={{ flex: 1, fontWeight: 500 }}>{label}</span>
                 <span style={{ fontSize: 11, color }}>{t.view} →</span>
