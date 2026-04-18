@@ -96,7 +96,10 @@ export default function App() {
   // Once useAuth finishes loading, check if we need to navigate to onboarding or profile
   useEffect(() => {
     if (!authLoading && user && view === 'home') {
-      if (!user.onboarding_complete) {
+      // Skip onboarding for admins
+      if (user.role === 'admin') {
+        setView('admin', true)
+      } else if (!user.onboarding_complete) {
         setView('onboarding', true)
       } else {
         // Route to appropriate profile based on user role
@@ -112,7 +115,9 @@ export default function App() {
     const uid = completedUser?.id || user?.id
     if (!uid) { setView('home'); return }
     const { data } = await supabase.from('profiles').select('onboarding_complete, role').eq('id', uid).single()
-    if (!data?.onboarding_complete) {
+    if (data?.role === 'admin') {
+      setView('admin')
+    } else if (!data?.onboarding_complete) {
       setView('onboarding')
     } else {
       const targetView = data.role === 'sender' ? 'sender-profile' : 'profile'
