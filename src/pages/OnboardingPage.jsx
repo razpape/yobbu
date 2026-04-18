@@ -46,7 +46,8 @@ const MAX_MB   = 3
 export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
   const isFr = lang === 'fr'
 
-  const [role,            setRole]            = useState('traveler') // Always traveler
+  const [role,            setRole]            = useState(null)
+  const [confirmingRole,  setConfirmingRole]  = useState(null)
   const [firstName,       setFirstName]       = useState('')
   const [lastName,        setLastName]        = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
@@ -187,16 +188,15 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
           {/* Role picker */}
           <div style={{ marginBottom: 32 }}>
             <label style={lbl}>{isFr ? 'Que faites-vous ? *' : 'What do you do? *'}</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
               {[
                 { val: 'traveler', label: isFr ? 'Je suis Voyageur' : 'I\'m a Traveler', emoji: '✈️' },
                 { val: 'sender', label: isFr ? 'Je suis Expéditeur' : 'I\'m a Sender', emoji: '📦' },
-                { val: 'both', label: isFr ? 'Les deux' : 'Both', emoji: '🤝' },
               ].map(opt => (
                 <button
                   key={opt.val}
                   type="button"
-                  onClick={() => setRole(opt.val)}
+                  onClick={() => setConfirmingRole(opt.val)}
                   style={{
                     padding: '16px 12px', borderRadius: 12,
                     border: `2px solid ${role === opt.val ? '#52B5D9' : '#E5E1DB'}`,
@@ -213,8 +213,53 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
             </div>
           </div>
 
+          {/* Role confirmation modal */}
+          {confirmingRole && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+              <div style={{ background: '#fff', borderRadius: 16, padding: 32, maxWidth: 400, boxShadow: '0 20px 60px rgba(0,0,0,.15)' }}>
+                <div style={{ fontSize: 24, marginBottom: 16, textAlign: 'center' }}>
+                  {confirmingRole === 'traveler' ? '✈️' : '📦'}
+                </div>
+                <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: '#1A1710', marginBottom: 12, textAlign: 'center' }}>
+                  {confirmingRole === 'traveler'
+                    ? (isFr ? 'Voyageur' : 'Traveler')
+                    : (isFr ? 'Expéditeur' : 'Sender')}
+                </h2>
+                <p style={{ fontSize: 14, color: '#6B6860', lineHeight: 1.6, marginBottom: 24, textAlign: 'center' }}>
+                  {confirmingRole === 'traveler'
+                    ? (isFr
+                        ? 'Vous allez poster vos trajets et gagner de l\'argent en transportant des colis. Vous ne pourrez pas changer ce rôle plus tard.'
+                        : 'You\'ll post trips and earn money carrying packages. You won\'t be able to change this role later.')
+                    : (isFr
+                        ? 'Vous allez poster vos demandes de colis et les voyageurs verified les livreront. Vous ne pourrez pas changer ce rôle plus tard.'
+                        : 'You\'ll post package requests and verified travelers will deliver them. You won\'t be able to change this role later.')}
+                </p>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={() => setConfirmingRole(null)}
+                    style={{ flex: 1, padding: 12, borderRadius: 10, border: '1.5px solid #E5E1DB', background: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", color: '#1A1710' }}
+                  >
+                    {isFr ? 'Retour' : 'Go back'}
+                  </button>
+                  <button
+                    onClick={() => { setRole(confirmingRole); setConfirmingRole(null) }}
+                    style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {isFr ? 'Confirmer' : 'Confirm'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+            {!role && (
+              <div style={{ opacity: 0.5, pointerEvents: 'none' }}>
+                {/* Photo and form hidden until role selected */}
+              </div>
+            )}
+
             {/* Photo */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
+            <div style={{ display: role ? 'flex' : 'none', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
               <button
                 className="ob-photo"
                 type="button"

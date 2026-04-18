@@ -118,7 +118,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
-        <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
+        {view !== 'onboarding' && (
+          <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
+        )}
 
         {view === 'home' && (
           <>

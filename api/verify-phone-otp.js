@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+import jwt from 'jsonwebtoken'
 import { logBruteForceAttempt, logSecurityEvent } from './utils/security-logger.js'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
@@ -146,15 +147,23 @@ export default async function handler(req, res) {
         .eq('id', user.id)
     }
 
-    // Create session using secure password auth
-    // NOTE: User's password is already securely generated and stored
-    // Session is created via Supabase session tokens, not password reuse
-    const email = `${phone.replace(/\D/g, '')}@phone.yobbu.app`
+    // Generate JWT tokens
+    const jwtSecret = process.env.SUPABASE_JWT_SECRET
+    if (!jwtSecret) throw new Error('SUPABASE_JWT_SECRET not configured')
 
-    // Use service role to create a session
-    const { data: sessionData, error: sessionError } = await supabase.auth.admin.createSession(user.id)
+    const now = Math.floor(Date.now() / 1000)
+    const accessToken = jwt.sign(
+      {
+        sub: user.id,
+        aud: 'authenticated',
+        role: 'authenticated',
+        iat: now,
+        exp: now + 3600, // 1 hour
+      },
+      jwtSecret
+    )
 
-    if (sessionError) throw sessionError
+    const refreshToken = crypto.randomUUID()
 
     console.log(`[OTP] Session created for user ${user.id}`)
 
@@ -168,8 +177,8 @@ export default async function handler(req, res) {
         verificationTier: user.verification_tier,
       },
       session: {
-        access_token: sessionData.session.access_token,
-        refresh_token: sessionData.session.refresh_token,
+        access_token: accessToken,
+        refresh_token: refreshToken,
       },
       isNewUser,
       hasPin: !!user.pin_hash,

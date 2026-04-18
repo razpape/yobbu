@@ -239,8 +239,8 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
   }
 
   const menuItems = [
-    { key: 'trips',         Icon: PlaneIcon,       label: t.menuTrips },
-    { key: 'requests',      Icon: PackageIcon,     label: t.menuRequests },
+    ...(isSender ? [] : [{ key: 'trips', Icon: PlaneIcon, label: t.menuTrips }]),
+    ...(isSender ? [{ key: 'requests', Icon: PackageIcon, label: t.menuRequests }] : []),
     { key: 'verification',  Icon: ShieldCheckIcon, label: isFr ? 'Vérification' : 'Verification' },
     { key: 'notifications', Icon: BellIcon,        label: t.menuNotif, badge: notifBadge },
     { key: 'settings',      Icon: SettingsIcon,    label: t.menuSettings },
@@ -362,7 +362,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         )
       })}
 
-      {!loading && trips.length > 0 && (
+      {!isSender && !loading && trips.length > 0 && (
         <button onClick={() => setView('post')}
           style={{ width: '100%', padding: '11px', borderRadius: 12, border: '2px dashed rgba(0,0,0,.1)', background: 'transparent', color: '#8A8070', fontSize: 13, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
           <PlusIcon size={13} color="#8A8070" /> {t.postNew}
@@ -465,16 +465,23 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ flex: 1, height: 8, background: '#E5E1DB', borderRadius: 20, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: '#22c55e', width: `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0)) / 3 * 100}%`, transition: 'width .3s' }} />
+              {isSender ? (
+                <div style={{ height: '100%', background: '#22c55e', width: '50%', transition: 'width .3s' }} />
+              ) : (
+                <div style={{ height: '100%', background: '#22c55e', width: `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0)) / 3 * 100}%`, transition: 'width .3s' }} />
+              )}
             </div>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#8A8070', minWidth: 40 }}>
-              {((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0))}/3
+              {isSender ? '1/2' : `${((true ? 1 : 0) + (profileData?.photo_verified || photoVerified ? 1 : 0) + (profileData?.id_verified ? 1 : 0))}/3`}
             </div>
           </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[
+          {(isSender ? [
+            { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, action: null },
+            { step: 2, label: isFr ? 'Vérification Facebook' : 'Facebook verification', desc: isFr ? 'Partagez votre profil Facebook pour la confiance' : 'Share your Facebook profile for trust', completed: profileData?.facebook_verified, status: profileData?.facebook_verified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), action: profileData?.facebook_verified ? null : (isFr ? 'Ajouter Facebook' : 'Add Facebook') },
+          ] : [
             { step: 1, label: isFr ? 'Vérification téléphone' : 'Phone verification', desc: isFr ? 'Fait lors de l\'inscription' : 'Done at signup', completed: true, action: null },
             {
               step: 2,
@@ -485,7 +492,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
               action: (profileData?.photo_verified || profileData?.photo_pending) ? null : (isFr ? 'Télécharger une photo' : 'Upload photo')
             },
             { step: 3, label: isFr ? 'Vérification ID' : 'ID verification', desc: isFr ? 'Téléchargez une copie de votre pièce d\'identité' : 'Upload a copy of your ID', completed: profileData?.id_verified, status: profileData?.id_verified ? (isFr ? 'Approuvée' : 'Approved') : (isFr ? 'En attente' : 'Pending'), badge: true, action: profileData?.id_verified ? null : (isFr ? 'Télécharger une pièce d\'identité' : 'Upload ID') },
-          ].map(({ step, label, desc, completed, status, badge, action }) => (
+          ]).map(({ step, label, desc, completed, status, badge, action }) => (
             <div key={step} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, background: '#fff', borderRadius: 10, border: `1px solid ${completed ? '#C8E6D4' : '#E5E1DB'}` }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: completed ? '#F0FAF4' : '#F5F3EF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 700, color: completed ? '#22c55e' : '#8A8070' }}>
@@ -511,7 +518,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 </div>
               </div>
               {action && (
-                <button onClick={() => step === 2 ? setShowAvatarUpload(true) : null}
+                <button onClick={() => (isSender && step === 2) ? null : (step === 2 ? setShowAvatarUpload(true) : null)}
                   style={{ alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8, border: 'none', background: '#52B5D9', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
                   {action}
                 </button>
@@ -539,10 +546,14 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           </div>
         </div>
       </div>
-      <div style={{ marginBottom: 16 }}>
-        <IDVerificationUpload user={user} profile={profileData} lang={lang} />
-      </div>
-      <SocialProfileLinks profile={user} lang={lang} />
+      {!isSender && (
+        <div style={{ marginBottom: 16 }}>
+          <IDVerificationUpload user={user} profile={profileData} lang={lang} />
+        </div>
+      )}
+      {!isSender && (
+        <SocialProfileLinks profile={user} lang={lang} />
+      )}
     </div>
   )
 
@@ -864,7 +875,7 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
                 {user.role === 'traveler' ? (isFr ? 'Voyageur' : 'Traveler') : user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Les deux' : 'Both')}
               </div>
             )}
-            <div style={{ fontSize: 11, color: '#8A8070' }}>{contact}</div>
+            <div style={{ fontSize: 11, color: '#8A8070' }}>{baseCountry || contact}</div>
           </div>
 
           {/* Language toggle */}

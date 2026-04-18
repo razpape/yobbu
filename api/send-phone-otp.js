@@ -26,12 +26,12 @@ function hashOtp(code) {
 }
 
 function generateSecureOtp(length = OTP_LENGTH) {
-  const bytes = crypto.randomBytes(Math.ceil(length * Math.log2(10) / 8))
+  const bytes = crypto.randomBytes(length)
   let code = ''
   for (let i = 0; i < length; i++) {
-    code += Math.floor((bytes[i] / 255) * 10)
+    code += bytes[i] % 10
   }
-  return code.slice(0, length)
+  return code
 }
 
 export default async function handler(req, res) {
@@ -55,49 +55,54 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Rate limit: max 10 different phone numbers per IP per hour
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const { count: ipPhoneCount } = await supabase
-      .from('otp_codes')
-      .select('*', { count: 'exact', head: true })
-      .eq('ip_address', clientIp)
-      .gte('created_at', oneHourAgo)
+    // Skip rate limiting in dev/local
+    const isLocal = clientIp === '::1' || clientIp === '127.0.0.1'
 
-    if ((ipPhoneCount || 0) >= MAX_PHONES_PER_IP_HOUR) {
-      await logRateLimitExceeded(clientIp, '/api/send-phone-otp')
-      return res.status(429).json({ error: 'Too many requests from this IP. Try again later.' })
-    }
+    if (!isLocal) {
+      // Rate limit: max 10 different phone numbers per IP per hour
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+      const { count: ipPhoneCount } = await supabase
+        .from('otp_codes')
+        .select('*', { count: 'exact', head: true })
+        .eq('ip_address', clientIp)
+        .gte('created_at', oneHourAgo)
 
-    // Resend cooldown: 60 seconds between sends
-    const { data: recent } = await supabase
-      .from('otp_codes')
-      .select('created_at')
-      .eq('phone', phone)
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    if (recent) {
-      const secondsSinceSent = Math.floor((Date.now() - new Date(recent.created_at).getTime()) / 1000)
-      if (secondsSinceSent < RESEND_COOLDOWN_SECONDS) {
-        return res.status(429).json({
-          error: `Please wait ${RESEND_COOLDOWN_SECONDS - secondsSinceSent} seconds before requesting a new code.`
-        })
+      if ((ipPhoneCount || 0) >= MAX_PHONES_PER_IP_HOUR) {
+        await logRateLimitExceeded(clientIp, '/api/send-phone-otp')
+        return res.status(429).json({ error: 'Too many requests from this IP. Try again later.' })
       }
-    }
 
-    // Resend limit: max 3 per hour
-    const { count: recentCount } = await supabase
-      .from('otp_codes')
-      .select('*', { count: 'exact', head: true })
-      .eq('phone', phone)
-      .is('deleted_at', null)
-      .gte('created_at', oneHourAgo)
+      // Resend cooldown: 60 seconds between sends
+      const { data: recent } = await supabase
+        .from('otp_codes')
+        .select('created_at')
+        .eq('phone', phone)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    if ((recentCount || 0) >= MAX_RESENDS_PER_HOUR) {
-      console.warn(`[OTP] Phone resend limit exceeded: ${phone}`)
-      return res.status(429).json({ error: 'Too many code requests. Try again after 1 hour.' })
+      if (recent) {
+        const secondsSinceSent = Math.floor((Date.now() - new Date(recent.created_at).getTime()) / 1000)
+        if (secondsSinceSent < RESEND_COOLDOWN_SECONDS) {
+          return res.status(429).json({
+            error: `Please wait ${RESEND_COOLDOWN_SECONDS - secondsSinceSent} seconds before requesting a new code.`
+          })
+        }
+      }
+
+      // Resend limit: max 3 per hour
+      const { count: recentCount } = await supabase
+        .from('otp_codes')
+        .select('*', { count: 'exact', head: true })
+        .eq('phone', phone)
+        .is('deleted_at', null)
+        .gte('created_at', oneHourAgo)
+
+      if ((recentCount || 0) >= MAX_RESENDS_PER_HOUR) {
+        console.warn(`[OTP] Phone resend limit exceeded: ${phone}`)
+        return res.status(429).json({ error: 'Too many code requests. Try again after 1 hour.' })
+      }
     }
 
     // Generate secure code
@@ -105,13 +110,16 @@ export default async function handler(req, res) {
     const codeHash = hashOtp(code)
     const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000).toISOString()
 
+    console.log(`\n==============================`)
+    console.log(`  OTP for ${phone}: ${code}`)
+    console.log(`==============================\n`)
+
     // Mark old codes as deleted (soft delete for audit)
     await supabase
       .from('otp_codes')
       .update({ deleted_at: new Date().toISOString() })
       .eq('phone', phone)
       .is('deleted_at', null)
-      .catch(err => console.error('[OTP] Cleanup error:', err.message))
 
     // Store hashed code
     const { error: insertError } = await supabase
@@ -134,6 +142,13 @@ export default async function handler(req, res) {
       const { data: existingUser } = await supabase
         .from('profiles').select('id').eq('phone', phone).maybeSingle()
       return res.status(200).json({ success: true, message: 'Verification code sent', isNewUser: !existingUser })
+    }
+
+    // Log code for local testing
+    if (isLocal) {
+      console.log(`\n==============================`)
+      console.log(`  OTP for ${phone}: ${code}`)
+      console.log(`==============================\n`)
     }
 
     // Send via Twilio

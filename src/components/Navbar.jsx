@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+function BellIcon({ size = 16, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+  )
+}
+
 function LogOutIcon({ size = 16, color = 'currentColor' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -12,9 +21,9 @@ function LogOutIcon({ size = 16, color = 'currentColor' }) {
 }
 
 export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState(null)
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+  const [searchText, setSearchText] = useState('')
   const isFr = lang === 'fr'
 
   const meta = user?.user_metadata || {}
@@ -23,7 +32,7 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
 
   useEffect(() => {
     if (!user?.id) return
-    supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle()
+    supabase.from('profiles').select('avatar_url, country_of_origin').eq('id', user.id).maybeSingle()
       .then(({ data }) => {
         if (data?.avatar_url) setAvatarUrl(data.avatar_url)
       })
@@ -40,206 +49,123 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
     return () => document.removeEventListener('click', handleClickOutside)
   }, [avatarMenuOpen])
 
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchText.trim()) {
+      setView('browse')
+    }
+  }
+
   return (
-    <>
-      <style>{`
-        .nav-link:hover { color: #52B5D9 !important; }
-        .btn-post:hover { background: #E5A630 !important; }
-        .btn-signin:hover { background: #F7F3ED !important; }
-        .avatar-btn:hover { background: #52B5D9 !important; color: #fff !important; }
-        @media (max-width: 768px) {
-          .nav-desktop { display: none !important; }
-          .nav-mobile-btn { display: flex !important; }
-        }
-        @media (min-width: 769px) {
-          .nav-mobile-btn { display: none !important; }
-          .mobile-menu { display: none !important; }
-        }
-      `}</style>
+    <nav style={{ fontFamily: 'DM Sans, sans-serif', background: '#fff', borderBottom: '1px solid #E5E1DB', position: 'sticky', top: 0, zIndex: 50, display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 1400, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
 
-      <nav style={{ fontFamily: 'DM Sans, sans-serif', background: '#FDFBF7', borderBottom: '1px solid rgba(0,0,0,.06)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '16px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-
-          {/* Logo */}
-          <div onClick={() => { setView('home'); setMenuOpen(false) }}
-            style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px' }}>
+        {/* Left: Logo + Search */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, maxWidth: 600 }}>
+          <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px', flexShrink: 0 }}>
             Yob<span style={{ color: '#52B5D9' }}>bu</span>
           </div>
 
-          {/* Desktop */}
-          <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 20, overflow: 'hidden', marginRight: 16 }}>
-              {['en', 'fr'].map(l => (
-                <button key={l} onClick={() => setLang(l)}
-                  style={{ padding: '6px 14px', border: 'none', background: lang === l ? '#52B5D9' : 'transparent', color: lang === l ? '#fff' : '#8A8070', fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 500, cursor: 'pointer', borderRadius: 20, transition: 'all .2s' }}>
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            <span className="nav-link" onClick={() => setView('browse')}
-              style={{ fontSize: 14, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '8px 16px', transition: 'color .2s' }}>
-              {isFr ? 'Voir les GPs' : 'Browse GPs'}
-            </span>
-
-            <span className="nav-link" onClick={() => setView('packages')}
-              style={{ fontSize: 14, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '8px 16px', transition: 'color .2s' }}>
-              {isFr ? 'Demandes' : 'Requests'}
-            </span>
-
-            {user ? (
-              <>
-                <button className="btn-post" onClick={() => setView('post')}
-                  style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
-                  {isFr ? '+ Poster' : '+ Post a trip'}
-                </button>
-                <div style={{ position: 'relative' }} data-avatar-menu>
-                  <button className="avatar-btn" onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'scale(1.1)'
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(82,181,217,.2)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'scale(1)'
-                      e.currentTarget.style.boxShadow = 'none'
-                    }}
-                    title={isFr ? 'Menu utilisateur' : 'User menu'}
-                    style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', transition: 'all .2s', overflow: 'hidden', padding: 0, position: 'relative' }}>
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      initials
-                    )}
-                    <div style={{ position: 'absolute', bottom: -2, right: -2, width: 12, height: 12, background: '#52B5D9', border: '2px solid #fff', borderRadius: '50%', fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>▼</div>
-                  </button>
-                  {avatarMenuOpen && (
-                    <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 180 }} data-avatar-menu>
-                      <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
-                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        {isFr ? 'Mon profil' : 'My profile'}
-                      </button>
-                      <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
-                        style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        {isFr ? 'Déconnexion' : 'Sign out'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <button className="btn-signin" onClick={onLoginClick}
-                  style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.12)', padding: '9px 20px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer', transition: 'all .2s' }}>
-                  {isFr ? 'Se connecter' : 'Sign in'}
-                </button>
-                <button className="btn-post" onClick={() => setView('post')}
-                  style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: 24, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all .25s' }}>
-                  {isFr ? '+ Poster un voyage' : '+ Post a trip'}
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile */}
-          <div className="nav-mobile-btn" style={{ alignItems: 'center', gap: 10, position: 'relative' }}>
-            {user && (
-              <div style={{ position: 'relative' }} data-avatar-menu>
-                <button onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'scale(1.1)'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(82,181,217,.2)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'scale(1)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
-                  title={isFr ? 'Menu utilisateur' : 'User menu'}
-                  style={{ width: 34, height: 34, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', flexShrink: 0, overflow: 'hidden', padding: 0, position: 'relative', transition: 'all .2s' }}>
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    initials
-                  )}
-                  <div style={{ position: 'absolute', bottom: -2, right: -2, width: 11, height: 11, background: '#52B5D9', border: '2px solid #fff', borderRadius: '50%', fontSize: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>▼</div>
-                </button>
-                {avatarMenuOpen && (
-                  <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 160 }} data-avatar-menu>
-                    <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
-                      style={{ width: '100%', padding: '12px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      {isFr ? 'Mon profil' : 'My profile'}
-                    </button>
-                    <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
-                      style={{ width: '100%', padding: '12px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
-                      {isFr ? 'Déconnexion' : 'Sign out'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 20, overflow: 'hidden' }}>
-              {['en', 'fr'].map(l => (
-                <button key={l} onClick={() => setLang(l)}
-                  style={{ padding: '5px 12px', border: 'none', background: lang === l ? '#52B5D9' : 'transparent', color: lang === l ? '#fff' : '#8A8070', fontFamily: 'DM Sans, sans-serif', fontSize: 12, cursor: 'pointer', borderRadius: 20 }}>
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-            <button onClick={() => setMenuOpen(!menuOpen)}
-              style={{ width: 36, height: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5, background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 10, cursor: 'pointer' }}>
-              {[0,1,2].map(i => (
-                <span key={i} style={{ display: 'block', width: 20, height: 2, background: '#1A1710', transition: 'all .2s',
-                  transform: menuOpen ? (i === 0 ? 'rotate(45deg) translateY(7px)' : i === 2 ? 'rotate(-45deg) translateY(-7px)' : 'none') : 'none',
-                  opacity: menuOpen && i === 1 ? 0 : 1 }} />
-              ))}
-            </button>
-          </div>
+          <input
+            type="text"
+            placeholder={isFr ? 'Rechercher...' : 'Search travelers, routes...'}
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            onKeyDown={handleSearch}
+            style={{
+              flex: 1,
+              padding: '9px 14px',
+              border: '1px solid #E5E1DB',
+              borderRadius: 20,
+              fontSize: 13,
+              fontFamily: 'DM Sans, sans-serif',
+              outline: 'none',
+              color: '#1A1710',
+              background: '#FDFBF7',
+              transition: 'border-color .2s'
+            }}
+            onFocus={e => e.target.style.borderColor = '#52B5D9'}
+            onBlur={e => e.target.style.borderColor = '#E5E1DB'}
+          />
         </div>
 
-        {/* Mobile menu */}
-        {menuOpen && (
-          <div className="mobile-menu" style={{ borderTop: '1px solid rgba(0,0,0,.06)', background: '#FDFBF7', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <span onClick={() => { setView('browse'); setMenuOpen(false) }}
-              style={{ fontSize: 15, fontWeight: 500, color: '#3D3829', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,.06)' }}>
-              {isFr ? 'Voir les GPs' : 'Browse GPs'}
-            </span>
-            {!user && (
-              <button onClick={() => { onLoginClick(); setMenuOpen(false) }}
-                style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.12)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-                {isFr ? 'Se connecter' : 'Sign in'}
-              </button>
-            )}
-            <button onClick={() => { setView('post'); setMenuOpen(false) }}
-              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '13px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-              {isFr ? '+ Poster un voyage' : '+ Post a trip'}
+        {/* Right: New Request + Language + Bell + Avatar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+          {user?.role === 'sender' && (
+            <button onClick={() => setView('packages')}
+              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '9px 18px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'background .2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#3D9FBD'}
+              onMouseLeave={e => e.currentTarget.style.background = '#52B5D9'}
+            >
+              + {isFr ? 'Demande' : 'New Request'}
             </button>
-            {user && (
-              <button onClick={() => { setView('profile'); setMenuOpen(false) }}
-                style={{ background: 'transparent', color: '#3D3829', border: '1px solid rgba(0,0,0,.08)', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-                {isFr ? 'Mon profil' : 'My profile'}
+          )}
+
+          {/* Language */}
+          <div style={{ display: 'flex', background: '#F7F3ED', borderRadius: 16, overflow: 'hidden', padding: 2 }}>
+            {['EN', 'FR'].map(l => (
+              <button key={l} onClick={() => setLang(l.toLowerCase())}
+                style={{ padding: '5px 10px', border: 'none', background: lang === l.toLowerCase() ? '#52B5D9' : 'transparent', color: lang === l.toLowerCase() ? '#fff' : '#8A8070', fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all .2s' }}>
+                {l}
               </button>
-            )}
-            {user && (
-              <button onClick={() => { onSignOut(); setMenuOpen(false) }}
-                style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <LogOutIcon size={15} color="#DC2626" />
-                {isFr ? 'Déconnexion' : 'Sign out'}
-              </button>
-            )}
+            ))}
           </div>
-        )}
-      </nav>
-    </>
+
+          {/* Bell */}
+          {user && (
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#8A8070', transition: 'color .2s', display: 'flex', alignItems: 'center' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#52B5D9'}
+              onMouseLeave={e => e.currentTarget.style.color = '#8A8070'}
+            >
+              <BellIcon size={20} color="currentColor" />
+            </button>
+          )}
+
+          {/* Avatar */}
+          {user ? (
+            <div style={{ position: 'relative' }} data-avatar-menu>
+              <button onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                style={{ width: 38, height: 38, borderRadius: '50%', background: '#D4E8F4', border: '1.5px solid #D4A574', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#52B5D9', cursor: 'pointer', overflow: 'hidden', padding: 0, transition: 'all .2s' }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.1)'}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  initials
+                )}
+              </button>
+
+              {avatarMenuOpen && (
+                <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: '#fff', border: '1px solid #EDEAE4', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,.1)', overflow: 'hidden', zIndex: 100, minWidth: 160 }} data-avatar-menu>
+                  <button onClick={() => { setView('profile'); setAvatarMenuOpen(false) }}
+                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {isFr ? 'Mon profil' : 'My profile'}
+                  </button>
+                  <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
+                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s', display: 'flex', alignItems: 'center', gap: 8 }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <LogOutIcon size={14} color="#DC2626" />
+                    {isFr ? 'Déconnexion' : 'Sign out'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button onClick={onLoginClick}
+              style={{ background: 'transparent', color: '#3D3829', border: '1px solid #E5E1DB', padding: '8px 16px', borderRadius: 20, fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all .2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F7F3ED'; e.currentTarget.style.borderColor = '#D4C8BC' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#E5E1DB' }}
+            >
+              {isFr ? 'Se connecter' : 'Sign in'}
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
   )
 }
