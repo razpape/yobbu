@@ -85,7 +85,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         .dot-btn.active { width: 20px !important; border-radius: 3px !important; }
         .mobile-search-block { display: none; }
         @media (max-width: 768px) {
-          .hero-section { background: #E8E5E0 !important; height: 100dvh; overflow-y: auto; }
+          .hero-section { background: #FDFBF7 !important; height: 100dvh; overflow-y: auto; }
           .hero-section > section { height: 100dvh; min-height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
           .hero-grid { display: none !important; }
           .stats-bar { display: none !important; }
@@ -97,7 +97,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         }
       `}</style>
 
-      <div className="hero-section" style={{ background: '#E8E5E0', color: '#1F2937' }}>
+      <div className="hero-section" style={{ background: '#FDFBF7', color: '#1F2937' }}>
         <section style={{ overflow: 'hidden', position: 'relative' }}>
           <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 900px 700px at 75% 45%, rgba(200,137,28,.10) 0%, transparent 70%)', pointerEvents:'none' }} />
 
@@ -144,7 +144,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
 
                 {/* Origin / Destination card */}
                 <div style={{ background:'#fff', borderRadius:18, overflow:'hidden', border:'1.5px solid #E5E0D8', marginBottom:20 }}>
-                  <div style={{ display:'flex', alignItems:'center', padding:'22px 20px', borderBottom:'1.5px solid #E5E0D8', gap:14 }}>
+                  <div style={{ display:'flex', alignItems:'center', padding:'28px 20px', borderBottom:'1.5px solid #E5E0D8', gap:14 }}>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Je suis à' : 'I am at'}</div>
                       <select value={from} onChange={e => setFrom(e.target.value)}
@@ -158,7 +158,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                       </svg>
                     </button>
                   </div>
-                  <div style={{ padding:'20px' }}>
+                  <div style={{ padding:'28px 20px' }}>
                     <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Ma famille est à' : 'My family is at'}</div>
                     <select value={dest} onChange={e => setDest(e.target.value)}
                       style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
