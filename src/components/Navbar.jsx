@@ -23,7 +23,6 @@ function LogOutIcon({ size = 16, color = 'currentColor' }) {
 export default function Navbar({ lang, setLang, setView, user, onSignOut, onLoginClick }) {
   const [avatarUrl, setAvatarUrl] = useState(null)
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
-  const [searchText, setSearchText] = useState('')
   const isFr = lang === 'fr'
 
   const meta = user?.user_metadata || {}
@@ -49,46 +48,16 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
     return () => document.removeEventListener('click', handleClickOutside)
   }, [avatarMenuOpen])
 
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && searchText.trim()) {
-      setView('browse')
-    }
-  }
-
   return (
     <nav style={{ fontFamily: 'DM Sans, sans-serif', background: '#fff', borderBottom: '1px solid #E5E1DB', position: 'sticky', top: 0, zIndex: 50, display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 1400, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
+      <div style={{ width: '100%', maxWidth: 1400, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-        {/* Left: Logo + Search */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, maxWidth: 600 }}>
-          <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px', flexShrink: 0 }}>
-            Yob<span style={{ color: '#52B5D9' }}>bu</span>
-          </div>
-
-          <input
-            type="text"
-            placeholder={isFr ? 'Rechercher...' : 'Search travelers, routes...'}
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onKeyDown={handleSearch}
-            style={{
-              flex: 1,
-              padding: '9px 14px',
-              border: '1px solid #E5E1DB',
-              borderRadius: 20,
-              fontSize: 13,
-              fontFamily: 'DM Sans, sans-serif',
-              outline: 'none',
-              color: '#1A1710',
-              background: '#FDFBF7',
-              transition: 'border-color .2s'
-            }}
-            onFocus={e => e.target.style.borderColor = '#52B5D9'}
-            onBlur={e => e.target.style.borderColor = '#E5E1DB'}
-          />
+        {/* Left: Logo */}
+        <div onClick={() => setView('home')} style={{ fontFamily: 'DM Serif Display, serif', fontSize: 20, color: '#1A1710', cursor: 'pointer', letterSpacing: '-.5px' }}>
+          Yob<span style={{ color: '#52B5D9' }}>bu</span>
         </div>
 
-        {/* Right: New Request + Language + Bell + Avatar */}
+        {/* Right: Language + Bell + Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
           {user?.role === 'sender' && (
             <button onClick={() => setView('packages')}
