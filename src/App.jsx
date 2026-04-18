@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
+import MobileNavbar from './components/MobileNavbar'
 import Hero from './components/Hero'
 import WhyYobbu from './components/WhyYobbu'
 import HowItWorks from './components/HowItWorks'
@@ -56,8 +57,16 @@ export default function App() {
   const [view, setViewState]            = useState(getInitialView)
   const [searchFilter, setSearchFilter] = useState({ dest: '', from: '' })
   const [selectedGp, setSelectedGp]     = useState(null)
+  const [isMobile, setIsMobile]         = useState(window.innerWidth < 1024)
   const { trips, loading: tripsLoading, error, addTrip } = useTrips()
   const { user, loading: authLoading, signOut } = useAuth()
+
+  // Detect mobile/desktop
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Wrap setView so it always keeps the URL in sync
   const setView = (v, replace = false) => {
@@ -129,9 +138,17 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div style={{ minHeight: '100vh', background: '#FDFBF7' }}>
+      <div style={{
+        minHeight: '100vh',
+        background: '#FDFBF7',
+        paddingTop: view !== 'onboarding' && isMobile ? 56 : 0,
+      }}>
         {view !== 'onboarding' && (
-          <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
+          isMobile ? (
+            <MobileNavbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} currentView={view} />
+          ) : (
+            <Navbar lang={lang} setLang={setLang} setView={setView} user={user} onSignOut={handleSignOut} onLoginClick={() => setView('phone-auth')} />
+          )
         )}
 
         {view === 'home' && (
