@@ -85,7 +85,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         .dot-btn.active { width: 20px !important; border-radius: 3px !important; }
         .mobile-search-block { display: none; }
         @media (max-width: 768px) {
-          .hero-section { background: #FDFBF7 !important; height: 100dvh; overflow-y: auto; }
+          .hero-section { background: linear-gradient(135deg, #FAFAF8 0%, #F5F1ED 100%) !important; height: 100dvh; overflow-y: auto; }
           .hero-section > section { height: 100dvh; min-height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
           .hero-grid { display: none !important; }
           .stats-bar { display: none !important; }
@@ -93,11 +93,11 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
           .swap-btn { width: 34px; height: 34px; background: #fff; border: 1px solid #E0D8CE; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,.08); flex-shrink: 0; transition: background .15s; }
           .swap-btn:hover { background: #F7F4F0; }
           .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #10B981; color: #fff; border: none; border-radius: 16px; padding: 22px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(200,137,28,.35); transition: background .2s; }
-          .mobile-btn-find:hover { background: #E5A630; }
+          .mobile-btn-find:hover { background: #D97706; }
         }
       `}</style>
 
-      <div className="hero-section" style={{ background: '#FDFBF7', color: '#1F2937' }}>
+      <div className="hero-section" style={{ background: 'linear-gradient(135deg, #FAFAF8 0%, #F5F1ED 100%)', color: '#1F2937' }}>
         <section style={{ overflow: 'hidden', position: 'relative' }}>
           <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 900px 700px at 75% 45%, rgba(200,137,28,.10) 0%, transparent 70%)', pointerEvents:'none' }} />
 
@@ -167,7 +167,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                   </div>
                 </div>
 
-                <button className="mobile-btn-find" onClick={handleSearch} style={{ width:'100%', padding:'16px', borderRadius:16, border:'none', background:'#10B981', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:"'DM Sans', sans-serif", marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8, transition:'all .2s' }}>
+                <button className="mobile-btn-find" onClick={handleSearch} style={{ width:'100%', padding:'16px', borderRadius:16, border:'none', background:'#F59E0B', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:"'DM Sans', sans-serif", marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8, transition:'all .2s' }}>
                   <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                     <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
                     <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
