@@ -143,25 +143,25 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 </p>
 
                 {/* Origin / Destination card */}
-                <div style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:'1.5px solid #E5E0D8', marginBottom:18 }}>
-                  <div style={{ display:'flex', alignItems:'center', padding:'18px 16px', borderBottom:'1.5px solid #E5E0D8', gap:12 }}>
+                <div style={{ background:'#fff', borderRadius:18, overflow:'hidden', border:'1.5px solid #E5E0D8', marginBottom:20 }}>
+                  <div style={{ display:'flex', alignItems:'center', padding:'22px 20px', borderBottom:'1.5px solid #E5E0D8', gap:14 }}>
                     <div style={{ flex:1 }}>
-                      <div style={{ fontSize:10, fontWeight:700, color:'#6B7280', marginBottom:4, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Je suis à' : 'I am at'}</div>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Je suis à' : 'I am at'}</div>
                       <select value={from} onChange={e => setFrom(e.target.value)}
-                        style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:16, fontWeight:600, color: from ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                        style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: from ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
                         {FROM_CITIES.map(c => <option key={c.value} value={c.value}>{c.value === '' ? (isFr ? 'Votre ville...' : 'Your city...') : (c[lang] || c.en)}</option>)}
                       </select>
                     </div>
-                    <button className="swap-btn" onClick={handleSwap} style={{ width:32, height:32, background:'#fff', border:'1px solid #E5E0D8', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'all .15s' }} aria-label="Swap">
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <button className="swap-btn" onClick={handleSwap} style={{ width:36, height:36, background:'#fff', border:'1px solid #E5E0D8', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'all .15s' }} aria-label="Swap">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M8 2.5V13.5M8 2.5L5 5.5M8 2.5L11 5.5M8 13.5L5 10.5M8 13.5L11 10.5" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </button>
                   </div>
-                  <div style={{ padding:'16px' }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:'#6B7280', marginBottom:4, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Ma famille est à' : 'My family is at'}</div>
+                  <div style={{ padding:'20px' }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:'#6B7280', marginBottom:6, textTransform:'uppercase', letterSpacing:'.08em' }}>{isFr ? 'Ma famille est à' : 'My family is at'}</div>
                     <select value={dest} onChange={e => setDest(e.target.value)}
-                      style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:16, fontWeight:600, color: dest ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
+                      style={{ width:'100%', border:'none', fontFamily:'DM Sans, sans-serif', fontSize:18, fontWeight:600, color: dest ? '#1F2937' : '#999', background:'transparent', cursor:'pointer', appearance:'none', outline:'none' }}>
                       {DESTINATIONS.map(d => <option key={d.value} value={d.value}>{d.value === '' ? (isFr ? 'Leur ville...' : 'Their city...') : (d[lang] || d.en)}</option>)}
                     </select>
                   </div>
