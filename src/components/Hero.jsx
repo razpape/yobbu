@@ -85,7 +85,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         .dot-btn.active { width: 20px !important; border-radius: 3px !important; }
         .mobile-search-block { display: none; }
         @media (max-width: 768px) {
-          .hero-section { background: #FDFBF7 !important; height: 100dvh; overflow-y: auto; }
+          .hero-section { background: #E8E5E0 !important; height: 100dvh; overflow-y: auto; }
           .hero-section > section { height: 100dvh; min-height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
           .hero-grid { display: none !important; }
           .stats-bar { display: none !important; }
@@ -97,7 +97,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         }
       `}</style>
 
-      <div className="hero-section" style={{ background: '#FDFBF7', color: '#1F2937' }}>
+      <div className="hero-section" style={{ background: '#E8E5E0', color: '#1F2937' }}>
         <section style={{ overflow: 'hidden', position: 'relative' }}>
           <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 900px 700px at 75% 45%, rgba(200,137,28,.10) 0%, transparent 70%)', pointerEvents:'none' }} />
 
