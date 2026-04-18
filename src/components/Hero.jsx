@@ -107,8 +107,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             {/* Tab switcher */}
             <div style={{ display:'flex', gap:10, marginBottom:32 }}>
               {[
-                { id:'send', label: isFr ? 'Envoyer' : 'Send', icon: '📍' },
-                { id:'travel', label: isFr ? 'GP' : 'GP', icon: '☎️' },
+                { id:'send', label: isFr ? 'Envoyer' : 'Send' },
+                { id:'travel', label: isFr ? 'GP' : 'GP' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -121,10 +121,9 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                     fontFamily: "'DM Sans', sans-serif",
                     boxShadow: 'none',
                     transition: 'all .2s',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   }}
                 >
-                  <span>{tab.icon}</span> {tab.label}
+                  {tab.label}
                 </button>
               ))}
             </div>
