@@ -144,6 +144,13 @@ export default function Navbar({ lang, setLang, setView, user, onSignOut, onLogi
                   >
                     {isFr ? 'Mon profil' : 'My profile'}
                   </button>
+                  <button onClick={() => { setView('sender-profile'); setAvatarMenuOpen(false) }}
+                    style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#1A1710', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', borderBottom: '1px solid #F0EDE8', transition: 'background .2s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#F9F7F5'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {isFr ? 'Mes colis' : 'My packages'}
+                  </button>
                   <button onClick={() => { onSignOut(); setAvatarMenuOpen(false) }}
                     style={{ width: '100%', padding: '11px 14px', textAlign: 'left', border: 'none', background: 'transparent', color: '#DC2626', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', transition: 'background .2s', display: 'flex', alignItems: 'center', gap: 8 }}
                     onMouseEnter={e => e.currentTarget.style.background = '#FEF2F2'}

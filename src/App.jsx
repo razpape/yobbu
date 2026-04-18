@@ -14,6 +14,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import SendPackagePage from './pages/SendPackagePage'
 import PackagesPage from './pages/PackagesPage'
+import SenderProfilePage from './pages/SenderProfilePage'
 import OnboardingPage from './pages/OnboardingPage'
 import DocumentationPage from './pages/DocumentationPage'
 import BlogPage from './pages/BlogPage'
@@ -25,7 +26,7 @@ import { useAuth } from './hooks/useAuth'
 import { supabase } from './lib/supabase'
 
 // Map URL paths → view names and back
-const PATH_TO_VIEW = { '/': 'home', '/browse': 'browse', '/send': 'send', '/packages': 'packages', '/post': 'post', '/privacy': 'privacy', '/terms': 'terms', '/login': 'phone-auth', '/profile': 'profile', '/docs': 'docs', '/blog': 'blog' }
+const PATH_TO_VIEW = { '/': 'home', '/browse': 'browse', '/send': 'send', '/packages': 'packages', '/post': 'post', '/privacy': 'privacy', '/terms': 'terms', '/login': 'phone-auth', '/profile': 'profile', '/sender-profile': 'sender-profile', '/docs': 'docs', '/blog': 'blog' }
 const VIEW_TO_PATH = Object.fromEntries(Object.entries(PATH_TO_VIEW).map(([k, v]) => [v, k]))
 
 function getInitialView() {
@@ -147,6 +148,10 @@ export default function App() {
 
         {view === 'profile' && (
           <ProfilePage user={user} lang={lang} onSignOut={handleSignOut} setView={setView} />
+        )}
+
+        {view === 'sender-profile' && (
+          <SenderProfilePage user={user} lang={lang} setView={setView} />
         )}
 
         {view === 'gp' && selectedGp && (
