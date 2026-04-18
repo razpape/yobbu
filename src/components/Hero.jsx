@@ -85,11 +85,11 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
         .dot-btn.active { width: 20px !important; border-radius: 3px !important; }
         .mobile-search-block { display: none; }
         @media (max-width: 768px) {
-          .hero-section { background: #EBF2FA !important; }
-          .hero-section > section { height: calc(100dvh - 68px); min-height: calc(100svh - 68px); display: flex; flex-direction: column; overflow: hidden; }
+          .hero-section { background: #FDFBF7 !important; height: 100dvh; overflow-y: auto; }
+          .hero-section > section { height: 100dvh; min-height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
           .hero-grid { display: none !important; }
           .stats-bar { display: none !important; }
-          .mobile-search-block { display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 32px 20px 24px; box-sizing: border-box; }
+          .mobile-search-block { display: flex; flex-direction: column; justify-content: flex-start; padding-top: 24px; flex: 1; padding: 24px 20px 32px; box-sizing: border-box; }
           .swap-btn { width: 34px; height: 34px; background: #fff; border: 1px solid #E0D8CE; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,.08); flex-shrink: 0; transition: background .15s; }
           .swap-btn:hover { background: #F7F4F0; }
           .mobile-btn-find { display: flex; align-items: center; justify-content: center; gap: 9px; background: #10B981; color: #fff; border: none; border-radius: 16px; padding: 22px 24px; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(200,137,28,.35); transition: background .2s; }
