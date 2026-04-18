@@ -47,8 +47,8 @@ export default function Footer({ lang, setView }) {
             </div>
             <p className="text-sm leading-relaxed mb-5" style={{ color: '#6B6560', maxWidth: 220 }}>
               {isFr
-                ? 'Connecter la diaspora ouest-africaine avec des voyageurs de confiance.'
-                : 'Connecting the West African diaspora with trusted travelers who carry packages home.'}
+                ? 'Connecter la diaspora ouest-africaine avec des GPs de confiance.'
+                : 'Connecting the West African diaspora with trusted GPs who carry packages home.'}
             </p>
             <div className="flex gap-2">
               {socials.map((s) => (

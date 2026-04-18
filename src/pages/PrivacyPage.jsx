@@ -36,7 +36,7 @@ export default function PrivacyPage({ lang, setView }) {
         <h2 style={s.h2}>{isFr ? '2. Données collectées' : '2. Data we collect'}</h2>
         <p style={s.p}>{isFr ? 'Nous collectons les informations suivantes :' : 'We collect the following information:'}</p>
         {[
-          isFr ? 'Nom complet — pour afficher votre profil de voyageur' : 'Full name — to display on your traveler listing',
+          isFr ? 'Nom complet — pour afficher votre profil GP' : 'Full name — to display on your GP listing',
           isFr ? 'Numéro de téléphone — pour la vérification SMS et le contact WhatsApp' : 'Phone number — for SMS verification and WhatsApp contact',
           isFr ? 'Adresse email — si vous vous connectez via Google' : 'Email address — if you sign in via Google',
           isFr ? 'Informations de voyage — destination, date, espace disponible, prix' : 'Trip details — destination, date, available space, price',
@@ -69,7 +69,7 @@ export default function PrivacyPage({ lang, setView }) {
         {[
           { name: 'Supabase', desc: isFr ? 'Stockage des données et authentification (serveurs UE/US)' : 'Data storage and authentication (EU/US servers)' },
           { name: 'Google OAuth', desc: isFr ? 'Connexion optionnelle via compte Google' : 'Optional sign-in via Google account' },
-          { name: 'WhatsApp', desc: isFr ? 'Contact direct entre expéditeurs et voyageurs' : 'Direct contact between senders and travelers' },
+          { name: 'WhatsApp', desc: isFr ? 'Contact direct entre expéditeurs et GPs' : 'Direct contact between senders and GPs' },
           { name: 'Vercel', desc: isFr ? 'Hébergement de la plateforme' : 'Platform hosting' },
         ].map(({ name, desc }) => (
           <div key={name} style={{ background:'#fff', border:'1px solid rgba(0,0,0,.06)', borderRadius:12, padding:'14px 16px', marginBottom:10, display:'flex', gap:14, alignItems:'flex-start' }}>

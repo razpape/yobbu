@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ContactModal from './ContactModal'
+import ReviewModal from './ReviewModal'
 import TrustBadges from './TrustBadges'
 import { supabase } from '../lib/supabase'
 import { ShieldCheckIcon, LockIcon, PlaneIcon, MapPinIcon, PackageIcon, CalendarIcon, DollarIcon, ShipIcon } from './Icons'
@@ -37,6 +38,50 @@ function Pill({ bg, color, border, children }) {
     }}>
       {children}
     </span>
+  )
+}
+
+// ── Review card ───────────────────────────────────────────────────────
+function ReviewCard({ review, lang }) {
+  const isFr = lang === 'fr'
+  const reviewer = review.profiles
+  const date = review.created_at
+    ? new Date(review.created_at).toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric' })
+    : null
+
+  return (
+    <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #EDEAE4', padding: '16px 20px', marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%',
+          background: '#D4E8F4', border: '1px solid #C8E6D4',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 11, fontWeight: 700, color: '#52B5D9',
+          overflow: 'hidden', flexShrink: 0,
+        }}>
+          {reviewer?.avatar_url ? (
+            <img src={reviewer.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            (reviewer?.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2)
+          )}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1710' }}>
+            {reviewer?.full_name || (isFr ? 'Utilisateur' : 'User')}
+          </div>
+          <div style={{ fontSize: 11, color: '#A09080', marginTop: 2 }}>
+            {[...Array(review.rating)].map((_, i) => '★').join('')}
+            {[...Array(5 - review.rating)].map((_, i) => '☆').join('')}
+            {date && <span style={{ marginLeft: 8 }}>{date}</span>}
+          </div>
+        </div>
+      </div>
+      {review.comment && (
+        <div style={{ fontSize: 13, color: '#3D3829', lineHeight: 1.6, fontStyle: 'italic' }}>
+          "{review.comment}"
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -176,7 +221,7 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         {trip.note && (
           <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8', background: '#FDFBF7' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
-              {isFr ? 'Note du voyageur' : 'Note'}
+              {isFr ? 'Note du GP' : 'Note'}
             </div>
             <div style={{ fontSize: 14, color: '#3D3829', lineHeight: 1.7, fontStyle: 'italic' }}>"{trip.note}"</div>
           </div>
@@ -227,6 +272,8 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   const [profile,   setProfile]   = useState(null)
   const [allTrips,  setAllTrips]  = useState(null)   // null = still loading
   const [avatarErr, setAvatarErr] = useState(false)
+  const [reviews, setReviews] = useState(null)
+  const [showReviewModal, setShowReviewModal] = useState(false)
 
   useEffect(() => {
     if (!gp?.user_id) {
@@ -275,7 +322,29 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
     return () => { cancelled = true }
   }, [gp?.user_id])
 
-  const displayName   = profile?.full_name  || gp.name    || 'Traveler'
+  // Fetch reviews for this GP
+  useEffect(() => {
+    if (!gp?.user_id) return
+    let cancelled = false
+
+    supabase
+      .from('reviews')
+      .select('id, rating, comment, created_at, sender_id, profiles:sender_id(full_name, avatar_url)')
+      .eq('gp_id', gp.user_id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[GPProfile] Failed to load reviews:', error)
+          return
+        }
+        if (!cancelled) setReviews(data || [])
+      })
+      .catch(err => console.error('[GPProfile] Unexpected error loading reviews:', err))
+
+    return () => { cancelled = true }
+  }, [gp?.user_id])
+
+  const displayName   = profile?.full_name  || gp.name    || 'GP'
   const displayAvatar = profile?.avatar_url || gp.avatar_url
   const initials      = displayName.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || 'GP'
   const joinDate      = (profile?.created_at || gp.created_at)
@@ -293,9 +362,28 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
   }
 
   const loading = allTrips === null
+  const avgRating = reviews?.length
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : null
+  const isSender = user?.role === 'sender' || user?.role === 'both'
+  const canReview = user && isSender && user.id !== gp?.user_id
 
   return (
     <div style={{ fontFamily: 'DM Sans, sans-serif', background: '#F7F5F1', minHeight: '100vh' }}>
+      {showReviewModal && (
+        <ReviewModal
+          gpId={gp.user_id}
+          gpName={displayName}
+          user={user}
+          lang={lang}
+          onClose={() => setShowReviewModal(false)}
+          onSubmitted={(newReview) => {
+            setReviews(prev => [newReview, ...(prev || [])])
+            setShowReviewModal(false)
+          }}
+        />
+      )}
+
       <style>{`
         @media (max-width: 640px) {
           .gpp-nav  { padding: 12px 16px !important; }
@@ -375,7 +463,7 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                     {isFr ? `Membre depuis ${joinDate}` : `Member since ${joinDate}`}
                   </div>
                 )}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: avgRating || canReview ? 12 : 0 }}>
                   {mergedProfile.phone_verified && (
                     <Pill bg="#F0FAF4" color="#059669" border="#B8DCC8">
                       <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2D8B4E', display: 'inline-block' }} />
@@ -393,7 +481,24 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
                       {isFr ? 'Photo vérifiée' : 'Photo verified'}
                     </Pill>
                   )}
+                  {avgRating && (
+                    <Pill bg="#FEF3C7" color="#92400E" border="#F59E0B">
+                      ★ {avgRating} <span style={{ fontWeight: 400, fontSize: 10 }}>({reviews.length})</span>
+                    </Pill>
+                  )}
                 </div>
+                {canReview && (
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    style={{
+                      padding: '8px 14px', borderRadius: 10, fontSize: 12, fontWeight: 700,
+                      background: '#FEF3C7', color: '#92400E', border: '1px solid #F59E0B',
+                      cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                    }}
+                  >
+                    {isFr ? 'Laisser un avis' : 'Leave a Review'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -441,6 +546,20 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             accent={accent}
           />
         ))}
+
+        {/* Reviews section */}
+        {reviews !== null && reviews.length > 0 && (
+          <div style={{ marginTop: 32 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 16 }}>
+              {reviews.length === 1
+                ? (isFr ? '1 avis' : '1 review')
+                : (isFr ? `${reviews.length} avis` : `${reviews.length} reviews`)}
+            </div>
+            {reviews.map(review => (
+              <ReviewCard key={review.id} review={review} lang={lang} />
+            ))}
+          </div>
+        )}
 
       </div>
     </div>

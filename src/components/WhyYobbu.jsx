@@ -39,13 +39,13 @@ export default function WhyYobbu({ lang }) {
                 },
                 {
                   icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>,
-                  title: isFr ? 'Voyageurs vérifiés' : 'Verified travelers',
+                  title: isFr ? 'GPs vérifiés' : 'Verified GPs',
                   desc: isFr ? "Chaque GP est vérifié par téléphone et ID avant d'apparaître sur Yobbu." : "Every GP is phone and ID verified before their listing goes live on Yobbu.",
                 },
                 {
                   icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
                   title: isFr ? '100% gratuit' : '100% free to use',
-                  desc: isFr ? "Aucune commission, aucun frais. Vous négociez directement avec le voyageur." : "Zero platform fees, zero commission. You agree on the price directly with the GP.",
+                  desc: isFr ? "Aucune commission, aucun frais. Vous négociez directement avec le GP." : "Zero platform fees, zero commission. You agree on the price directly with the GP.",
                 },
                 {
                   icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#52B5D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,

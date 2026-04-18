@@ -108,7 +108,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
             <div style={{ display:'flex', background:'#F0EDE8', borderRadius:14, padding:4, marginBottom:24 }}>
               {[
                 { id:'send',   label: isFr ? 'Envoyer'  : 'Send',   emoji: '📦' },
-                { id:'travel', label: isFr ? 'Voyager'  : 'Travel', emoji: '✈️' },
+                { id:'travel', label: isFr ? 'GP'  : 'GP', emoji: '✈️' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -138,8 +138,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                 </h1>
                 <p style={{ fontSize:14, color:'#6B6860', textAlign:'center', marginBottom:20, lineHeight:1.5 }}>
                   {isFr
-                    ? 'Trouvez un voyageur de confiance. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
-                    : 'Find a trusted traveler heading your way. Contact them on WhatsApp. Your family gets it in days.'}
+                    ? 'Trouvez un GP de confiance. Contactez-le sur WhatsApp. Votre famille reçoit le colis en quelques jours.'
+                    : 'Find a trusted GP heading your way. Contact them on WhatsApp. Your family gets it in days.'}
                 </p>
 
                 {/* Origin / Destination card */}
@@ -172,7 +172,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
                     <circle cx="7.5" cy="7.5" r="5.5" stroke="white" strokeWidth="1.8"/>
                     <path d="M11.5 11.5L15.5 15.5" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
                   </svg>
-                  {isFr ? 'Voir les voyageurs disponibles' : 'Find available travelers'}
+                  {isFr ? 'Voir les GPs disponibles' : 'Find available GPs'}
                 </button>
 
                 <div style={{ display:'flex', gap:10, marginTop:16, marginBottom:10 }}>
@@ -190,7 +190,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
 
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:10, fontSize:13, color:'#8A8070' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  {isFr ? 'Tous les voyageurs sont vérifiés' : 'All travelers are phone verified'}
+                  {isFr ? 'Tous les GPs sont vérifiés' : 'All GPs are phone verified'}
                 </div>
               </>
             )}
@@ -281,7 +281,7 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               {/* 3-step explainer — answers "what is this?" instantly */}
               <div className="anim-3" style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:32 }}>
                 {[
-                  { n:'1', text: isFr ? 'Trouvez un voyageur qui part vers votre pays' : 'Find a traveler heading to your country' },
+                  { n:'1', text: isFr ? 'Trouvez un GP qui part vers votre pays' : 'Find a GP heading to your country' },
                   { n:'2', text: isFr ? 'Contactez-les sur WhatsApp — négociez le prix' : 'Contact them on WhatsApp — agree on a price' },
                   { n:'3', text: isFr ? 'Votre famille reçoit le colis en quelques jours' : 'Your family receives it in days, not weeks' },
                 ].map(({ n, text }) => (
@@ -335,8 +335,8 @@ export default function Hero({ lang, setView, onSearch, onSend }) {
               <div className="anim-5 hero-trust" style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'#8A8070' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 {isFr
-                  ? <span>Chaque voyageur est <strong style={{ color:'#2D8B4E', fontWeight:600 }}>vérifié par téléphone</strong> avant d'apparaître sur Yobbu.</span>
-                  : <span>Every traveler is <strong style={{ color:'#2D8B4E', fontWeight:600 }}>phone verified</strong> before appearing on Yobbu.</span>}
+                  ? <span>Chaque GP est <strong style={{ color:'#2D8B4E', fontWeight:600 }}>vérifié par téléphone</strong> avant d'apparaître sur Yobbu.</span>
+                  : <span>Every GP is <strong style={{ color:'#2D8B4E', fontWeight:600 }}>phone verified</strong> before appearing on Yobbu.</span>}
               </div>
             </div>
 

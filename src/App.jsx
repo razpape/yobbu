@@ -152,7 +152,10 @@ export default function App() {
         )}
 
         {view === 'onboarding' && (
-          <OnboardingPage user={user} lang={lang} onComplete={() => setView('profile')} onBrowse={() => setView('browse')} />
+          <OnboardingPage user={user} lang={lang} onComplete={async () => {
+            const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+            setView((data?.role === 'sender') ? 'browse' : 'profile')
+          }} onBrowse={() => setView('browse')} />
         )}
 
         {view === 'privacy' && (

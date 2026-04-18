@@ -3,19 +3,19 @@ import { useState } from 'react'
 const FAQS = {
   en: [
     { q: 'What is a GP?', a: 'A GP (from the French "Good Person" or informal "GP") is someone who travels between countries and carries packages for others — usually for a small fee per kg. It\'s a long-standing tradition in the West African diaspora community.' },
-    { q: 'Is Yobbu free to use?', a: 'Yes — Yobbu is completely free. We don\'t charge any platform fees or commissions. You negotiate the price directly with the traveler and pay them however you agree.' },
-    { q: 'How do I know the traveler is trustworthy?', a: 'Every GP on Yobbu is phone-verified before their listing goes live. ID-verified travelers carry a shield badge on their profile. You can also read reviews from other community members who have used them before.' },
+    { q: 'Is Yobbu free to use?', a: 'Yes — Yobbu is completely free. We don\'t charge any platform fees or commissions. You negotiate the price directly with the GP and pay them however you agree.' },
+    { q: 'How do I know the GP is trustworthy?', a: 'Every GP on Yobbu is phone-verified before their listing goes live. ID-verified GPs carry a shield badge on their profile. You can also read reviews from other community members who have used them before.' },
     { q: 'What can I send?', a: 'Most everyday items are fine — clothes, food, electronics, medicine, documents. You cannot send liquids over 100ml, flammable items, or anything prohibited by customs regulations in the destination country.' },
-    { q: 'How do I contact a traveler?', a: 'Once you find a GP you like, click the Contact button on their profile. This opens a WhatsApp conversation directly with them. You discuss the details, agree on a price, and arrange a pickup — all over WhatsApp.' },
-    { q: 'What happens if my package doesn\'t arrive?', a: 'Yobbu connects senders and travelers — we are not a shipping company and cannot guarantee delivery. This is why we encourage you to only use verified travelers with good reviews, and to always confirm delivery with the recipient.' },
+    { q: 'How do I contact a GP?', a: 'Once you find a GP you like, click the Contact button on their profile. This opens a WhatsApp conversation directly with them. You discuss the details, agree on a price, and arrange a pickup — all over WhatsApp.' },
+    { q: 'What happens if my package doesn\'t arrive?', a: 'Yobbu connects senders and GPs — we are not a shipping company and cannot guarantee delivery. This is why we encourage you to only use verified GPs with good reviews, and to always confirm delivery with the recipient.' },
   ],
   fr: [
     { q: 'Qu\'est-ce qu\'un GP?', a: 'Un GP est quelqu\'un qui voyage entre pays et transporte des colis pour d\'autres — généralement contre une petite somme par kg. C\'est une longue tradition dans la communauté de la diaspora ouest-africaine.' },
-    { q: 'Yobbu est-il gratuit?', a: 'Oui — Yobbu est entièrement gratuit. Nous ne facturons aucune commission. Vous négociez le prix directement avec le voyageur et le payez comme vous l\'entendez.' },
-    { q: 'Comment savoir si le voyageur est fiable?', a: 'Chaque GP sur Yobbu est vérifié par téléphone avant que son annonce soit publiée. Les GPs vérifiés par ID portent un badge bouclier sur leur profil. Vous pouvez aussi lire les avis d\'autres membres de la communauté.' },
+    { q: 'Yobbu est-il gratuit?', a: 'Oui — Yobbu est entièrement gratuit. Nous ne facturons aucune commission. Vous négociez le prix directement avec le GP et le payez comme vous l\'entendez.' },
+    { q: 'Comment savoir si le GP est fiable?', a: 'Chaque GP sur Yobbu est vérifié par téléphone avant que son annonce soit publiée. Les GPs vérifiés par ID portent un badge bouclier sur leur profil. Vous pouvez aussi lire les avis d\'autres membres de la communauté.' },
     { q: 'Que puis-je envoyer?', a: 'La plupart des articles courants sont acceptés — vêtements, nourriture, électronique, médicaments, documents. Vous ne pouvez pas envoyer de liquides de plus de 100ml, d\'articles inflammables, ou tout ce qui est interdit par les douanes.' },
-    { q: 'Comment contacter un voyageur?', a: 'Une fois que vous avez trouvé un GP, cliquez sur le bouton Contacter de son profil. Cela ouvre une conversation WhatsApp directement avec lui. Vous discutez des détails et convenez d\'un prix.' },
-    { q: 'Que se passe-t-il si mon colis n\'arrive pas?', a: 'Yobbu met en relation les expéditeurs et les voyageurs — nous ne sommes pas une société de transport. C\'est pourquoi nous vous encourageons à utiliser uniquement des voyageurs vérifiés avec de bons avis.' },
+    { q: 'Comment contacter un GP?', a: 'Une fois que vous avez trouvé un GP, cliquez sur le bouton Contacter de son profil. Cela ouvre une conversation WhatsApp directement avec lui. Vous discutez des détails et convenez d\'un prix.' },
+    { q: 'Que se passe-t-il si mon colis n\'arrive pas?', a: 'Yobbu met en relation les expéditeurs et les GPs — nous ne sommes pas une société de transport. C\'est pourquoi nous vous encourageons à utiliser uniquement des GPs vérifiés avec de bons avis.' },
   ]
 }
 

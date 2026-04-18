@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase'
 import { CITIES } from '../utils/constants'
 import { PackageIcon, PlaneIcon } from '../components/Icons'
 
+// Force fresh build
+
 export default function SendPackagePage({ lang, setView }) {
   const isFr = lang === 'fr'
   const [step, setStep] = useState(1)
@@ -85,8 +87,8 @@ export default function SendPackagePage({ lang, setView }) {
           </div>
           <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.7, marginBottom: 28 }}>
             {isFr
-              ? `Votre demande pour ${form.from_city} → ${form.to_city} est en ligne. Les voyageurs vérifiés vous contacteront bientôt sur WhatsApp.`
-              : `Your request for ${form.from_city} → ${form.to_city} is live. Verified travelers will reach out to you on WhatsApp.`}
+              ? `Votre demande pour ${form.from_city} → ${form.to_city} est en ligne. Les GPs vérifiés vous contacteront bientôt sur WhatsApp.`
+              : `Your request for ${form.from_city} → ${form.to_city} is live. Verified GPs will reach out to you on WhatsApp.`}
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
             <button
@@ -119,14 +121,14 @@ export default function SendPackagePage({ lang, setView }) {
         </h1>
         <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65 }}>
           {isFr
-            ? 'Postez votre demande et les voyageurs sur votre route vous contacteront directement sur WhatsApp.'
-            : 'Post your request and travelers on your route will contact you directly on WhatsApp.'}
+            ? 'Postez votre demande et les GPs sur votre route vous contacteront directement sur WhatsApp.'
+            : 'Post your request and GPs on your route will contact you directly on WhatsApp.'}
         </p>
       </div>
 
       {error && (
         <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', padding: 12, borderRadius: 10, marginBottom: 20, fontSize: 13 }}>
-          {error}
+          ⚠️ {error}
         </div>
       )}
 
@@ -159,6 +161,18 @@ export default function SendPackagePage({ lang, setView }) {
               />
             </div>
           </div>
+        </div>
+
+        {/* Privacy info box */}
+        <div style={{ display: 'flex', gap: 10, background: '#F0FAF4', border: '1px solid #C8E6D4', borderRadius: 10, padding: '12px 14px', marginBottom: 20 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D8B4E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span style={{ fontSize: 12, color: '#2D6B46', lineHeight: 1.55 }}>
+            {isFr
+              ? 'Votre numéro WhatsApp sera partagé avec les GPs vérifiés intéressés. Jamais publiquement.'
+              : 'Your WhatsApp will be shared only with verified GPs who express interest. Never publicly.'}
+          </span>
         </div>
 
         <div style={{ background: '#fff', border: '1.5px solid #EDEAE4', borderRadius: 14, padding: '20px', marginBottom: 16 }}>

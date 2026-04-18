@@ -109,7 +109,7 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
         last_name:         trimmedLast,
         full_name:         `${trimmedFirst} ${trimmedLast}`,
         country_of_origin: countryOfOrigin || null,
-        role:              'traveler',
+        role:              role,
       }
       if (avatarBlob) {
         setUploading(true)
@@ -183,6 +183,35 @@ export default function OnboardingPage({ user, lang, onComplete, onBrowse }) {
           <p style={{ fontSize: 14, color: '#8A8070', lineHeight: 1.65, marginBottom: 28 }}>
             {isFr ? 'Quelques infos rapides pour démarrer.' : 'Just a few quick details to get started.'}
           </p>
+
+          {/* Role picker */}
+          <div style={{ marginBottom: 32 }}>
+            <label style={lbl}>{isFr ? 'Que faites-vous ? *' : 'What do you do? *'}</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
+              {[
+                { val: 'traveler', label: isFr ? 'Je suis Voyageur' : 'I\'m a Traveler', emoji: '✈️' },
+                { val: 'sender', label: isFr ? 'Je suis Expéditeur' : 'I\'m a Sender', emoji: '📦' },
+                { val: 'both', label: isFr ? 'Les deux' : 'Both', emoji: '🤝' },
+              ].map(opt => (
+                <button
+                  key={opt.val}
+                  type="button"
+                  onClick={() => setRole(opt.val)}
+                  style={{
+                    padding: '16px 12px', borderRadius: 12,
+                    border: `2px solid ${role === opt.val ? '#52B5D9' : '#E5E1DB'}`,
+                    background: role === opt.val ? '#D4E8F4' : '#fff',
+                    fontSize: 13, fontWeight: 700, color: role === opt.val ? '#52B5D9' : '#3D3829',
+                    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+                    transition: 'all .15s',
+                  }}
+                >
+                  <div style={{ fontSize: 18, marginBottom: 6 }}>{opt.emoji}</div>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
             {/* Photo */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>

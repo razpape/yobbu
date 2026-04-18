@@ -123,7 +123,30 @@ export function useTrips() {
       profileCacheRef.current = profileMap
     }
 
-    setTrips(data.map(row => rowToTrip(row, profileMap[row.user_id] || {})))
+    // Batch-aggregate reviews per GP
+    let reviewMap = {}
+    if (userIds.length) {
+      const { data: reviewAggs } = await supabase
+        .from('reviews')
+        .select('gp_id, rating')
+        .in('gp_id', userIds)
+
+      for (const r of (reviewAggs || [])) {
+        if (!reviewMap[r.gp_id]) reviewMap[r.gp_id] = { sum: 0, count: 0 }
+        reviewMap[r.gp_id].sum += r.rating
+        reviewMap[r.gp_id].count++
+      }
+    }
+
+    setTrips(data.map(row => {
+      const trip = rowToTrip(row, profileMap[row.user_id] || {})
+      const agg = reviewMap[row.user_id]
+      if (agg?.count) {
+        trip.avg_rating = (agg.sum / agg.count).toFixed(1)
+        trip.review_count = agg.count
+      }
+      return trip
+    }))
     setLoading(false)
   }
 

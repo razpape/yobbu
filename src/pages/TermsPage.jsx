@@ -31,13 +31,13 @@ export default function TermsPage({ lang, setView }) {
           </div>
           <ul style={{ margin: 0, padding: '0 0 0 18px' }}>
             {(isFr ? [
-              'Yobbu est une place de marché. Nous mettons en relation des expéditeurs et des voyageurs (GPs). Nous ne sommes pas partie à la transaction.',
+              'Yobbu est une place de marché. Nous mettons en relation des expéditeurs et des GPs. Nous ne sommes pas partie à la transaction.',
               'Yobbu ne touche pas l\'argent. Le paiement se fait directement entre l\'expéditeur et le GP.',
               'Yobbu n\'est pas responsable des colis perdus, endommagés ou confisqués.',
               'Vous devez respecter les lois douanières et les règles de l\'aviation de votre pays.',
               'Les articles illégaux ou dangereux sont strictement interdits.',
             ] : [
-              'Yobbu is a marketplace. We connect senders and travelers (GPs). We are not a party to any transaction.',
+              'Yobbu is a marketplace. We connect senders and GPs. We are not a party to any transaction.',
               'Yobbu never handles money. Payment is agreed directly between the sender and the GP.',
               'Yobbu is not responsible for lost, damaged, or seized packages.',
               'You must comply with the customs laws and aviation rules of your country.',
@@ -51,8 +51,8 @@ export default function TermsPage({ lang, setView }) {
         <h2 style={s.h2}>{isFr ? '1. Ce qu\'est Yobbu' : '1. What Yobbu is'}</h2>
         <p style={s.p}>
           {isFr
-            ? "Yobbu est une plateforme en ligne qui permet aux membres de la diaspora africaine de trouver des voyageurs (GPs) disposés à transporter des colis vers l'Afrique ou l'Europe. Yobbu agit uniquement comme intermédiaire de mise en relation — comme une petite annonce. Nous ne sommes pas transporteurs, nous ne garantissons aucun service et nous ne sommes pas parties aux accords conclus entre expéditeurs et GPs."
-            : "Yobbu is an online platform that allows members of the African diaspora to find travelers (GPs) willing to carry packages to Africa or Europe. Yobbu acts solely as a connection marketplace — like a classifieds board. We are not a carrier, we do not guarantee any service, and we are not a party to any agreement made between senders and GPs."}
+            ? "Yobbu est une plateforme en ligne qui permet aux membres de la diaspora africaine de trouver des GPs disposés à transporter des colis vers l'Afrique ou l'Europe. Yobbu agit uniquement comme intermédiaire de mise en relation — comme une petite annonce. Nous ne sommes pas transporteurs, nous ne garantissons aucun service et nous ne sommes pas parties aux accords conclus entre expéditeurs et GPs."
+            : "Yobbu is an online platform that allows members of the African diaspora to find GPs willing to carry packages to Africa or Europe. Yobbu acts solely as a connection marketplace — like a classifieds board. We are not a carrier, we do not guarantee any service, and we are not a party to any agreement made between senders and GPs."}
         </p>
 
         <h2 style={s.h2}>{isFr ? '2. Responsabilité des utilisateurs' : '2. User responsibility'}</h2>

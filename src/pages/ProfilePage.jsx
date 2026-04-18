@@ -53,7 +53,8 @@ const T = {
 
 export default function ProfilePage({ user, lang: initialLang, onSignOut, setView }) {
   const [lang, setLang]               = useState(initialLang || 'en')
-  const [section, setSection]         = useState('trips')
+  const isSender = user?.role === 'sender' || user?.role === 'both'
+  const [section, setSection]         = useState(isSender ? 'requests' : 'trips')
   const [avatarUrl, setAvatarUrl]     = useState(null)
   const [profileName,    setProfileName]    = useState('')
   const [photoVerified,  setPhotoVerified]  = useState(false)
@@ -266,11 +267,19 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <PlaneIcon size={40} color="#E8DDD0" />
           </div>
-          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{t.noTrips}</div>
-          <button onClick={() => setView('post')}
-            style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-            {t.postNew}
-          </button>
+          <div style={{ fontSize: 14, color: '#8A8070', marginBottom: 16 }}>{isSender ? (isFr ? 'Parcourez les voyageurs disponibles' : 'Browse available travelers') : t.noTrips}</div>
+          {!isSender && (
+            <button onClick={() => setView('post')}
+              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              {t.postNew}
+            </button>
+          )}
+          {isSender && (
+            <button onClick={() => setView('browse')}
+              style={{ background: '#52B5D9', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: 12, fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              {isFr ? 'Parcourir' : 'Browse'}
+            </button>
+          )}
         </div>
       )}
 
@@ -803,7 +812,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={96} onUpload={handleAvatarUpload} />
         </div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 16, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: '#1A1710', marginBottom: 8, fontFamily: 'DM Serif Display, serif' }}>{fullName}</div>
+        {user?.role && (
+          <div style={{ display: 'inline-block', padding: '4px 12px', background: '#D4E8F4', color: '#52B5D9', fontSize: 11, fontWeight: 700, borderRadius: 12, marginBottom: 16 }}>
+            {user.role === 'traveler' ? (isFr ? 'Voyageur' : 'Traveler') : user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Les deux' : 'Both')}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#F7F4EF', borderRadius: 20, padding: '6px 12px' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8070" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -844,7 +858,12 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
               <AvatarUpload user={user} avatarUrl={avatarUrl} initials={initials} size={60} onUpload={handleAvatarUpload} />
             </div>
-            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1A1710', marginBottom: 2 }}>{fullName}</div>
+            <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 16, color: '#1A1710', marginBottom: 6 }}>{fullName}</div>
+            {user?.role && (
+              <div style={{ display: 'inline-block', padding: '3px 10px', background: '#D4E8F4', color: '#52B5D9', fontSize: 9, fontWeight: 700, borderRadius: 10, marginBottom: 8 }}>
+                {user.role === 'traveler' ? (isFr ? 'Voyageur' : 'Traveler') : user.role === 'sender' ? (isFr ? 'Expéditeur' : 'Sender') : (isFr ? 'Les deux' : 'Both')}
+              </div>
+            )}
             <div style={{ fontSize: 11, color: '#8A8070' }}>{contact}</div>
           </div>
 
@@ -882,11 +901,15 @@ export default function ProfilePage({ user, lang: initialLang, onSignOut, setVie
         <div>
           {/* Stats row — desktop only (mobile has it in hero) */}
           <div className="pf-desktop-header" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, margin: '12px 0' }}>
-            {[
+            {(isSender ? [
+              { n: requests.length,                           l: isFr ? 'Total' : 'Total' },
+              { n: requests.filter(r => r.status === 'open').length, l: isFr ? 'Ouvertes' : 'Open', color: '#52B5D9' },
+              { n: requests.filter(r => r.status === 'closed').length, l: isFr ? 'Fermées' : 'Closed', color: '#8A8070' },
+            ] : [
               { n: trips.length,                             l: t.st1 },
               { n: trips.filter(tr => tr.approved).length,  l: t.st2, color: '#2D8B4E' },
               { n: trips.filter(tr => tr.suspended).length, l: t.st3, color: '#DC2626' },
-            ].map(({ n, l, color }) => (
+            ]).map(({ n, l, color }) => (
               <div key={l} style={{ background: '#fff', border: '1px solid rgba(0,0,0,.06)', borderRadius: 14, padding: '14px 18px', textAlign: 'center' }}>
                 <div style={{ fontFamily: 'DM Serif Display, serif', fontSize: 26, color: color || '#52B5D9', lineHeight: 1 }}>{n}</div>
                 <div style={{ fontSize: 11, color: '#8A8070', marginTop: 4 }}>{l}</div>

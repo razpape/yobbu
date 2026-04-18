@@ -191,7 +191,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {/* Name */}
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {gp.name || 'Traveler'}
+              {gp.name || 'GP'}
             </div>
             {badge && (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, padding: '2px 8px', background: '#D7E8DC', borderRadius: 12, border: '1px solid #4A9B5F' }}>
@@ -203,7 +203,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             )}
             {!badge && (
               <div style={{ fontSize: 11, color: verified ? '#16A34A' : '#9CA3AF', fontWeight: verified ? 600 : 400, marginTop: 4 }}>
-                {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'Voyageur' : 'Traveler')}
+                {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'GP' : 'GP')}
               </div>
             )}
           </div>
@@ -266,6 +266,14 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {price && !disabled && (
             <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginTop: 8 }}>
               <span style={{ color: '#52B5D9' }}>{price}</span><span style={{ color: '#4A9B5F' }}>/kg</span>
+            </div>
+          )}
+
+          {/* Rating */}
+          {gp.avg_rating && (
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', textAlign: 'center' }}>
+              ★ {gp.avg_rating}
+              <span style={{ fontWeight: 400, color: '#A09080', fontSize: 11 }}> ({gp.review_count})</span>
             </div>
           )}
 

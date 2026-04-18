@@ -156,8 +156,8 @@ function ProfileStep({ isFr, phone, onComplete }) {
       </p>
       <p style={{ fontSize: 13, color: '#8A8070', marginBottom: 24, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
         {isFr
-          ? 'Les expéditeurs et voyageurs vous contacteront via WhatsApp. Pré-rempli avec votre numéro de connexion — changez-le si nécessaire.'
-          : 'Senders and travelers will contact you via WhatsApp. Pre-filled with your sign-in number — change it if needed.'}
+          ? 'Les expéditeurs et GPs vous contacteront via WhatsApp. Pré-rempli avec votre numéro de connexion — changez-le si nécessaire.'
+          : 'Senders and GPs will contact you via WhatsApp. Pre-filled with your sign-in number — change it if needed.'}
       </p>
 
       <div style={{ marginBottom: 24 }}>
