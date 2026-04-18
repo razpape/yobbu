@@ -236,23 +236,42 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
                 {isFr ? 'Contact non disponible' : 'Contact unavailable'}
               </div>
             </div>
+          ) : !user ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FEF3C7', borderRadius: 10, padding: '12px 14px', marginBottom: 14, border: '1px solid #FCD34D' }}>
+                <LockIcon size={14} color="#D97706" />
+                <span style={{ fontSize: 13, color: '#D97706', fontWeight: 600 }}>
+                  {isFr ? 'Connectez-vous pour contacter' : 'Sign up to contact this traveler'}
+                </span>
+              </div>
+              <button onClick={onLoginRequired} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                width: '100%', padding: '15px', borderRadius: 14, border: 'none',
+                background: '#F59E0B', color: '#fff', fontSize: 16, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                boxShadow: '0 4px 16px rgba(245,158,11,.25)',
+                transition: 'background .2s'
+              }}
+              onMouseEnter={e => e.target.style.background = '#D97706'}
+              onMouseLeave={e => e.target.style.background = '#F59E0B'}
+              >
+                <LockIcon size={18} color="#fff" />
+                {isFr ? 'Se connecter pour contacter' : 'Sign in to message'}
+              </button>
+            </>
           ) : (
             <>
-              {!user && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#D1F4E7', borderRadius: 10, padding: '10px 14px', marginBottom: 12, border: '1px solid #D4A574' }}>
-                  <LockIcon size={13} color="#10B981" />
-                  <span style={{ fontSize: 13, color: '#10B981', fontWeight: 500 }}>
-                    {isFr ? 'Connectez-vous pour voir les coordonnées' : 'Sign in to see contact details'}
-                  </span>
-                </div>
-              )}
               <button onClick={handleContact} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 width: '100%', padding: '15px', borderRadius: 14, border: 'none',
                 background: '#25D366', color: '#fff', fontSize: 16, fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
                 boxShadow: '0 4px 16px rgba(37,211,102,.25)',
-              }}>
+                transition: 'background .2s'
+              }}
+              onMouseEnter={e => e.target.style.background = '#1EAA51'}
+              onMouseLeave={e => e.target.style.background = '#25D366'}
+              >
                 <WhatsAppIcon size={20} />
                 {isFr ? 'Contacter sur WhatsApp' : 'Message on WhatsApp'}
               </button>
