@@ -87,7 +87,13 @@ export default function App() {
   // Once useAuth finishes loading, check if we need to navigate to onboarding or profile
   useEffect(() => {
     if (!authLoading && user && view === 'home') {
-      setView(user.onboarding_complete ? 'profile' : 'onboarding', true)
+      if (!user.onboarding_complete) {
+        setView('onboarding', true)
+      } else {
+        // Route to appropriate profile based on user role
+        const targetView = user.role === 'sender' ? 'sender-profile' : 'profile'
+        setView(targetView, true)
+      }
     }
   }, [authLoading, user, view])
 
@@ -96,8 +102,13 @@ export default function App() {
   const handlePhoneAuthComplete = async (completedUser) => {
     const uid = completedUser?.id || user?.id
     if (!uid) { setView('home'); return }
-    const { data } = await supabase.from('profiles').select('onboarding_complete').eq('id', uid).single()
-    setView(data?.onboarding_complete ? 'profile' : 'onboarding')
+    const { data } = await supabase.from('profiles').select('onboarding_complete, role').eq('id', uid).single()
+    if (!data?.onboarding_complete) {
+      setView('onboarding')
+    } else {
+      const targetView = data.role === 'sender' ? 'sender-profile' : 'profile'
+      setView(targetView)
+    }
   }
 
   const handleSignOut = async () => {
@@ -161,7 +172,7 @@ export default function App() {
         {view === 'onboarding' && (
           <OnboardingPage user={user} lang={lang} onComplete={async () => {
             const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-            setView((data?.role === 'sender') ? 'browse' : 'profile')
+            setView((data?.role === 'sender') ? 'sender-profile' : 'profile')
           }} onBrowse={() => setView('browse')} />
         )}
 
