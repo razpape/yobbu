@@ -103,29 +103,29 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         onClick={() => !disabled && onViewProfile?.(gp)}
         style={{
           background: '#fff',
-          border: '1px solid #E8E4DE',
-          borderRadius: 16,
-          padding: '16px 14px',
+          border: 'none',
+          borderRadius: 12,
+          padding: '16px',
           fontFamily: "'DM Sans', sans-serif",
           cursor: disabled ? 'default' : 'pointer',
           opacity: disabled ? 0.5 : 1,
           transition: 'all .2s',
         }}
-        onMouseEnter={e => !disabled && (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.08)')}
+        onMouseEnter={e => !disabled && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)')}
         onMouseLeave={e => !disabled && (e.currentTarget.style.boxShadow = 'none')}
       >
-        {/* Header: Avatar + Name + Rating + Tag */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
+        {/* Header: Avatar + Name/Rating + Tag */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
           {/* Avatar */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: '50%',
-              background: `linear-gradient(135deg, ${accent}22, ${accent}08)`,
-              border: `1.5px solid ${accent}25`,
+              width: 52, height: 52, borderRadius: '50%',
+              background: gp.avatar_url && !avatarErr ? 'transparent' : '#1B5E54',
+              border: 'none',
               overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: "'DM Serif Display', serif",
-              fontSize: 14, fontWeight: 700, color: accent,
+              fontSize: 18, fontWeight: 700, color: '#fff',
             }}>
               {gp.avatar_url && !avatarErr
                 ? <img src={gp.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setAvatarErr(true)} />
@@ -133,11 +133,11 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             </div>
             {verified && (
               <div style={{
-                position: 'absolute', bottom: -2, right: -2,
-                width: 18, height: 18, borderRadius: '50%',
-                background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.12)',
+                position: 'absolute', bottom: 0, right: 0,
+                width: 20, height: 20, borderRadius: '50%',
+                background: '#fff', border: '2px solid #1B5E54',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 10,
+                fontSize: 12, fontWeight: 700, color: '#1B5E54',
               }}>
                 ✓
               </div>
@@ -146,12 +146,15 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
           {/* Name + Rating */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', lineHeight: 1.3 }}>
-              {gp.name || 'GP'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2937' }}>
+                {gp.name || 'GP'}
+              </div>
+              {verified && <span style={{ fontSize: 12 }}>✓</span>}
             </div>
             {gp.avg_rating && (
-              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                ★ {gp.avg_rating} • {gp.review_count || 0} {isFr ? 'voyages' : 'trips'}
+              <div style={{ fontSize: 12, color: '#6B7280' }}>
+                {gp.avg_rating}★ • {gp.review_count || 0} {isFr ? 'voyages' : 'trips'}
               </div>
             )}
           </div>
@@ -159,14 +162,15 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
           {/* Availability tag */}
           {departDate && (
             <div style={{
-              background: countdown ? '#A85A3A' : urgency.c,
-              color: '#fff',
-              padding: '4px 10px',
-              borderRadius: 12,
-              fontSize: countdown ? 9 : 10,
+              background: '#D1F4E7',
+              color: '#1B5E54',
+              padding: '6px 12px',
+              borderRadius: 8,
+              fontSize: 11,
               fontWeight: 700,
               whiteSpace: 'nowrap',
               flexShrink: 0,
+              textAlign: 'center',
             }}>
               {countdown ? `${countdown.hours}h ${countdown.mins}m` : urgency.label}
             </div>
@@ -174,40 +178,40 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         </div>
 
         {/* Route: From → To */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, paddingLeft: 2 }}>
-          <div style={{ textAlign: 'center', minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#1F2937', letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingLeft: 2 }}>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#1F2937', letterSpacing: '-.4px', fontFamily: "'DM Serif Display', serif", lineHeight: 1 }}>
               {from}
             </div>
-            {gp.pickup_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{gp.pickup_area}</div>}
+            {gp.pickup_area && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{gp.pickup_area}</div>}
           </div>
 
-          <div style={{ fontSize: 12, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+          <div style={{ fontSize: 14, color: '#D4C4A8', margin: '0 12px' }}>→</div>
 
-          <div style={{ textAlign: 'center', minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: accent, letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: accent, letterSpacing: '-.4px', fontFamily: "'DM Serif Display', serif", lineHeight: 1 }}>
               {to}
             </div>
-            {gp.dropoff_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{gp.dropoff_area}</div>}
+            {gp.dropoff_area && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{gp.dropoff_area}</div>}
           </div>
         </div>
 
         {/* Info row: Departure + Price */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 12, marginBottom: 12, borderBottom: '1px solid #F0EDE8' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14, paddingBottom: 14, borderBottom: '1px solid #F0EDE8' }}>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 2 }}>
               {isFr ? 'Départ' : 'Depart'}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#1F2937', marginTop: 2 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>
               {departDate}
             </div>
           </div>
           {price && (
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 2 }}>
                 {isFr ? 'Tarif' : 'Price'}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#10B981', marginTop: 2 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#10B981' }}>
                 {price}<span style={{ fontSize: 10, color: '#6B7280' }}>/kg</span>
               </div>
             </div>
@@ -216,7 +220,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
 
         {/* CTA Button */}
         {disabled ? (
-          <div style={{ width: '100%', padding: '10px', textAlign: 'center', borderRadius: 10, fontSize: 12, fontWeight: 700, background: isFull ? '#EDD8C4' : '#F3F4F6', color: isFull ? '#8B4A2E' : '#6B7280' }}>
+          <div style={{ width: '100%', padding: '12px 16px', textAlign: 'center', borderRadius: 8, fontSize: 13, fontWeight: 700, background: isFull ? '#EDD8C4' : '#F3F4F6', color: isFull ? '#8B4A2E' : '#6B7280', marginBottom: 6 }}>
             {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
           </div>
         ) : (
@@ -224,19 +228,27 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             onClick={handleContact}
             style={{
               width: '100%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              padding: '10px 14px', borderRadius: 10, border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              padding: '12px 16px', borderRadius: 8, border: 'none',
               background: '#25D366', color: '#fff',
-              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
               fontFamily: "'DM Sans', sans-serif",
               transition: 'opacity .15s',
+              marginBottom: 6,
             }}
             onMouseEnter={e => e.currentTarget.style.opacity = '.85'}
             onMouseLeave={e => e.currentTarget.style.opacity = '1'}
           >
-            <WhatsAppIcon size={14} />
-            {isFr ? 'WhatsApp' : 'WhatsApp'}
+            <WhatsAppIcon size={16} />
+            WhatsApp
           </button>
+        )}
+
+        {/* Published date */}
+        {(gp.created_at || gp.approved_at) && (
+          <div style={{ fontSize: 10, color: '#B5AFA8', textAlign: 'right' }}>
+            {isFr ? 'publié le ' : 'published '}{formatPostDate(gp.approved_at || gp.created_at, lang === 'fr' ? 'fr-FR' : 'en-US')}
+          </div>
         )}
       </div>
     </>
