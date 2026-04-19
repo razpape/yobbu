@@ -86,14 +86,12 @@ function ReviewCard({ review, lang }) {
 }
 
 // ── Single trip detail card ───────────────────────────────────────────────────
-function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
+function TripDetailCard({ trip, lang, user, onLoginRequired, accent, gpName, gpAvatar, gpInitials, gpRating, gpTripsCount }) {
   const [showModal, setShowModal] = useState(false)
   const isFr       = lang === 'fr'
   const price      = formatPrice(trip.price)
-  const isGroupage = trip.service_type === 'groupage'
 
-  // Normalise field names — rows from Supabase have from_city/to_city;
-  // rows already through rowToTrip have from/to.
+  // Normalise field names
   const fromCity = trip.from_city || trip.from || '—'
   const toCity   = trip.to_city   || trip.to   || '—'
   const phone    = trip.phone?.replace(/\D/g, '') || ''
@@ -108,6 +106,15 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
     setShowModal(false)
   }
 
+  const days = trip.date ? Math.ceil((new Date(trip.date) - new Date().setHours(0,0,0,0)) / 86400000) : null
+  const urgency = (() => {
+    if (days === 0) return { label: isFr ? "Aujourd'hui" : 'Today',       c: '#059669' }
+    if (days === 1) return { label: isFr ? 'Demain'      : 'Tomorrow',    c: '#10B981' }
+    if (days <= 6)  return { label: isFr ? 'Cette sem.'  : 'This week',   c: '#2563EB' }
+    if (days <= 30) return { label: isFr ? 'Ce mois'     : 'This month',  c: '#7C3AED' }
+    return { label: isFr ? 'Prochain mois' : 'Next month', c: '#6366F1' }
+  })()
+
   return (
     <>
       {showModal && (
@@ -119,165 +126,143 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent }) {
         />
       )}
 
-      <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #EDEAE4', overflow: 'hidden', marginBottom: 14 }}>
+      <div style={{
+        background: '#fff',
+        border: '1px solid #E8E4DE',
+        borderRadius: 12,
+        padding: '14px',
+        marginBottom: 10,
+        transition: 'all .2s',
+      }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.05)'}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+      >
+        {/* Header: Avatar + Name + Rating + Tag */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
+          {/* Avatar */}
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%',
+            background: `linear-gradient(135deg, ${accent}22, ${accent}08)`,
+            border: `1.5px solid ${accent}25`,
+            overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'DM Serif Display', serif",
+            fontSize: 13, fontWeight: 700, color: accent,
+            flexShrink: 0,
+          }}>
+            {gpAvatar
+              ? <img src={gpAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : gpInitials}
+          </div>
 
-        {/* Service type tag */}
-        <div style={{ padding: '18px 24px 0' }}>
-          {isGroupage ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#EFF6FF', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>
-              <ShipIcon size={13} color="#1d4ed8" />
-              {isFr ? 'Bateau — groupage' : 'Boat — groupage'}
-            </span>
-          ) : (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 20, background: '#D1F4E7', color: '#10B981', border: '1px solid #D4A574' }}>
-              <PlaneIcon size={13} color="#10B981" />
-              {isFr ? 'Transport avion — bagage cabine' : 'Air transport — carry-on luggage'}
-            </span>
+          {/* Name + Rating */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', lineHeight: 1.3 }}>
+              {gpName || 'GP'}
+            </div>
+            {gpRating && (
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
+                ★ {gpRating} • {gpTripsCount || 0} {isFr ? 'voyages' : 'trips'}
+              </div>
+            )}
+          </div>
+
+          {/* Availability tag */}
+          {urgency && (
+            <div style={{
+              background: urgency.c,
+              color: '#fff',
+              padding: '4px 10px',
+              borderRadius: 12,
+              fontSize: 10,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}>
+              {urgency.label}
+            </div>
           )}
         </div>
 
-        {/* Route */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Route: From → To */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, paddingLeft: 2 }}>
+          <div style={{ textAlign: 'center', minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#1F2937', letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+              {fromCity}
+            </div>
+            {trip.pickup_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{trip.pickup_area}</div>}
+          </div>
+
+          <div style={{ fontSize: 12, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+
+          <div style={{ textAlign: 'center', minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: accent, letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+              {toCity}
+            </div>
+            {trip.dropoff_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{trip.dropoff_area}</div>}
+          </div>
+        </div>
+
+        {/* Info row: Departure + Price */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 12, marginBottom: 12, borderBottom: '1px solid #F0EDE8' }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+              {isFr ? 'Départ' : 'Depart'}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1F2937', marginTop: 2 }}>
+              {formatDate(trip.date) || '—'}
+            </div>
+          </div>
+          {price && (
             <div>
-              <div style={{ fontSize: 30, fontWeight: 900, color: '#1F2937', lineHeight: 1, fontFamily: 'DM Serif Display, serif' }}>
-                {fromCity}
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                {isFr ? 'Tarif' : 'Price'}
               </div>
-              <div style={{ fontSize: 11, color: '#A09080', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                {isFr ? 'Départ' : 'Origin'}
-              </div>
-            </div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
-              {isGroupage ? <ShipIcon size={18} color="#A09080" /> : <PlaneIcon size={18} color="#A09080" />}
-              <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 30, fontWeight: 900, color: accent, lineHeight: 1, fontFamily: 'DM Serif Display, serif' }}>
-                {toCity}
-              </div>
-              <div style={{ fontSize: 11, color: '#A09080', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                {isFr ? 'Arrivée' : 'Destination'}
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#10B981', marginTop: 2 }}>
+                {price}<span style={{ fontSize: 10, color: '#6B7280' }}>/kg</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Key info grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #F0EDE8' }}>
-          {[
-            { Icon: CalendarIcon, label: isFr ? 'Date de départ' : 'Departure date', value: formatDate(trip.date) || '—',  color: '#1F2937' },
-            { Icon: DollarIcon,   label: isFr ? 'Prix / kg'       : 'Price per kg',    value: price || (isFr ? 'À négocier' : 'Negotiable'), color: '#10B981' },
-          ].map(({ Icon, label, value, color }, i) => (
-            <div key={label} style={{ padding: '16px 12px', borderRight: i < 1 ? '1px solid #F0EDE8' : 'none', textAlign: 'center' }}>
-              <Icon size={16} color="#A09080" />
-              <div style={{ fontSize: 11, color: '#A09080', marginTop: 5, marginBottom: 3 }}>{label}</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color }}>{value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pickup / dropoff */}
-        {(trip.pickup_area || trip.dropoff_area) && (
-          <div style={{ display: 'flex', borderBottom: '1px solid #F0EDE8' }}>
-            {trip.pickup_area && (
-              <div style={{ flex: 1, padding: '14px 20px', borderRight: trip.dropoff_area ? '1px solid #F0EDE8' : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#10B981" />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                    {isFr ? 'Récupère à' : 'Picks up in'}
-                  </span>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937' }}>{trip.pickup_area}</div>
-              </div>
-            )}
-            {trip.dropoff_area && (
-              <div style={{ flex: 1, padding: '14px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <MapPinIcon size={13} color="#10B981" />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-                    {isFr ? 'Livre à' : 'Drops off in'}
-                  </span>
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#1F2937' }}>{trip.dropoff_area}</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Flight number */}
-        {trip.flight_number && (
-          <div style={{ padding: '12px 24px', borderBottom: '1px solid #F0EDE8', background: '#FDFBF7' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-              {isFr ? 'Numéro de vol' : 'Flight number'}
-            </span>
-            <span style={{ marginLeft: 10, fontSize: 13, fontWeight: 700, color: '#1F2937', fontFamily: 'monospace' }}>
-              {trip.flight_number}
-            </span>
-          </div>
-        )}
-
-        {/* Note */}
-        {trip.note && (
-          <div style={{ padding: '16px 24px', borderBottom: '1px solid #F0EDE8', background: '#FDFBF7' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#A09080', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>
-              {isFr ? 'Note du GP' : 'Note'}
-            </div>
-            <div style={{ fontSize: 14, color: '#1F2937', lineHeight: 1.7, fontStyle: 'italic' }}>"{trip.note}"</div>
-          </div>
-        )}
-
-        {/* Contact */}
-        <div style={{ padding: '20px 24px' }}>
-          {!phone ? (
-            <div style={{ textAlign: 'center', padding: '12px 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}><LockIcon size={24} color="#C0B8B0" /></div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', marginBottom: 3 }}>
-                {isFr ? 'Contact non disponible' : 'Contact unavailable'}
-              </div>
-            </div>
-          ) : !user ? (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FEF3C7', borderRadius: 10, padding: '12px 14px', marginBottom: 14, border: '1px solid #FCD34D' }}>
-                <LockIcon size={14} color="#D97706" />
-                <span style={{ fontSize: 13, color: '#D97706', fontWeight: 600 }}>
-                  {isFr ? 'Connectez-vous pour contacter' : 'Sign up to contact this traveler'}
-                </span>
-              </div>
-              <button onClick={onLoginRequired} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                width: '100%', padding: '15px', borderRadius: 14, border: 'none',
-                background: '#F59E0B', color: '#fff', fontSize: 16, fontWeight: 700,
-                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                boxShadow: '0 4px 16px rgba(245,158,11,.25)',
-                transition: 'background .2s'
-              }}
-              onMouseEnter={e => e.target.style.background = '#D97706'}
-              onMouseLeave={e => e.target.style.background = '#F59E0B'}
-              >
-                <LockIcon size={18} color="#fff" />
-                {isFr ? 'Se connecter pour contacter' : 'Sign in to message'}
-              </button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleContact} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                width: '100%', padding: '15px', borderRadius: 14, border: 'none',
-                background: '#25D366', color: '#fff', fontSize: 16, fontWeight: 700,
-                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                boxShadow: '0 4px 16px rgba(37,211,102,.25)',
-                transition: 'background .2s'
-              }}
-              onMouseEnter={e => e.target.style.background = '#1EAA51'}
-              onMouseLeave={e => e.target.style.background = '#25D366'}
-              >
-                <WhatsAppIcon size={20} />
-                {isFr ? 'Contacter sur WhatsApp' : 'Message on WhatsApp'}
-              </button>
-            </>
           )}
         </div>
+
+        {/* CTA Button */}
+        {!phone ? (
+          <div style={{ padding: '8px', textAlign: 'center', borderRadius: 10, fontSize: 11, fontWeight: 700, background: '#F3F4F6', color: '#6B7280' }}>
+            {isFr ? 'Non disponible' : 'Unavailable'}
+          </div>
+        ) : !user ? (
+          <button onClick={onLoginRequired} style={{
+            width: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            padding: '10px 14px', borderRadius: 10, border: 'none',
+            background: '#F59E0B', color: '#fff',
+            fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            transition: 'opacity .15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            <LockIcon size={12} color="#fff" />
+            {isFr ? 'Se connecter' : 'Sign in'}
+          </button>
+        ) : (
+          <button onClick={handleContact} style={{
+            width: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            padding: '10px 14px', borderRadius: 10, border: 'none',
+            background: '#25D366', color: '#fff',
+            fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            transition: 'opacity .15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            <WhatsAppIcon size={14} />
+            {isFr ? 'WhatsApp' : 'WhatsApp'}
+          </button>
+        )}
       </div>
     </>
   )
@@ -563,6 +548,11 @@ export default function GPProfile({ gp, lang, user, onLoginRequired, onBack }) {
             user={user}
             onLoginRequired={onLoginRequired}
             accent={accent}
+            gpName={displayName}
+            gpAvatar={displayAvatar}
+            gpInitials={initials}
+            gpRating={avgRating}
+            gpTripsCount={allTrips.length}
           />
         ))}
 
