@@ -93,7 +93,7 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Once useAuth finishes loading, check if we need to navigate to onboarding or profile
+  // Once useAuth finishes loading, check if we need to navigate to onboarding or browse
   useEffect(() => {
     if (!authLoading && user && view === 'home') {
       // Skip onboarding for admins
@@ -102,8 +102,8 @@ export default function App() {
       } else if (!user.onboarding_complete) {
         setView('onboarding', true)
       } else {
-        // Route to appropriate profile based on user role
-        const targetView = user.role === 'sender' ? 'sender-profile' : 'profile'
+        // Route to browse for senders, profile for travelers
+        const targetView = user.role === 'sender' ? 'browse' : 'profile'
         setView(targetView, true)
       }
     }
@@ -120,7 +120,7 @@ export default function App() {
     } else if (!data?.onboarding_complete) {
       setView('onboarding')
     } else {
-      const targetView = data.role === 'sender' ? 'sender-profile' : 'profile'
+      const targetView = data.role === 'sender' ? 'browse' : 'profile'
       setView(targetView)
     }
   }
@@ -194,7 +194,7 @@ export default function App() {
         {view === 'onboarding' && (
           <OnboardingPage user={user} lang={lang} onComplete={async () => {
             const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-            setView((data?.role === 'sender') ? 'sender-profile' : 'profile')
+            setView((data?.role === 'sender') ? 'browse' : 'profile')
           }} onBrowse={() => setView('browse')} />
         )}
 

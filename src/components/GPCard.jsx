@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { ShieldCheck, BadgeCheck } from 'lucide-react'
 import ContactModal from './ContactModal'
 
 function WhatsAppIcon({ size = 15 }) {
@@ -100,77 +99,33 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         <ContactModal gp={{ ...gp, price }} lang={lang} onClose={() => setShowModal(false)} onSend={sendWhatsApp} />
       )}
 
-      <style>{`
-        .gpc-wrap {
-          background: #fff;
-          border: 1px solid #EBEBEB;
-          border-radius: 20px;
-          overflow: hidden;
-          display: flex;
-          font-family: 'DM Sans', sans-serif;
-          cursor: pointer;
-          transition: box-shadow .18s, border-color .18s;
-        }
-        .gpc-wrap:hover { box-shadow: 0 6px 24px rgba(0,0,0,.07); border-color: #DDDAD5; }
-
-        /* Left: traveler name */
-        .gpc-traveler {
-          padding: 22px 22px;
-          background: #FDFBF8;
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          border-right: 1px solid #F2F0ED;
-          min-width: 100px;
-        }
-
-        /* Middle: route/destination */
-        .gpc-route {
-          padding: 22px 24px;
-          flex: 1;
-          min-width: 0;
-          border-right: 1px solid #F2F0ED;
-        }
-
-        /* Right: CTA */
-        .gpc-action {
-          padding: 22px 22px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          min-width: 100px;
-          position: relative;
-        }
-
-        @media (max-width: 640px) {
-          .gpc-wrap { flex-direction: column; }
-          .gpc-route, .gpc-traveler { border-right: none; border-bottom: 1px solid #F2F0ED; }
-          .gpc-traveler { min-width: unset; }
-          .gpc-action { flex-direction: row; justify-content: space-between; min-width: unset; }
-          .gpc-cta { flex: 1; justify-content: center !important; }
-        }
-      `}</style>
-
       <div
-        className="gpc-wrap"
-        style={{ opacity: disabled ? 0.5 : 1, cursor: disabled ? 'default' : 'pointer' }}
         onClick={() => !disabled && onViewProfile?.(gp)}
+        style={{
+          background: '#fff',
+          border: '1px solid #E8E4DE',
+          borderRadius: 16,
+          padding: '16px 14px',
+          fontFamily: "'DM Sans', sans-serif",
+          cursor: disabled ? 'default' : 'pointer',
+          opacity: disabled ? 0.5 : 1,
+          transition: 'all .2s',
+        }}
+        onMouseEnter={e => !disabled && (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.08)')}
+        onMouseLeave={e => !disabled && (e.currentTarget.style.boxShadow = 'none')}
       >
-
-        {/* ── LEFT: Traveler name ── */}
-        <div className="gpc-traveler" style={{ padding: '16px 18px' }}>
+        {/* Header: Avatar + Name + Rating + Tag */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
           {/* Avatar */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <div style={{
-              width: 46, height: 46, borderRadius: '50%',
-              background: `linear-gradient(135deg, ${accent}28, ${accent}0e)`,
-              border: `2px solid ${accent}30`,
+              width: 44, height: 44, borderRadius: '50%',
+              background: `linear-gradient(135deg, ${accent}22, ${accent}08)`,
+              border: `1.5px solid ${accent}25`,
               overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: "'DM Serif Display', serif",
-              fontSize: 16, fontWeight: 700, color: accent,
+              fontSize: 14, fontWeight: 700, color: accent,
             }}>
               {gp.avatar_url && !avatarErr
                 ? <img src={gp.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={() => setAvatarErr(true)} />
@@ -178,139 +133,111 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             </div>
             {verified && (
               <div style={{
-                position: 'absolute', bottom: 0, right: 0,
-                width: 16, height: 16, borderRadius: '50%',
+                position: 'absolute', bottom: -2, right: -2,
+                width: 18, height: 18, borderRadius: '50%',
                 background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.12)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10,
               }}>
-                <ShieldCheck size={9} color="#16A34A" strokeWidth={2.5} />
+                ✓
               </div>
             )}
           </div>
 
-          {/* Name */}
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#111', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {/* Name + Rating */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937', lineHeight: 1.3 }}>
               {gp.name || 'GP'}
             </div>
-            {badge && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, padding: '2px 8px', background: '#D7E8DC', borderRadius: 12, border: '1px solid #4A9B5F' }}>
-                <BadgeCheck size={12} color="#4A9B5F" strokeWidth={2.5} />
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#4A9B5F' }}>
-                  {isFr ? 'Vérifié' : 'Verified'}
-                </span>
-              </div>
-            )}
-            {!badge && (
-              <div style={{ fontSize: 11, color: verified ? '#16A34A' : '#9CA3AF', fontWeight: verified ? 600 : 400, marginTop: 4 }}>
-                {verified ? (isFr ? '✓ Vérifié' : '✓ Verified') : (isFr ? 'GP' : 'GP')}
+            {gp.avg_rating && (
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
+                ★ {gp.avg_rating} • {gp.review_count || 0} {isFr ? 'voyages' : 'trips'}
               </div>
             )}
           </div>
+
+          {/* Availability tag */}
+          {departDate && (
+            <div style={{
+              background: countdown ? '#A85A3A' : urgency.c,
+              color: '#fff',
+              padding: '4px 10px',
+              borderRadius: 12,
+              fontSize: countdown ? 9 : 10,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}>
+              {countdown ? `${countdown.hours}h ${countdown.mins}m` : urgency.label}
+            </div>
+          )}
         </div>
 
-        {/* ── MIDDLE: Destination ── */}
-        <div className="gpc-route" style={{ padding: '16px 20px' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 10 }}>
-            {isFr ? 'Itinéraire' : 'Route'}
+        {/* Route: From → To */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, paddingLeft: 2 }}>
+          <div style={{ textAlign: 'center', minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: '#1F2937', letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+              {from}
+            </div>
+            {gp.pickup_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{gp.pickup_area}</div>}
           </div>
 
-          {departDate && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-              <div style={{
-                background: countdown ? '#A85A3A' : urgency.c,
-                color: '#fff',
-                padding: '3px 10px',
-                borderRadius: 14,
-                fontSize: countdown ? 10 : 9,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-              }}>
-                {countdown ? `${countdown.hours}h ${countdown.mins}m` : urgency.label}
+          <div style={{ fontSize: 12, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+
+          <div style={{ textAlign: 'center', minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: accent, letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
+              {to}
+            </div>
+            {gp.dropoff_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{gp.dropoff_area}</div>}
+          </div>
+        </div>
+
+        {/* Info row: Departure + Price */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 12, marginBottom: 12, borderBottom: '1px solid #F0EDE8' }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+              {isFr ? 'Départ' : 'Depart'}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1F2937', marginTop: 2 }}>
+              {departDate}
+            </div>
+          </div>
+          {price && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                {isFr ? 'Tarif' : 'Price'}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#10B981', marginTop: 2 }}>
+                {price}<span style={{ fontSize: 10, color: '#6B7280' }}>/kg</span>
               </div>
             </div>
           )}
+        </div>
 
-          {/* Cities + arrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 900, color: '#111', letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{from}</div>
-              {gp.pickup_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.pickup_area}</div>}
-            </div>
-
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 0, minWidth: 40 }}>
-              <div style={{ flex: 1, height: '1.5px', background: `linear-gradient(90deg, #D4C9BA, ${accent})` }} />
-              <div style={{ fontSize: 16, margin: '0 2px', lineHeight: 1 }}>✈</div>
-            </div>
-
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 28, fontWeight: 900, color: accent, letterSpacing: '-.6px', lineHeight: 1, fontFamily: "'DM Serif Display', serif" }}>{to}</div>
-              {gp.dropoff_area && <div style={{ fontSize: 11, color: '#A09898', marginTop: 4 }}>{gp.dropoff_area}</div>}
-            </div>
+        {/* CTA Button */}
+        {disabled ? (
+          <div style={{ width: '100%', padding: '10px', textAlign: 'center', borderRadius: 10, fontSize: 12, fontWeight: 700, background: isFull ? '#EDD8C4' : '#F3F4F6', color: isFull ? '#8B4A2E' : '#6B7280' }}>
+            {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
           </div>
-
-          {/* Date below */}
-          {departDate && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#B5AFA8', textTransform: 'uppercase', letterSpacing: '.08em' }}>
-                {isFr ? 'Départ' : 'Departs'}
-              </span>
-              <span style={{ fontSize: 12, color: '#6B7280' }}>{departDate}</span>
-            </div>
-          )}
-        </div>
-
-        {/* ── RIGHT: CTA + date ── */}
-        <div className="gpc-action" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          {/* Price */}
-          {price && !disabled && (
-            <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginTop: 8 }}>
-              <span style={{ color: '#10B981' }}>{price}</span><span style={{ color: '#4A9B5F' }}>/kg</span>
-            </div>
-          )}
-
-          {/* Rating */}
-          {gp.avg_rating && (
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', textAlign: 'center' }}>
-              ★ {gp.avg_rating}
-              <span style={{ fontWeight: 400, color: '#A09080', fontSize: 11 }}> ({gp.review_count})</span>
-            </div>
-          )}
-
-          {/* CTA */}
-          {disabled ? (
-            <div style={{ padding: '8px 16px', borderRadius: 10, fontSize: 11, fontWeight: 700, background: isFull ? '#EDD8C4' : '#F3F4F6', color: isFull ? '#8B4A2E' : '#6B7280' }}>
-              {isFull ? (isFr ? 'Complet' : 'Full') : (isFr ? 'Indisponible' : 'Unavailable')}
-            </div>
-          ) : (
-            <button
-              className="gpc-cta"
-              onClick={handleContact}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                padding: '10px 16px', borderRadius: 12, border: 'none',
-                background: '#25D366', color: '#fff',
-                fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif",
-                transition: 'opacity .15s', whiteSpace: 'nowrap',
-                marginTop: 8,
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '.8'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              <WhatsAppIcon size={13} />
-              WhatsApp
-            </button>
-          )}
-
-          {/* Date posted — bottom */}
-          {(gp.created_at || gp.approved_at) && (
-            <div style={{ fontSize: 9, color: '#B5AFA8', fontWeight: 600, textAlign: 'center', marginTop: 'auto', paddingTop: 8 }}>
-              Posted on: <span style={{ color: '#1F2937' }}>{formatPostDate(gp.approved_at || gp.created_at, locale)}</span>
-            </div>
-          )}
-        </div>
-
+        ) : (
+          <button
+            onClick={handleContact}
+            style={{
+              width: '100%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              padding: '10px 14px', borderRadius: 10, border: 'none',
+              background: '#25D366', color: '#fff',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              fontFamily: "'DM Sans', sans-serif",
+              transition: 'opacity .15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '.85'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          >
+            <WhatsAppIcon size={14} />
+            {isFr ? 'WhatsApp' : 'WhatsApp'}
+          </button>
+        )}
       </div>
     </>
   )

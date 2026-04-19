@@ -128,10 +128,10 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
         </div>
       </nav>
 
-      {/* Sidebar Menu - Modern Drawer */}
+      {/* Bottom Menu Drawer */}
       {menuOpen && (
         <>
-          {/* Overlay - Subtle */}
+          {/* Overlay */}
           <div
             onClick={handleMenuClose}
             style={{
@@ -140,27 +140,30 @@ export default function MobileNavbar({ lang, setLang, setView, user, onSignOut, 
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'rgba(0,0,0,.15)',
+              background: 'rgba(0,0,0,.25)',
               zIndex: 101,
-              backdropFilter: 'blur(2px)',
+              backdropFilter: 'blur(3px)',
+              animation: 'fadeIn .2s ease-out',
             }}
           />
 
-          {/* Sidebar */}
+          {/* Bottom Drawer */}
           <div style={{
             position: 'fixed',
-            top: 0,
+            bottom: 0,
             left: 0,
-            width: '85%',
-            maxWidth: 300,
-            height: '100vh',
+            right: 0,
+            maxHeight: '90vh',
             background: '#FDFBF7',
             zIndex: 102,
             display: 'flex',
             flexDirection: 'column',
+            borderRadius: '24px 24px 0 0',
             overflow: 'auto',
             fontFamily: "'DM Sans', sans-serif",
-            boxShadow: '2px 0 12px rgba(0,0,0,.08)',
+            boxShadow: '0 -4px 24px rgba(0,0,0,.15)',
+            animation: 'slideUp .3s ease-out',
+            WebkitOverflowScrolling: 'touch',
           }}>
             {/* Header with Close Button */}
             <div style={{

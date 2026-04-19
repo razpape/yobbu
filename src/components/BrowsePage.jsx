@@ -640,6 +640,18 @@ export default function BrowsePage({ lang, trips, loading, error, user, onLoginR
 
         {/* Results */}
         <div>
+          {/* Greeting for senders */}
+          {user?.role === 'sender' && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#1F2937', marginBottom: 2 }}>
+                {isFr ? 'Salut, ' : 'Hello, '}{user.first_name || user.phone} 🧳
+              </div>
+              <div style={{ fontSize: 13, color: '#6B7280' }}>
+                {isFr ? 'Voyageurs disponibles cette semaine' : 'Travelers available this week'}
+              </div>
+            </div>
+          )}
+
           {/* Search bar */}
           <div className="browse-search-bar" ref={searchRef} style={{ marginBottom: 16, position: 'relative' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A09080" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
