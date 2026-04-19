@@ -430,92 +430,110 @@ export default function PhoneAuth({ lang = 'en', onComplete }) {
 
   const renderWelcome = () => (
     <div style={{
-      textAlign: 'center', padding: '48px 28px 32px',
-      flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      textAlign: 'center', padding: '40px 24px 32px',
+      flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
     }}>
-      <div style={{
-        width: 80, height: 80,
-        background: 'linear-gradient(135deg, #10B981 0%, #A07015 100%)',
-        borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        margin: '0 auto 28px',
-        boxShadow: '0 6px 24px rgba(200, 137, 28, 0.25)',
-      }}>
-        <Package size={38} color="#fff" strokeWidth={1.5} />
+      {/* Top: Branding + Emotional Hook */}
+      <div>
+        <div style={{
+          width: 72, height: 72,
+          background: '#10B981', borderRadius: 18,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 24px', boxShadow: '0 8px 28px rgba(16, 185, 129, 0.15)',
+        }}>
+          <Package size={36} color="#fff" strokeWidth={1.5} />
+        </div>
+
+        <h1 style={{
+          fontSize: 32, fontWeight: 800, color: '#1F2937', marginBottom: 16,
+          fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.5px', lineHeight: 1.1,
+        }}>
+          {isFr ? 'Restez connecté à la maison' : 'Stay connected to home'}
+        </h1>
+
+        <p style={{
+          fontSize: 15, color: '#6B7280', lineHeight: 1.7,
+          maxWidth: 280, margin: '0 auto 32px',
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          {isFr
+            ? 'Envoyez des colis à votre famille avec des voyageurs de confiance. Rapide, sûr et abordable.'
+            : 'Send packages to your family with trusted travelers. Fast, safe, and affordable.'}
+        </p>
+
+        {/* Trust Badges */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
+          {[
+            { icon: '✓', text: isFr ? 'Tous les GP sont vérifiés' : 'All travelers verified' },
+            { icon: '🔒', text: isFr ? 'Paiement sécurisé' : 'Secure payments' },
+            { icon: '⚡', text: isFr ? 'Livraison rapide' : 'Fast delivery' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              fontSize: 13, color: '#6B7280', fontFamily: "'DM Sans', sans-serif",
+            }}>
+              <span style={{ fontSize: 16 }}>{item.icon}</span>
+              {item.text}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <h1 style={{
-        fontSize: 30, fontWeight: 800, color: '#1F2937', marginBottom: 12,
-        fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.3px',
-      }}>
-        Yobbu
-      </h1>
+      {/* Bottom: CTAs */}
+      <div>
+        <button
+          onClick={() => setStep(STEPS.PHONE)}
+          style={{
+            width: '100%', padding: '16px 24px',
+            background: '#F59E0B', color: '#fff',
+            border: 'none', borderRadius: 16,
+            fontSize: 16, fontWeight: 700, cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.2)',
+            transition: 'all .2s', marginBottom: 12,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#D97706'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#F59E0B'; e.currentTarget.style.transform = 'none' }}
+        >
+          {isFr ? 'Commencer maintenant' : 'Get started'}
+        </button>
 
-      <p style={{
-        fontSize: 15, color: '#6B6860', lineHeight: 1.6,
-        maxWidth: 300, margin: '0 auto 40px',
-        fontFamily: "'DM Sans', sans-serif",
-      }}>
-        {isFr
-          ? 'Envoyez des colis avec des voyageurs qui vont dans votre direction'
-          : 'Send packages with travelers going your way'}
-      </p>
+        <button
+          onClick={() => onComplete?.(null, 'browse')}
+          style={{
+            width: '100%', padding: '14px 24px',
+            background: '#fff', color: '#1F2937',
+            border: '1.5px solid #E5E0D8', borderRadius: 16,
+            fontSize: 15, fontWeight: 600, cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif",
+            marginBottom: 28, transition: 'all .2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#D5CAC0'; e.currentTarget.style.background = '#F9F7F5' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E0D8'; e.currentTarget.style.background = '#fff' }}
+        >
+          {isFr ? 'Parcourir en tant que visiteur' : 'Browse as guest'}
+        </button>
 
-      <button
-        onClick={() => setStep(STEPS.PHONE)}
-        style={{
-          width: '100%', padding: '16px 24px',
-          background: '#10B981', color: '#fff',
-          border: 'none', borderRadius: 14,
-          fontSize: 16, fontWeight: 600, cursor: 'pointer',
-          fontFamily: "'DM Sans', sans-serif",
-          boxShadow: '0 4px 16px rgba(200, 137, 28, 0.25)',
-          transition: 'transform .15s, box-shadow .15s',
-          marginBottom: 12,
-        }}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(200, 137, 28, 0.3)' }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(200, 137, 28, 0.25)' }}
-      >
-        {isFr ? 'Continuer avec mon numero' : 'Continue with my number'}
-      </button>
-
-      <button
-        onClick={() => onComplete?.(null, 'browse')}
-        style={{
-          width: '100%', padding: '14px 24px',
-          background: 'transparent', color: '#6B6860',
-          border: '1.5px solid #E0DAD0', borderRadius: 14,
-          fontSize: 15, fontWeight: 500, cursor: 'pointer',
-          fontFamily: "'DM Sans', sans-serif",
-          marginBottom: 28,
-          transition: 'border-color .15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.borderColor = '#10B98180'}
-        onMouseLeave={e => e.currentTarget.style.borderColor = '#E0DAD0'}
-      >
-        {isFr ? "Parcourir d'abord" : 'Browse First'}
-      </button>
-
-      <div style={{ marginTop: 'auto' }}>
-        <p style={{ fontSize: 13, color: '#6B7280', fontFamily: "'DM Sans', sans-serif" }}>
-          {isFr ? 'Deja un compte ? ' : 'Already have an account? '}
+        <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 12, fontFamily: "'DM Sans', sans-serif" }}>
+          {isFr ? 'Déjà inscrit ? ' : 'Already have an account? '}
           <button
             onClick={() => setStep(STEPS.PHONE)}
             style={{
               color: '#10B981', background: 'none', border: 'none',
-              cursor: 'pointer', fontWeight: 600, fontSize: 13,
+              cursor: 'pointer', fontWeight: 700, fontSize: 12,
               fontFamily: "'DM Sans', sans-serif",
             }}
           >
-            {isFr ? 'Se connecter' : 'Log In'}
+            {isFr ? 'Se connecter' : 'Sign in'}
           </button>
         </p>
+
         <p style={{
-          marginTop: 12, fontSize: 11, color: '#B0A898',
-          maxWidth: 260, margin: '12px auto 0',
-          fontFamily: "'DM Sans', sans-serif",
+          marginTop: 16, fontSize: 10, color: '#B0A898',
+          fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5,
         }}>
           {isFr
-            ? 'En continuant, vous acceptez nos Conditions et notre Politique de confidentialite'
+            ? 'En continuant, vous acceptez nos Conditions et notre Politique de confidentialité'
             : 'By continuing, you agree to our Terms and Privacy Policy'}
         </p>
       </div>
