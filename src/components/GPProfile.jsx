@@ -185,17 +185,21 @@ function TripDetailCard({ trip, lang, user, onLoginRequired, accent, gpName, gpA
         </div>
 
         {/* Route: From → To */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, paddingLeft: 2 }}>
-          <div style={{ textAlign: 'center', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, paddingLeft: 2 }}>
+          <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 16, fontWeight: 900, color: '#1F2937', letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
               {fromCity}
             </div>
             {trip.pickup_area && <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 1 }}>{trip.pickup_area}</div>}
           </div>
 
-          <div style={{ fontSize: 12, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
+            <div style={{ fontSize: 14, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+            <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
+          </div>
 
-          <div style={{ textAlign: 'center', minWidth: 0 }}>
+          <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 16, fontWeight: 900, color: accent, letterSpacing: '-.3px', fontFamily: "'DM Serif Display', serif" }}>
               {toCity}
             </div>

@@ -178,7 +178,7 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
         </div>
 
         {/* Route: From → To */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingLeft: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, paddingLeft: 2 }}>
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#1F2937', letterSpacing: '-.4px', fontFamily: "'DM Serif Display', serif", lineHeight: 1 }}>
               {from}
@@ -186,7 +186,11 @@ export default function GPCard({ gp, lang, user, onContactClick, onViewProfile }
             {gp.pickup_area && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{gp.pickup_area}</div>}
           </div>
 
-          <div style={{ fontSize: 14, color: '#D4C4A8', margin: '0 12px' }}>→</div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
+            <div style={{ fontSize: 16, color: '#D4C4A8', flexShrink: 0 }}>→</div>
+            <div style={{ flex: 1, height: 1, background: '#E5E1DB' }} />
+          </div>
 
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 18, fontWeight: 900, color: accent, letterSpacing: '-.4px', fontFamily: "'DM Serif Display', serif", lineHeight: 1 }}>
